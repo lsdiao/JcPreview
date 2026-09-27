@@ -69,6 +69,27 @@ Page({
     })
   },
 
+  /** 预览封面图 */
+  previewCover() {
+    const cover = this.data.item && this.data.item.cover
+    if (!cover) return
+    wx.previewImage({
+      urls: [cover],
+      current: cover
+    })
+  },
+
+  /** 预览正文中的图片 */
+  previewImage(e) {
+    const index = e.currentTarget.dataset.index
+    const images = this.data.inlineImages || []
+    if (!images.length) return
+    wx.previewImage({
+      urls: images,
+      current: images[index] || images[0]
+    })
+  },
+
   onShareAppMessage() {
     const item = this.data.item || {}
     return {

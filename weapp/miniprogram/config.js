@@ -5,7 +5,7 @@
 module.exports = {
   // 云开发环境 ID，例如 'zhenci-tile-3g8xxxxx'。
   // 留空则使用小程序默认环境（只有一个环境时可用）。
-  envId: '',
+  envId: 'cloud1-d9ge2qxa0ff3581e3',
 
   // 品牌信息
   brand: {

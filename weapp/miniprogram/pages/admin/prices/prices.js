@@ -1,31 +1,12 @@
 const api = require('../../../utils/api.js')
 const config = require('../../../config.js')
 
-const EMPTY_FORM = {
-  _id: '',
-  no: '',
-  brand: '',
-  name: '',
-  spec: '',
-  cat: '',
-  unit: '元/片',
-  desc: '',
-  images: [],
-  prices: [0, 0, 0],
-  off: false
-}
-
 Page({
   data: {
     levelsShort: config.levelsShort,
     loading: true,
     list: [],
-    cats: [],
-    kw: '',
-    formOpen: false,
-    form: Object.assign({}, EMPTY_FORM),
-    saving: false,
-    uploading: false
+    kw: ''
   },
 
   onShow() {
@@ -36,9 +17,7 @@ Page({
     if (!silent) this.setData({ loading: true })
     return api.call('product.adminList')
       .then(list => {
-        const cats = []
         const rows = (list || []).map(p => {
-          if (p.cat && cats.indexOf(p.cat) < 0) cats.push(p.cat)
           const prices = (p.prices || [0, 0, 0]).slice(0, 3)
           while (prices.length < 3) prices.push(0)
           return Object.assign({}, p, {
@@ -46,7 +25,7 @@ Page({
             offText: p.off ? '已下架' : '上架中'
           })
         })
-        this.setData({ list: rows, cats, loading: false })
+        this.setData({ list: rows, loading: false })
         this.applyFilter()
       })
       .catch(err => {
@@ -56,7 +35,6 @@ Page({
   },
 
   applyFilter() {
-    // 过滤仅影响展示，操作仍按下标定位原始 list
     const k = String(this.data.kw || '').trim().toUpperCase()
     const rows = this.data.list.map((p, i) => Object.assign({ _i: i }, p))
     const view = !k ? rows : rows.filter(p =>
@@ -130,100 +108,14 @@ Page({
     })
   },
 
-  /* ---------------- 产品资料表单 ---------------- */
+  /* ---------------- 跳转编辑页 ---------------- */
 
   openNew() {
-    this.setData({ formOpen: true, form: Object.assign({}, EMPTY_FORM, { images: [], prices: [0, 0, 0] }) })
+    wx.navigateTo({ url: '/pages/admin/product-edit/product-edit' })
   },
 
   openEdit(e) {
-    const i = Number(e.currentTarget.dataset.i)
-    const p = this.data.list[i]
-    if (!p) return
-    this.setData({
-      formOpen: true,
-      form: {
-        _id: p._id,
-        no: p.no || '',
-        brand: p.brand || '',
-        name: p.name || '',
-        spec: p.spec || '',
-        cat: p.cat || '',
-        unit: p.unit || '元/片',
-        desc: p.desc || '',
-        images: (p.images || []).slice(),
-        prices: (p.prices || [0, 0, 0]).slice(0, 3),
-        off: !!p.off
-      }
-    })
-  },
-
-  closeForm() {
-    this.setData({ formOpen: false })
-  },
-
-  onField(e) {
-    this.setData({ ['form.' + e.currentTarget.dataset.field]: e.detail.value })
-  },
-
-  onPrice(e) {
-    this.setData({ ['form.prices[' + e.currentTarget.dataset.j + ']']: e.detail.value })
-  },
-
-  onOff(e) {
-    this.setData({ 'form.off': e.detail.value })
-  },
-
-  pickCat(e) {
-    this.setData({ 'form.cat': e.currentTarget.dataset.cat })
-  },
-
-  addImages() {
-    if (this.data.uploading) return
-    const left = 9 - this.data.form.images.length
-    if (left <= 0) { api.toast('最多 9 张'); return }
-    this.setData({ uploading: true })
-    api.chooseImages(left)
-      .then(files => {
-        this.setData({ uploading: false })
-        if (files && files.length) {
-          this.setData({ 'form.images': this.data.form.images.concat(files) })
-        }
-      })
-      .catch(err => {
-        this.setData({ uploading: false })
-        api.toast(err.message)
-      })
-  },
-
-  removeImage(e) {
-    const i = Number(e.currentTarget.dataset.index)
-    const images = this.data.form.images.slice()
-    images.splice(i, 1)
-    this.setData({ 'form.images': images })
-  },
-
-  previewImage(e) {
-    const images = this.data.form.images
-    wx.previewImage({ current: images[e.currentTarget.dataset.index], urls: images })
-  },
-
-  save() {
-    if (this.data.saving) return
-    const f = this.data.form
-    if (!String(f.no || '').trim()) { api.toast('请填写产品编号'); return }
-    if (!String(f.name || '').trim()) { api.toast('请填写产品名称'); return }
-
-    this.setData({ saving: true })
-    api.call('product.save', { data: f })
-      .then(() => {
-        this.setData({ saving: false, formOpen: false })
-        api.toast('已保存')
-        return this.load(true)
-      })
-      .catch(err => {
-        this.setData({ saving: false })
-        api.toast(err.message)
-      })
+    const id = e.currentTarget.dataset.id
+    wx.navigateTo({ url: '/pages/admin/product-edit/product-edit?id=' + id })
   }
 })

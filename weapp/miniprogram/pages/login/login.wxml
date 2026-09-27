@@ -1,0 +1,76 @@
+<!-- 登录 · 手机号一键登录 -->
+<view class="login-page">
+  <view class="login-hero">
+    <view class="login-logo">{{brand.name}}</view>
+    <view class="login-en">{{brand.en}}</view>
+    <view class="login-slogan">{{brand.slogan}}</view>
+  </view>
+
+  <view class="login-card">
+    <view class="login-tip">
+      <text class="cuIcon-mobilephonefill login-tip-ic"></text>
+      <text>手机号一键登录，安全便捷</text>
+    </view>
+
+    <!-- 手机号登录按钮 -->
+    <button
+      class="tc-btn tc-btn-block login-btn {{!agreed ? 'tc-disabled' : ''}}"
+      open-type="getPhoneNumber"
+      bindgetphonenumber="onGetPhone"
+      disabled="{{!agreed || loading}}"
+    >
+      {{loading ? '登录中…' : '微信手机号一键登录'}}
+    </button>
+
+    <!-- 隐私协议勾选 -->
+    <view class="agree-row" bindtap="toggleAgree">
+      <view class="checkbox {{agreed ? 'checked' : ''}}">
+        <text wx:if="{{agreed}}" class="cuIcon-right"></text>
+      </view>
+      <text class="agree-text">
+        我已阅读并同意
+        <text class="agree-link" catchtap="showPrivacy">《用户隐私协议》</text>
+      </text>
+    </view>
+
+    <!-- 跳过登录 -->
+    <view class="skip-row">
+      <text class="skip-btn" bindtap="skipLogin">暂不登录，先逛逛</text>
+    </view>
+  </view>
+
+  <view class="login-footer">
+    <text>{{brand.name}} · {{brand.version}}</text>
+  </view>
+
+  <!-- 隐私协议弹窗 -->
+  <view class="privacy-mask" wx:if="{{showPrivacy}}" bindtap="hidePrivacy">
+    <view class="privacy-modal" catchtap="">
+      <view class="privacy-title">用户隐私协议</view>
+      <scroll-view class="privacy-body" scroll-y>
+        <view class="privacy-sec">一、信息收集</view>
+        <view class="privacy-p">为向您提供会员服务，我们会收集您的微信昵称、头像及手机号。手机号仅用于身份验证和会员管理，不会用于其他用途。</view>
+
+        <view class="privacy-sec">二、信息使用</view>
+        <view class="privacy-p">1. 用于创建和管理您的会员账户；</view>
+        <view class="privacy-p">2. 用于验证身份，保障账户安全；</view>
+        <view class="privacy-p">3. 用于向您推送产品及服务信息（您可随时退订）。</view>
+
+        <view class="privacy-sec">三、信息保护</view>
+        <view class="privacy-p">我们采用微信云开发服务，数据存储在腾讯云服务器上，通过加密传输和访问控制等技术手段保护您的个人信息安全。</view>
+
+        <view class="privacy-sec">四、信息共享</view>
+        <view class="privacy-p">未经您的同意，我们不会向任何第三方共享您的个人信息，法律法规要求的情形除外。</view>
+
+        <view class="privacy-sec">五、您的权利</view>
+        <view class="privacy-p">您有权查询、更正、删除您的个人信息。如需操作，请联系客服。</view>
+
+        <view class="privacy-sec">六、联系我们</view>
+        <view class="privacy-p">如有疑问，请通过小程序内「联系客服」与我们取得联系。</view>
+      </scroll-view>
+      <view class="privacy-footer">
+        <view class="tc-btn tc-btn-block" bindtap="hidePrivacy">我已阅读并同意</view>
+      </view>
+    </view>
+  </view>
+</view>

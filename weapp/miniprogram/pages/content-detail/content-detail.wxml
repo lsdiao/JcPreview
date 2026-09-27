@@ -65,7 +65,7 @@
 
     <!-- ============ 图文：站内阅读 ============ -->
     <block wx:else>
-      <image class="cover" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}"></image>
+      <image class="cover" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}" bindtap="previewCover"></image>
       <view class="body">
         <view class="title">{{item.title}}</view>
         <view class="meta">
@@ -84,6 +84,8 @@
           src="{{img}}"
           mode="widthFix"
           lazy-load="{{true}}"
+          data-index="{{index}}"
+          bindtap="previewImage"
         ></image>
       </view>
     </block>

@@ -36,8 +36,9 @@ Page({
     return api.getMe()
       .then(me => {
         const m = me.member
-        this.setData({ isMember: !!m, levelText: m ? config.levels[m.level] : '' })
-        if (!m) {
+        const isActive = !!(m && m.status === 'active')
+        this.setData({ isMember: isActive, levelText: isActive ? config.levels[m.level] : '' })
+        if (!isActive) {
           this.loaded = true
           this.setData({ loading: false, items: [], list: [] })
           return null

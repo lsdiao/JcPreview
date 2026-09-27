@@ -12,11 +12,14 @@ Page({
     nickname: '',
     avatar: '',
     code: '',
-    submitting: false
+    submitting: false,
+    consultant: null,
+    showConsultant: false
   },
 
   onShow() {
     this.load()
+    this.loadConsultant()
   },
 
   load(force) {
@@ -26,11 +29,19 @@ Page({
         this.setData({
           me,
           loading: false,
-          isMember: !!m,
-          levelText: m ? config.levels[m.level] : '',
+          isMember: !!(m && m.status === 'active'),
+          levelText: m && m.status === 'active' ? config.levels[m.level] : '',
           nickname: (m && m.nickname) || this.data.nickname,
           avatar: (m && m.avatar) || this.data.avatar
         })
+        // 检查全局是否有待填入的邀请码（扫码进入时带来的）
+        const app = getApp()
+        if (app && app.globalData && app.globalData.inviteCode && !m) {
+          const inviteCode = app.globalData.inviteCode
+          app.globalData.inviteCode = ''
+          this.setData({ code: inviteCode })
+          api.toast('已自动填入邀请码：' + inviteCode)
+        }
       })
       .catch(err => {
         this.setData({ loading: false })
@@ -54,6 +65,35 @@ Page({
 
   onCodeInput(e) {
     this.setData({ code: String(e.detail.value || '').trim().toUpperCase() })
+  },
+
+  /** 扫一扫识别邀请码 */
+  scanCode() {
+    wx.scanCode({
+      onlyFromCamera: false,
+      scanType: ['qrCode', 'barCode'],
+      success: res => {
+        const result = res.result || ''
+        // 尝试从结果中提取邀请码（支持纯码和 inv=XXX 格式）
+        let code = ''
+        const match = result.match(/invite=([A-Z0-9]+)/i)
+        if (match && match[1]) {
+          code = match[1].toUpperCase()
+        } else {
+          // 纯文本，直接当邀请码用
+          code = result.trim().toUpperCase()
+        }
+        if (code) {
+          this.setData({ code })
+          api.toast('已识别邀请码：' + code)
+        } else {
+          api.toast('未识别到有效邀请码')
+        }
+      },
+      fail: () => {
+        // 用户取消不提示
+      }
+    })
   },
 
   activate() {
@@ -91,6 +131,40 @@ Page({
 
   goAdmin() {
     wx.navigateTo({ url: '/pages/admin/index/index' })
+  },
+
+  goProfile() {
+    wx.navigateTo({ url: '/pages/profile/profile' })
+  },
+
+  goBindPhone() {
+    wx.navigateTo({ url: '/pages/login/login' })
+  },
+
+  loadConsultant() {
+    return api.call('config.getConsultant')
+      .then(data => {
+        if (data && data.qrcode) {
+          this.setData({ consultant: data })
+        }
+      })
+      .catch(() => {})
+  },
+
+  showConsultant() {
+    this.setData({ showConsultant: true })
+  },
+
+  hideConsultant() {
+    this.setData({ showConsultant: false })
+  },
+
+  previewConsultantQrcode() {
+    if (!this.data.consultant || !this.data.consultant.qrcode) return
+    wx.previewImage({
+      urls: [this.data.consultant.qrcode],
+      current: this.data.consultant.qrcode
+    })
   },
 
   contact() {

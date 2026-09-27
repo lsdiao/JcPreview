@@ -59,4 +59,25 @@
   </view>
 
   <view class="tc-safe"></view>
+
+  <!-- 专属顾问悬浮按钮 -->
+  <view class="consultant-fab" wx:if="{{consultant && consultant.qrcode}}" bindtap="showConsultant">
+    <view class="consultant-fab-ic">
+      <text class="cuIcon-peoplefill"></text>
+    </view>
+    <text class="consultant-fab-text">{{consultant.title || '专属顾问'}}</text>
+  </view>
+
+  <!-- 专属顾问弹框 -->
+  <view class="consultant-mask" wx:if="{{showConsultant}}" bindtap="hideConsultant">
+    <view class="consultant-modal" catchtap="">
+      <view class="consultant-modal-title">{{consultant.title || '专属顾问'}}</view>
+      <view class="consultant-modal-name" wx:if="{{consultant.name}}">{{consultant.name}}</view>
+      <image class="consultant-modal-qrcode" src="{{consultant.qrcode}}" mode="aspectFit" bindtap="previewConsultantQrcode"></image>
+      <view class="consultant-modal-tip">长按识别二维码 · 添加专属顾问微信</view>
+      <view class="consultant-modal-close" bindtap="hideConsultant">
+        <text class="cuIcon-close"></text>
+      </view>
+    </view>
+  </view>
 </view>

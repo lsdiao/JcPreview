@@ -3,7 +3,7 @@
   "cloudfunctionRoot": "cloudfunctions/",
   "compileType": "miniprogram",
   "libVersion": "3.5.5",
-  "appid": "touristappid",
+  "appid": "wxe33b5ae3894f0d55",
   "projectname": "zhenci-tile-club",
   "description": "臻瓷汇 · 瓷砖授权经销商会员制小程序（ColorUI + 云开发）",
   "setting": {
@@ -20,14 +20,45 @@
     "packNpmManually": false,
     "packNpmRelationList": [],
     "useCompilerPlugins": false,
-    "ignoreUploadUnusedFiles": true
+    "ignoreUploadUnusedFiles": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
   },
   "condition": {
     "miniprogram": {
       "list": [
-        { "name": "首页", "pathName": "pages/home/home", "query": "", "scene": null },
-        { "name": "管理后台", "pathName": "pages/admin/index/index", "query": "", "scene": null }
+        {
+          "name": "首页",
+          "pathName": "pages/home/home",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "管理后台",
+          "pathName": "pages/admin/index/index",
+          "query": "",
+          "scene": null
+        }
       ]
     }
-  }
+  },
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
 }

@@ -203,7 +203,7 @@ view, text, input, textarea, button, image, scroll-view {
 .tc-picker {
   width: 100%;
   min-height: 88rpx;
-  padding: 24rpx;
+  padding: 0 24rpx;
   border: 1rpx solid rgba(235, 225, 205, 0.16);
   border-radius: 18rpx;
   background-color: #0d0d13;

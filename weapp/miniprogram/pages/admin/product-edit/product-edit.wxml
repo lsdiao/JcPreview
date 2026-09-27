@@ -1,0 +1,86 @@
+<!-- 管理后台 · 产品编辑（新增/编辑通用） -->
+<view class="tc-page tc-pad">
+
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:else>
+    <view class="tc-hero">
+      <view class="tc-hero-k">{{isEdit ? 'EDIT' : 'NEW'}}</view>
+      <view class="tc-hero-title">{{isEdit ? '编辑产品' : '新增产品'}}</view>
+      <view class="tc-hero-desc">填写产品资料和三档会员价格</view>
+    </view>
+
+    <view class="tc-card">
+      <view class="two">
+        <view class="two-c">
+          <view class="fl-label">产品编号 <text class="req">必填</text></view>
+          <input class="tc-input tc-mono" data-field="no" value="{{form.no}}" bindinput="onField" placeholder="如 A-8001" placeholder-class="tc-input-ph" />
+        </view>
+        <view class="two-c">
+          <view class="fl-label">品牌</view>
+          <input class="tc-input" data-field="brand" value="{{form.brand}}" bindinput="onField" placeholder="如 马可波罗" placeholder-class="tc-input-ph" />
+        </view>
+      </view>
+
+      <view class="fl-label">产品名称 <text class="req">必填</text></view>
+      <input class="tc-input" data-field="name" value="{{form.name}}" bindinput="onField" placeholder="如 通体大理石瓷砖" placeholder-class="tc-input-ph" />
+
+      <view class="two">
+        <view class="two-c">
+          <view class="fl-label">规格</view>
+          <input class="tc-input" data-field="spec" value="{{form.spec}}" bindinput="onField" placeholder="800×800mm" placeholder-class="tc-input-ph" />
+        </view>
+        <view class="two-c">
+          <view class="fl-label">单位</view>
+          <input class="tc-input" data-field="unit" value="{{form.unit}}" bindinput="onField" placeholder="元/片" placeholder-class="tc-input-ph" />
+        </view>
+      </view>
+
+      <view class="fl-label">分类</view>
+      <input class="tc-input" data-field="cat" value="{{form.cat}}" bindinput="onField" placeholder="如 大理石纹" placeholder-class="tc-input-ph" />
+
+      <view class="fl-label">排序（数字越大越靠前）</view>
+      <input class="tc-input tc-mono" type="number" data-field="sort" value="{{form.sort}}" bindinput="onField" placeholder="如 100" placeholder-class="tc-input-ph" />
+
+      <view class="fl-label">三档会员价（{{levelsShort[0]}} / {{levelsShort[1]}} / {{levelsShort[2]}}）</view>
+      <view class="price-row">
+        <view class="price-c" wx:for="{{levelsShort}}" wx:key="index">
+          <view class="price-lab">{{item}}</view>
+          <input class="tc-input tc-mono price-in" type="digit" data-j="{{index}}" value="{{form.prices[index]}}" bindinput="onPrice" placeholder="0" placeholder-class="tc-input-ph" />
+        </view>
+      </view>
+
+      <view class="fl-label">产品说明</view>
+      <textarea class="tc-textarea" data-field="desc" value="{{form.desc}}" bindinput="onField" placeholder="工艺、适配场景、装箱规格等" placeholder-class="tc-input-ph" auto-height />
+
+      <view class="fl-label">产品图片（最多 9 张）</view>
+      <view class="img-grid">
+        <view class="img-cell" wx:for="{{form.images}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewImage"></image>
+          <view class="img-del" data-index="{{index}}" catchtap="removeImage"><text class="cuIcon-close"></text></view>
+        </view>
+        <view class="img-cell is-add" wx:if="{{form.images.length < 9}}" bindtap="addImages">
+          <text class="cuIcon-add"></text>
+        </view>
+      </view>
+
+      <view class="sw-row">
+        <view class="sw-label">
+          <view class="sw-name">上架展示</view>
+          <view class="sw-desc">关闭后会员端不可见</view>
+        </view>
+        <switch checked="{{!form.off}}" color="#c9a26b" bindchange="onOff" />
+      </view>
+    </view>
+
+    <!-- 底部操作栏 -->
+    <view class="bottom-ops">
+      <view class="tc-btn-ghost bop" bindtap="onBack">取消</view>
+      <view class="tc-btn bop {{saving ? 'tc-disabled' : ''}}" bindtap="save">{{saving ? '保存中…' : '保存产品'}}</view>
+    </view>
+
+    <view class="tc-safe"></view>
+  </block>
+</view>

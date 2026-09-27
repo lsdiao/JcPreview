@@ -1,0 +1,70 @@
+<!-- 会员资料编辑 -->
+<view class="tc-page tc-pad">
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:else>
+    <!-- 头像 + 昵称 -->
+    <view class="tc-card profile-card">
+      <view class="profile-avatar-row">
+        <button class="profile-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image class="profile-avatar" wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"></image>
+          <view class="profile-avatar ph" wx:else>
+            <text class="cuIcon-myfill"></text>
+          </view>
+          <view class="profile-avatar-edit">
+            <text class="cuIcon-cameraadd"></text>
+          </view>
+        </button>
+      </view>
+      <view class="profile-nick-row">
+        <text class="profile-label">昵称</text>
+        <input
+          class="tc-input profile-input"
+          type="nickname"
+          placeholder="请输入昵称"
+          placeholder-class="tc-input-ph"
+          value="{{nickname}}"
+          bindinput="onNickInput"
+        />
+      </view>
+    </view>
+
+    <!-- 会员信息 -->
+    <view class="tc-card">
+      <view class="tc-card-hd">会员信息</view>
+      <view class="info-row">
+        <text class="info-label">会员等级</text>
+        <text class="info-value">{{levelText || '未开通'}}</text>
+      </view>
+      <view class="info-row" wx:if="{{member && member.code}}">
+        <text class="info-label">邀请码</text>
+        <text class="info-value tc-mono">{{member.code}}</text>
+      </view>
+      <view class="info-row info-edit">
+        <text class="info-label">手机号</text>
+        <input
+          class="info-input"
+          type="number"
+          placeholder="请输入手机号"
+          placeholder-class="tc-input-ph"
+          value="{{phone}}"
+          maxlength="11"
+          bindinput="onPhoneInput"
+        />
+      </view>
+      <view class="info-row">
+        <text class="info-label">openid</text>
+        <text class="info-value tc-mono info-openid">{{openid}}</text>
+      </view>
+    </view>
+
+    <!-- 保存按钮 -->
+    <view class="tc-btn tc-btn-block {{saving ? 'tc-disabled' : ''}}" bindtap="save">
+      {{saving ? '保存中…' : '保存修改'}}
+    </view>
+
+    <view class="tc-safe"></view>
+  </block>
+</view>

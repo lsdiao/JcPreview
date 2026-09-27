@@ -68,12 +68,43 @@
 
       <view class="tc-item-ops">
         <view class="tc-btn-ghost" data-code="{{item.code}}" bindtap="copy">复制</view>
+        <view class="tc-btn-ghost" data-id="{{item._id}}" data-code="{{item.code}}" bindtap="showQrcode">二维码</view>
         <view class="tc-btn-danger" wx:if="{{item.status === 'unused'}}" data-id="{{item._id}}" data-code="{{item.code}}" bindtap="voidCode">作废</view>
       </view>
     </view>
   </block>
 
   <view class="tc-empty" wx:else>还没有邀请码</view>
+
+  <!-- 邀请码二维码弹框 -->
+  <view class="qr-mask" wx:if="{{showQrcode}}" bindtap="hideQrcode">
+    <view class="qr-modal" catchtap="">
+      <view class="qr-title">{{qrcodeCode}}</view>
+      <view class="qr-level">{{qrcodeLevel}}</view>
+      <block wx:if="{{qrcodeLoading}}">
+        <view class="qr-loading">
+          <view class="tc-loading">生成中…</view>
+        </view>
+      </block>
+      <block wx:elif="{{qrcodeImg}}">
+        <image class="qr-img" src="{{qrcodeImg}}" mode="aspectFit" bindtap="previewQrcode"></image>
+        <view class="qr-tip">微信扫一扫 → 打开小程序 → 自动填入邀请码</view>
+      </block>
+      <block wx:else>
+        <view class="qr-fail">
+          <text class="cuIcon-infofill"></text>
+          <view class="qr-fail-tip">{{qrcodeErr || '生成失败'}}</view>
+          <view class="qr-fallback">邀请码：{{qrcodeCode}}</view>
+        </view>
+      </block>
+      <view class="qr-ops">
+        <view class="tc-btn-ghost" data-text="{{qrcodeCode}}" bindtap="copy" wx:if="{{!qrcodeLoading}}">复制邀请码</view>
+      </view>
+      <view class="qr-close" bindtap="hideQrcode">
+        <text class="cuIcon-close"></text>
+      </view>
+    </view>
+  </view>
 
   <view class="tc-safe"></view>
 </view>

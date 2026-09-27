@@ -1,0 +1,52 @@
+<!-- 管理后台 · 专属顾问二维码 -->
+<view class="tc-page tc-pad">
+  <view class="tc-hero">
+    <view class="tc-hero-k">CONSULTANT</view>
+    <view class="tc-hero-title">专属顾问</view>
+    <view class="tc-hero-desc">上传顾问微信二维码，首页和「我的」页会展示入口</view>
+  </view>
+
+  <view class="tc-card" wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </view>
+
+  <block wx:else>
+    <view class="tc-card">
+      <view class="tc-card-hd">标题文案</view>
+      <input
+        class="tc-input"
+        placeholder="如：专属顾问"
+        placeholder-class="tc-input-ph"
+        value="{{title}}"
+        bindinput="onTitleInput"
+      />
+
+      <view class="fl-label">顾问名称</view>
+      <input
+        class="tc-input"
+        placeholder="如：小臻顾问"
+        placeholder-class="tc-input-ph"
+        value="{{name}}"
+        bindinput="onNameInput"
+      />
+
+      <view class="fl-label">微信二维码</view>
+      <view class="qrcode-upload" bindtap="chooseImage">
+        <block wx:if="{{qrcode}}">
+          <image class="qrcode-img" src="{{qrcode}}" mode="aspectFit"></image>
+          <view class="qrcode-replace">点击更换</view>
+        </block>
+        <block wx:else>
+          <text class="cuIcon-qrcode qrcode-ic"></text>
+          <view class="qrcode-tip">点击上传顾问微信二维码</view>
+        </block>
+      </view>
+    </view>
+
+    <view class="tc-btn tc-btn-block {{saving ? 'tc-disabled' : ''}}" bindtap="save">
+      {{saving ? '保存中…' : '保存设置'}}
+    </view>
+  </block>
+
+  <view class="tc-safe"></view>
+</view>

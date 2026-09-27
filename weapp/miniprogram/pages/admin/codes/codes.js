@@ -10,7 +10,13 @@ Page({
     levelIndex: 0,
     remark: '',
     expireDays: '',
-    creating: false
+    creating: false,
+    showQrcode: false,
+    qrcodeLoading: false,
+    qrcodeImg: '',
+    qrcodeCode: '',
+    qrcodeLevel: '',
+    qrcodeErr: ''
   },
 
   onShow() {
@@ -80,7 +86,49 @@ Page({
   },
 
   copy(e) {
-    api.copy(e.currentTarget.dataset.code)
+    const text = e.currentTarget.dataset.code || e.currentTarget.dataset.text
+    api.copy(text)
+  },
+
+  /** 显示邀请码二维码 */
+  showQrcode(e) {
+    const id = e.currentTarget.dataset.id
+    const code = e.currentTarget.dataset.code
+    const item = this.data.list.find(x => x._id === id)
+    const levelText = item ? item.levelText : ''
+
+    this.setData({
+      showQrcode: true,
+      qrcodeLoading: true,
+      qrcodeImg: '',
+      qrcodeCode: code,
+      qrcodeLevel: levelText,
+      qrcodeErr: ''
+    })
+
+    api.call('code.qrcode', { id })
+      .then(res => {
+        this.setData({ qrcodeLoading: false, qrcodeImg: res.fileID })
+      })
+      .catch(err => {
+        this.setData({
+          qrcodeLoading: false,
+          qrcodeImg: '',
+          qrcodeErr: err.message || '生成失败'
+        })
+      })
+  },
+
+  hideQrcode() {
+    this.setData({ showQrcode: false })
+  },
+
+  previewQrcode() {
+    if (!this.data.qrcodeImg) return
+    wx.previewImage({
+      urls: [this.data.qrcodeImg],
+      current: this.data.qrcodeImg
+    })
   },
 
   voidCode(e) {

@@ -30,7 +30,8 @@ const C = {
   products: 'products',
   apps: 'mini_apps',
   votes: 'votes',
-  records: 'vote_records'
+  records: 'vote_records',
+  configs: 'configs'
 }
 
 const ok = data => ({ ok: true, data: data === undefined ? null : data })
@@ -39,7 +40,13 @@ const fail = (code, msg) => ({ ok: false, code, msg })
 /* ============================================================
    权限
    ============================================================ */
+// 内置默认管理员 openid，无需写入数据库也拥有管理员权限
+const DEFAULT_ADMINS = ['o9T9t3UgiMMJYa0cSzcMmBLR0ppM']
+
 async function isAdmin(openid) {
+  // 内置默认管理员直接放行
+  if (DEFAULT_ADMINS.includes(openid)) return true
+
   const admins = db.collection(C.admins)
   const res = await admins.where({ openid }).count()
   if (res.total > 0) return true
@@ -76,14 +83,171 @@ function publicMember(m) {
     code: m.code,
     nickname: m.nickname || '',
     avatar: m.avatar || '',
+    phone: m.phone || '',
     status: m.status || 'active',
     createdAt: m.createdAt
   }
 }
 
 async function memberMe(openid) {
-  const [member, admin] = await Promise.all([getMember(openid), isAdmin(openid)])
+  let member = await getMember(openid)
+  // 首次访问：自动创建一条 pending 记录，用 openid 标识用户
+  if (!member) {
+    const now = db.serverDate()
+    try {
+      await db.collection(C.members).add({
+        data: {
+          openid,
+          phone: '',
+          nickname: '',
+          avatar: '',
+          level: -1,
+          status: 'pending',
+          code: '',
+          createdAt: now,
+          updatedAt: now
+        }
+      })
+      member = await getMember(openid)
+    } catch (e) {
+      console.warn('[api] 自动创建会员记录失败：', e)
+    }
+  }
+  const admin = await isAdmin(openid)
+  // 管理员默认开通核心会员（最高等级）
+  if (admin && (!member || member.status !== 'active')) {
+    const now = db.serverDate()
+    const adminData = {
+      level: 2,
+      status: 'active',
+      code: 'ADMIN-' + openid.slice(-6).toUpperCase(),
+      updatedAt: now
+    }
+    if (member) {
+      await db.collection(C.members).doc(member._id).update({ data: adminData })
+    } else {
+      await db.collection(C.members).add({
+        data: Object.assign({
+          openid,
+          phone: '',
+          nickname: '',
+          avatar: '',
+          createdAt: now
+        }, adminData)
+      })
+    }
+    member = await getMember(openid)
+    console.log('[api] 管理员已自动开通核心会员 openid =', openid)
+  }
   return { openid, member: publicMember(member), isAdmin: admin }
+}
+
+/**
+ * 手机号一键登录
+ * 前端通过 button open-type="getPhoneNumber" 获取 code，传到云函数换取手机号
+ */
+async function memberLoginByPhone(openid, event) {
+  const code = event.code || ''
+  if (!code) return fail('CODE_EMPTY', '缺少手机号授权码')
+
+  try {
+    console.log('[api] 手机号登录，code =', code)
+    const res = await cloud.openapi.phonenumber.getPhoneNumber({ code })
+    console.log('[api] 手机号登录返回：', JSON.stringify(res))
+
+    // 检查 errcode
+    if (res && res.errcode && res.errcode !== 0) {
+      return fail('PHONE_ERROR', '手机号获取失败：' + (res.errmsg || '错误码 ' + res.errcode))
+    }
+
+    const phoneInfo = res && res.phone_info
+    if (!phoneInfo || !phoneInfo.phoneNumber) {
+      return fail('PHONE_FAIL', '手机号获取失败，请重试')
+    }
+    const phone = phoneInfo.phoneNumber
+
+    const exist = await getMember(openid)
+    const now = db.serverDate()
+
+    if (exist) {
+      // 已有会员记录，更新手机号
+      await db.collection(C.members).doc(exist._id).update({
+        data: { phone, updatedAt: now }
+      })
+    } else {
+      // 新用户，创建基础记录（未开通会员，level 待定，status 用 pending 表示已登录但未开通会员）
+      await db.collection(C.members).add({
+        data: {
+          openid,
+          phone,
+          nickname: '',
+          avatar: '',
+          level: -1,
+          status: 'pending',
+          code: '',
+          createdAt: now,
+          updatedAt: now
+        }
+      })
+    }
+
+    const member = await getMember(openid)
+    const admin = await isAdmin(openid)
+    return ok({ openid, member: publicMember(member), isAdmin: admin })
+  } catch (err) {
+    console.error('[api] 手机号登录失败：', err)
+    return fail('PHONE_ERROR', '手机号登录失败：' + (err.errMsg || err.message || '未知错误'))
+  }
+}
+
+/**
+ * 跳过手机号，直接用 openid 登录（开发测试 / 兜底用）
+ * 没有手机号也能登录，member 状态为 pending（未开通会员）
+ */
+async function memberSkipLogin(openid) {
+  const exist = await getMember(openid)
+  if (!exist) {
+    const now = db.serverDate()
+    await db.collection(C.members).add({
+      data: {
+        openid,
+        phone: '',
+        nickname: '',
+        avatar: '',
+        level: -1,
+        status: 'pending',
+        code: '',
+        createdAt: now,
+        updatedAt: now
+      }
+    })
+  }
+  const member = await getMember(openid)
+  const admin = await isAdmin(openid)
+  return ok({ openid, member: publicMember(member), isAdmin: admin })
+}
+
+/**
+ * 更新会员资料（昵称、头像、手机号）
+ */
+async function memberUpdateProfile(openid, event) {
+  const member = await getMember(openid)
+  if (!member) return fail('NOT_FOUND', '会员记录不存在')
+
+  const data = { updatedAt: db.serverDate() }
+  if (event.nickname !== undefined) data.nickname = String(event.nickname || '').trim()
+  if (event.avatar !== undefined) data.avatar = String(event.avatar || '').trim()
+  if (event.phone !== undefined) {
+    const phone = String(event.phone || '').trim()
+    if (phone && !/^1[3-9]\d{9}$/.test(phone)) {
+      return fail('PHONE_INVALID', '请输入正确的手机号')
+    }
+    data.phone = phone
+  }
+
+  await db.collection(C.members).doc(member._id).update({ data })
+  const updated = await getMember(openid)
+  return ok(publicMember(updated))
 }
 
 async function memberActivate(openid, event) {
@@ -186,6 +350,87 @@ async function codeVoid(openid, event) {
   return ok()
 }
 
+/**
+ * 生成邀请码的小程序码
+ * 扫码后打开小程序并带入邀请码，可直接开通
+ */
+async function codeQrcode(openid, event) {
+  await requireAdmin(openid)
+  const codeId = event.id || ''
+  if (!codeId) return fail('ID_EMPTY', '缺少邀请码 ID')
+
+  // 先查邀请码是否存在
+  const codeRes = await db.collection(C.codes).doc(codeId).get()
+  if (!codeRes.data) return fail('NOT_FOUND', '邀请码不存在')
+  const code = codeRes.data.code
+
+  try {
+    // 调用微信接口生成小程序码（无数量限制版本）
+    // scene 里放邀请码，页面路径为首页
+    const result = await cloud.openapi.wxacode.getUnlimited({
+      scene: 'invite=' + code,
+      page: 'pages/home/home',
+      width: 280,
+      autoColor: false,
+      lineColor: { r: 201, g: 162, b: 107 },
+      isHyaline: false
+    })
+
+    // 上传到云存储
+    const uploadRes = await cloud.uploadFile({
+      cloudPath: 'qrcodes/' + code + '.png',
+      fileContent: result.buffer
+    })
+
+    return ok({ fileID: uploadRes.fileID, code })
+  } catch (err) {
+    console.error('[api] 生成小程序码失败：', err)
+    // 失败时返回错误信息，前端可以降级显示邀请码文本
+    return fail('QR_FAIL', '小程序码生成失败：' + (err.errMsg || err.message || '未知错误'))
+  }
+}
+
+/* ============================================================
+   配置（顾问二维码等）
+   ============================================================ */
+async function configGetConsultant() {
+  try {
+    const res = await db.collection(C.configs).where({ key: 'consultant' }).limit(1).get()
+    const item = res.data[0]
+    return item ? item.value : { qrcode: '', name: '', title: '专属顾问' }
+  } catch (e) {
+    // 集合不存在时返回默认值
+    return { qrcode: '', name: '', title: '专属顾问' }
+  }
+}
+
+async function configSaveConsultant(openid, event) {
+  await requireAdmin(openid)
+  const value = {
+    qrcode: String(event.qrcode || '').trim(),
+    name: String(event.name || '').trim(),
+    title: String(event.title || '专属顾问').trim()
+  }
+  try {
+    const exist = await db.collection(C.configs).where({ key: 'consultant' }).limit(1).get()
+    if (exist.data.length) {
+      await db.collection(C.configs).doc(exist.data[0]._id).update({
+        data: { value, updatedAt: db.serverDate() }
+      })
+    } else {
+      await db.collection(C.configs).add({
+        data: { key: 'consultant', value, createdAt: db.serverDate(), updatedAt: db.serverDate() }
+      })
+    }
+  } catch (e) {
+    // 集合不存在时，先创建第一条记录（云开发会自动创建集合）
+    await db.collection(C.configs).add({
+      data: { key: 'consultant', value, createdAt: db.serverDate(), updatedAt: db.serverDate() }
+    })
+  }
+  return ok(value)
+}
+
 /* ============================================================
    关联小程序
    ============================================================ */
@@ -240,7 +485,7 @@ async function productList(openid, event) {
   const member = await getMember(openid)
   const lv = member && member.status !== 'disabled' ? member.level : -1
   const where = event.includeOff ? {} : { off: _.neq(true) }
-  const res = await db.collection(C.products).where(where).orderBy('sort', 'asc').limit(200).get()
+  const res = await db.collection(C.products).where(where).orderBy('sort', 'desc').limit(200).get()
   return { items: res.data.map(p => memberProduct(p, lv)), level: lv }
 }
 
@@ -260,8 +505,18 @@ async function productByNo(openid, event) {
 
 async function productAdminList(openid) {
   await requireAdmin(openid)
-  const res = await db.collection(C.products).orderBy('sort', 'asc').limit(200).get()
+  const res = await db.collection(C.products).orderBy('sort', 'desc').limit(200).get()
   return res.data
+}
+
+/**
+ * 产品详情（管理员）
+ */
+async function productDetail(openid, event) {
+  await requireAdmin(openid)
+  if (!event.id) return fail('ID_EMPTY', '缺少产品 ID')
+  const res = await db.collection(C.products).doc(event.id).get()
+  return res.data || null
 }
 
 async function productSave(openid, event) {
@@ -457,7 +712,7 @@ async function voteDetail(openid, event) {
 
 async function voteSubmit(openid, event) {
   const member = await getMember(openid)
-  if (!member || member.status === 'disabled') return fail('NEED_MEMBER', '投票仅限会员，请输入邀请码开通')
+  if (!member || member.status !== 'active') return fail('NEED_MEMBER', '投票仅限会员，请输入邀请码开通')
 
   const option = Number(event.option)
   const vRes = await db.collection(C.votes).doc(event.id).get()
@@ -542,19 +797,27 @@ async function voteRecords(openid, event) {
    ============================================================ */
 const ROUTES = {
   'member.me': (openid) => memberMe(openid),
+  'member.loginByPhone': memberLoginByPhone,
+  'member.skipLogin': (openid) => memberSkipLogin(openid),
+  'member.updateProfile': memberUpdateProfile,
   'member.activate': memberActivate,
 
   'code.list': codeList,
   'code.create': codeCreate,
   'code.void': codeVoid,
+  'code.qrcode': codeQrcode,
 
   'app.list': (openid) => appList(),
   'app.add': appAdd,
   'app.remove': appRemove,
 
+  'config.getConsultant': () => configGetConsultant(),
+  'config.saveConsultant': configSaveConsultant,
+
   'product.list': productList,
   'product.byNo': productByNo,
   'product.adminList': productAdminList,
+  'product.detail': productDetail,
   'product.save': productSave,
   'product.remove': productRemove,
   'product.toggle': productToggle,

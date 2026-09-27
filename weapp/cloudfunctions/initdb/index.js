@@ -22,7 +22,8 @@ const COLLECTIONS = [
   'products',
   'mini_apps',
   'votes',
-  'vote_records'
+  'vote_records',
+  'configs'
 ]
 
 /** 演示图片：部署时建议替换为云存储 fileID 或你自己的图床地址 */
@@ -33,6 +34,12 @@ const IMG = (prompt, size) =>
   (size || 'square')
 
 const SEED = {
+  admins: [
+    { openid: 'o9T9t3UgiMMJYa0cSzcMmBLR0ppM', name: '默认管理员' }
+  ],
+  configs: [
+    { key: 'consultant', value: { qrcode: '', name: '', title: '专属顾问' } }
+  ],
   products: [
     {
       no: 'A-8001', brand: '马可波罗', name: '通体大理石瓷砖', spec: '800×800mm', cat: '大理石纹',

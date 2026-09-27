@@ -73,8 +73,7 @@ Page({
   },
 
   addOption() {
-    if (this.data.options.length >= 4) { api.toast('最多 4 个选项'); return }
-    this.setData({ options: this.data.options.concat(['']) })
+    this.setData({ options: this.data.options.concat('') })
   },
 
   removeOption(e) {

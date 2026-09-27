@@ -5,10 +5,11 @@ Page({
     openid: '',
     cells: [
       { key: 'contents', name: '内容管理', desc: '发布视频 / 图文 · 置顶 · 排序 · 上下架', icon: 'cuIcon-formfill', wide: true },
-      { key: 'codes', name: '邀请码管理', desc: '生成 · 追溯 · 作废', icon: 'cuIcon-ticket', wide: false },
+      { key: 'codes', name: '邀请码管理', desc: '生成 · 追溯 · 作废 · 二维码', icon: 'cuIcon-ticket', wide: false },
       { key: 'prices', name: '价格设置', desc: '三档会员价 · 上下架', icon: 'cuIcon-tag', wide: false },
       { key: 'votes', name: '投票管理', desc: '发起 · 截止 · 结果', icon: 'cuIcon-roundcheck', wide: false },
-      { key: 'apps', name: '关联小程序', desc: '增减品牌直达入口', icon: 'cuIcon-apps', wide: false }
+      { key: 'apps', name: '关联小程序', desc: '增减品牌直达入口', icon: 'cuIcon-apps', wide: false },
+      { key: 'consultant', name: '专属顾问', desc: '上传顾问二维码 · 首页展示', icon: 'cuIcon-peoplefill', wide: true }
     ]
   },
 
@@ -30,6 +31,10 @@ Page({
 
   open(e) {
     const key = e.currentTarget.dataset.key
-    wx.navigateTo({ url: `/pages/admin/${key}/${key}` })
+    if (key === 'consultant') {
+      wx.navigateTo({ url: '/pages/admin/consultant/consultant' })
+    } else {
+      wx.navigateTo({ url: `/pages/admin/${key}/${key}` })
+    }
   }
 })

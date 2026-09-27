@@ -8,12 +8,16 @@
     "pages/vote/vote",
     "pages/vote-detail/vote-detail",
     "pages/mine/mine",
+    "pages/login/login",
+    "pages/profile/profile",
     "pages/admin/index/index",
     "pages/admin/codes/codes",
     "pages/admin/apps/apps",
     "pages/admin/prices/prices",
+    "pages/admin/product-edit/product-edit",
     "pages/admin/votes/votes",
-    "pages/admin/contents/contents"
+    "pages/admin/contents/contents",
+    "pages/admin/consultant/consultant"
   ],
   "window": {
     "navigationBarBackgroundColor": "#0c0c11",

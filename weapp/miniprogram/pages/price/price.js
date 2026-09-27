@@ -28,11 +28,12 @@ Page({
     return api.getMe()
       .then(me => {
         const m = me.member
+        const isActive = !!(m && m.status === 'active')
         this.loaded = true
         this.setData({
-          isMember: !!m,
-          needMember: !m,
-          levelText: m ? config.levels[m.level] : '',
+          isMember: isActive,
+          needMember: !isActive,
+          levelText: isActive ? config.levels[m.level] : '',
           loading: false
         })
       })

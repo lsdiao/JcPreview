@@ -25,8 +25,8 @@
       </view>
     </view>
 
-    <!-- 未开通：填写邀请码 -->
-    <view class="tc-card" wx:if="{{!isMember}}">
+    <!-- 未开通：填写邀请码（管理员不显示） -->
+    <view class="tc-card" wx:if="{{!isMember && !me.isAdmin}}">
       <view class="tc-card-hd">开通会员</view>
       <view class="tc-fcol">
         <view class="nick-row">
@@ -43,14 +43,20 @@
             bindinput="onNickInput"
           />
         </view>
-        <input
-          class="tc-input tc-mono"
-          placeholder="请输入邀请码"
-          placeholder-class="tc-input-ph"
-          value="{{code}}"
-          maxlength="12"
-          bindinput="onCodeInput"
-        />
+        <view class="code-row">
+          <input
+            class="tc-input tc-mono code-input"
+            placeholder="请输入邀请码"
+            placeholder-class="tc-input-ph"
+            value="{{code}}"
+            maxlength="12"
+            bindinput="onCodeInput"
+          />
+          <view class="scan-btn" bindtap="scanCode">
+            <text class="cuIcon-scan"></text>
+            <text>扫一扫</text>
+          </view>
+        </view>
         <view class="tc-btn tc-btn-block {{submitting ? 'tc-disabled' : ''}}" bindtap="activate">
           {{submitting ? '提交中…' : '开通会员'}}
         </view>
@@ -59,7 +65,7 @@
     </view>
 
     <!-- 已开通：等级说明 -->
-    <view class="tc-card" wx:else>
+    <view class="tc-card" wx:elif="{{isMember}}">
       <view class="tc-card-hd">我的等级</view>
       <view class="lv-row">
         <view class="lv-cell {{me.member.level === index ? 'on' : ''}}" wx:for="{{levels}}" wx:key="index">
@@ -70,6 +76,12 @@
       <view class="hint">等级仅影响价格展示，不影响其他功能</view>
     </view>
 
+    <!-- 管理员未开通会员：提示信息 -->
+    <view class="tc-card" wx:elif="{{me.isAdmin}}">
+      <view class="tc-card-hd">管理员模式</view>
+      <view class="hint">你以管理员身份登录，可进入管理后台进行内容和会员管理。</view>
+    </view>
+
     <!-- 功能入口 -->
     <view class="tc-card">
       <view class="cell" wx:if="{{me.isAdmin}}" bindtap="goAdmin" hover-class="cell-hover">
@@ -77,21 +89,45 @@
         <text class="cell-name">管理后台</text>
         <text class="cuIcon-right cell-arrow"></text>
       </view>
-      <view class="cell" bindtap="contact" hover-class="cell-hover">
-        <text class="cuIcon-weixin cell-ic"></text>
-        <text class="cell-name">联系客服</text>
-        <text class="cell-sub">{{brand.serviceWx}}</text>
+      <view class="cell" wx:if="{{me}}" bindtap="goProfile" hover-class="cell-hover">
+        <text class="cuIcon-myfill cell-ic"></text>
+        <text class="cell-name">会员资料</text>
         <text class="cuIcon-right cell-arrow"></text>
       </view>
-      <view class="cell" bindtap="copyOpenid" hover-class="cell-hover">
+      <view class="cell" wx:if="{{consultant && consultant.qrcode}}" bindtap="showConsultant" hover-class="cell-hover">
+        <text class="cuIcon-peoplefill cell-ic"></text>
+        <text class="cell-name">联系客服</text>
+        <text class="cell-sub" wx:if="{{consultant.name}}">{{consultant.name}}</text>
+        <text class="cuIcon-right cell-arrow"></text>
+      </view>
+      <view class="cell" wx:if="{{me}}" bindtap="copyOpenid" hover-class="cell-hover">
         <text class="cuIcon-profilefill cell-ic"></text>
         <text class="cell-name">我的 openid</text>
+        <text class="cuIcon-right cell-arrow"></text>
+      </view>
+      <view class="cell" wx:if="{{me && !me.member.phone}}" bindtap="goBindPhone" hover-class="cell-hover">
+        <text class="cuIcon-mobilephonefill cell-ic"></text>
+        <text class="cell-name">绑定手机号</text>
+        <text class="cell-sub">未绑定</text>
         <text class="cuIcon-right cell-arrow"></text>
       </view>
     </view>
 
     <view class="ver">{{brand.name}} · {{brand.version}}</view>
   </block>
+
+  <!-- 专属顾问弹框 -->
+  <view class="consultant-mask" wx:if="{{showConsultant}}" bindtap="hideConsultant">
+    <view class="consultant-modal" catchtap="">
+      <view class="consultant-modal-title">{{consultant.title || '专属顾问'}}</view>
+      <view class="consultant-modal-name" wx:if="{{consultant.name}}">{{consultant.name}}</view>
+      <image class="consultant-modal-qrcode" src="{{consultant.qrcode}}" mode="aspectFit" bindtap="previewConsultantQrcode"></image>
+      <view class="consultant-modal-tip">长按识别二维码 · 添加专属顾问微信</view>
+      <view class="consultant-modal-close" bindtap="hideConsultant">
+        <text class="cuIcon-close"></text>
+      </view>
+    </view>
+  </view>
 
   <view class="tc-safe"></view>
 </view>

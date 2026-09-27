@@ -47,3 +47,112 @@
   color: #e7d2a4;
   letter-spacing: 4rpx;
 }
+
+/* ---------- 二维码弹框 ---------- */
+.qr-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 60rpx;
+}
+.qr-modal {
+  width: 100%;
+  background-color: #16161d;
+  border: 1rpx solid rgba(235, 225, 205, 0.12);
+  border-radius: 28rpx;
+  padding: 40rpx 32rpx 32rpx;
+  position: relative;
+  text-align: center;
+}
+.qr-title {
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #e7d2a4;
+  letter-spacing: 6rpx;
+}
+.qr-level {
+  font-size: 22rpx;
+  color: #c9a26b;
+  letter-spacing: 4rpx;
+  margin-top: 8rpx;
+  margin-bottom: 28rpx;
+}
+.qr-img {
+  width: 360rpx;
+  height: 360rpx;
+  border-radius: 16rpx;
+  background-color: #fff;
+  padding: 16rpx;
+}
+.qr-tip {
+  margin-top: 20rpx;
+  font-size: 22rpx;
+  color: #8f8a80;
+  line-height: 1.8;
+  letter-spacing: 1rpx;
+}
+.qr-loading {
+  width: 360rpx;
+  height: 360rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+.qr-fail {
+  width: 360rpx;
+  height: 360rpx;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #0d0d13;
+  border-radius: 16rpx;
+  border: 1rpx dashed rgba(224, 104, 79, 0.3);
+}
+.qr-fail .cuIcon-infofill {
+  font-size: 64rpx;
+  color: #e0684f;
+  margin-bottom: 16rpx;
+}
+.qr-fail-tip {
+  font-size: 22rpx;
+  color: #d98a77;
+  margin-bottom: 20rpx;
+}
+.qr-fallback {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #e7d2a4;
+  letter-spacing: 4rpx;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.qr-ops {
+  margin-top: 28rpx;
+  display: flex;
+  justify-content: center;
+}
+.qr-ops .tc-btn-ghost {
+  min-width: 200rpx;
+}
+.qr-close {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5f5b54;
+  font-size: 28rpx;
+}
