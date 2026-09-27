@@ -1,0 +1,99 @@
+<!-- 产品库 · 会员专属 -->
+<view class="tc-page">
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <!-- 非会员：锁定 -->
+  <block wx:elif="{{!isMember}}">
+    <view class="tc-lock">
+      <view class="tc-lock-ic"><text class="cuIcon-lock"></text></view>
+      <view class="tc-lock-title">产品库仅对会员开放</view>
+      <view class="tc-lock-desc">产品资料与等级价格仅对受邀会员可见</view>
+      <view class="tc-lock-desc">输入邀请码即可开通</view>
+      <view class="tc-btn" bindtap="goActivate">去开通会员</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="head">
+      <view class="head-t">{{brand.name}} · 授权产品库</view>
+      <view class="head-s">当前身份 {{levelText}} · 展示本等级价格</view>
+    </view>
+
+    <!-- 品牌官方小程序直达 -->
+    <scroll-view class="apps" scroll-x wx:if="{{apps.length}}" enhanced show-scrollbar="{{false}}">
+      <view
+        class="app"
+        wx:for="{{apps}}"
+        wx:key="_id"
+        data-appid="{{item.appid}}"
+        data-path="{{item.path}}"
+        data-name="{{item.name}}"
+        bindtap="openApp"
+        hover-class="app-hover"
+      >
+        <view class="app-logo">
+          <image wx:if="{{item.logo}}" src="{{item.logo}}" mode="aspectFill"></image>
+          <text wx:else>{{item.name[0]}}</text>
+        </view>
+        <view class="app-name tc-ellipsis">{{item.name}}</view>
+      </view>
+    </scroll-view>
+
+    <!-- 搜索 -->
+    <view class="search">
+      <text class="cuIcon-search"></text>
+      <input
+        class="search-input"
+        placeholder="搜索品牌 / 名称 / 编号"
+        placeholder-class="tc-input-ph"
+        value="{{kw}}"
+        bindinput="onKw"
+      />
+    </view>
+
+    <!-- 分类 -->
+    <scroll-view class="cats" scroll-x enhanced show-scrollbar="{{false}}">
+      <view
+        class="cat {{cat === item ? 'on' : ''}}"
+        wx:for="{{cats}}"
+        wx:key="*this"
+        data-cat="{{item}}"
+        bindtap="onCat"
+      >{{item}}</view>
+    </scroll-view>
+
+    <!-- 产品列表 -->
+    <view class="plist">
+      <view
+        class="pcard"
+        wx:for="{{list}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="openProduct"
+        hover-class="pcard-hover"
+        hover-stay-time="60"
+      >
+        <view class="pimg">
+          <image wx:if="{{item.images[0]}}" src="{{item.images[0]}}" mode="aspectFill" lazy-load="{{true}}"></image>
+          <text class="cuIcon-pic is-ph" wx:else></text>
+        </view>
+        <view class="pinfo">
+          <view class="pname tc-clamp2">{{item.name}}</view>
+          <view class="pspec tc-ellipsis">{{item.brand}} · {{item.spec}}</view>
+          <view class="pno tc-mono">{{item.no}}</view>
+          <view class="prow">
+            <view class="tc-price">{{item.price}}<text class="unit">{{item.unit}}</text></view>
+            <view class="tc-tag is-dim">{{levelText}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="tc-empty" wx:if="{{!list.length}}">没有匹配的产品</view>
+    <view class="tip" wx:if="{{list.length}}">价格仅展示当前等级，如需其他等级请联系客服调整</view>
+  </block>
+
+  <view class="tc-safe"></view>
+</view>

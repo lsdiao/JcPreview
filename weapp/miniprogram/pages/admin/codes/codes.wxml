@@ -1,0 +1,79 @@
+<!-- 管理后台 · 邀请码（一码一会员，可追溯） -->
+<view class="tc-page tc-pad">
+  <view class="tc-hero">
+    <view class="tc-hero-k">INVITE CODES</view>
+    <view class="tc-hero-title">邀请码管理</view>
+    <view class="tc-hero-desc">一码一会员 · 生成时绑定等级 · 全程可追溯</view>
+  </view>
+
+  <!-- 统计 -->
+  <view class="stat">
+    <view class="stat-c">
+      <view class="stat-n">{{stat.total}}</view>
+      <view class="stat-l">累计生成</view>
+    </view>
+    <view class="stat-c">
+      <view class="stat-n is-gold">{{stat.unused}}</view>
+      <view class="stat-l">未使用</view>
+    </view>
+    <view class="stat-c">
+      <view class="stat-n">{{stat.used}}</view>
+      <view class="stat-l">已开通</view>
+    </view>
+  </view>
+
+  <!-- 生成 -->
+  <view class="tc-card">
+    <view class="tc-card-hd">生成邀请码</view>
+    <view class="fl-label">绑定等级</view>
+    <picker mode="selector" range="{{levels}}" value="{{levelIndex}}" bindchange="onLevel">
+      <view class="tc-picker">
+        <text>{{levels[levelIndex]}}</text>
+        <text class="cuIcon-right"></text>
+      </view>
+    </picker>
+
+    <view class="fl-label">备注（发给谁）</view>
+    <input class="tc-input" value="{{remark}}" bindinput="onRemark" placeholder="如：城东门店 · 王老板" placeholder-class="tc-input-ph" />
+
+    <view class="fl-label">有效期（天，留空为长期有效）</view>
+    <input class="tc-input" type="number" value="{{expireDays}}" bindinput="onExpire" placeholder="如 30" placeholder-class="tc-input-ph" />
+
+    <view class="tc-btn tc-btn-block mt {{creating ? 'tc-disabled' : ''}}" bindtap="create">{{creating ? '生成中…' : '生成邀请码'}}</view>
+    <view class="hint">每个邀请码只能成功开通一次，开通后自动绑定为所选等级，等级决定其看到的价格。</view>
+  </view>
+
+  <view class="tc-sec">邀请码列表</view>
+
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:elif="{{list.length}}">
+    <view class="tc-item" wx:for="{{list}}" wx:key="_id">
+      <view class="tc-item-hd">
+        <text class="code tc-mono">{{item.code}}</text>
+        <text class="tc-tag {{item.status === 'unused' ? 'is-on' : (item.status === 'used' ? 'is-dim' : 'is-danger')}}">{{item.statusText}}</text>
+      </view>
+
+      <view class="tc-item-trace">
+        <view>绑定等级：<text class="hl">{{item.levelText}}</text></view>
+        <view>备注：<text class="hl">{{item.remark || '—'}}</text></view>
+        <view>生成时间：<text class="hl">{{item.createdText}}</text> · {{item.expireText}}</view>
+        <block wx:if="{{item.status === 'used'}}">
+          <view>使用者：<text class="hl">{{item.usedBy || '会员'}}</text></view>
+          <view>开通时间：<text class="hl">{{item.usedText}}</text></view>
+        </block>
+      </view>
+
+      <view class="tc-item-ops">
+        <view class="tc-btn-ghost" data-code="{{item.code}}" bindtap="copy">复制</view>
+        <view class="tc-btn-danger" wx:if="{{item.status === 'unused'}}" data-id="{{item._id}}" data-code="{{item.code}}" bindtap="voidCode">作废</view>
+      </view>
+    </view>
+  </block>
+
+  <view class="tc-empty" wx:else>还没有邀请码</view>
+
+  <view class="tc-safe"></view>
+</view>

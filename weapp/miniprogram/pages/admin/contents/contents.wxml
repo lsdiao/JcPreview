@@ -1,0 +1,182 @@
+<!-- 管理后台 · 内容管理：视频（视频号内嵌）/ 图文 发布与编辑 -->
+<view class="tc-page tc-pad">
+  <view class="tc-hero">
+    <view class="tc-hero-k">CONTENT</view>
+    <view class="tc-hero-title">内容管理</view>
+    <view class="tc-hero-desc">首页内容支持「视频号视频」与「图文」· 可置顶、排序、上下架</view>
+  </view>
+
+  <view class="bar">
+    <view class="bar-btn" data-type="video" bindtap="openNew">
+      <text class="cuIcon-videofill"></text><text class="bar-txt">新建视频</text>
+    </view>
+    <view class="bar-btn is-ghost" data-type="article" bindtap="openNew">
+      <text class="cuIcon-formfill"></text><text class="bar-txt">新建图文</text>
+    </view>
+  </view>
+
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:elif="{{list.length}}">
+    <view class="tc-item" wx:for="{{list}}" wx:key="_id">
+      <view class="ci">
+        <view class="ci-thumb">
+          <image wx:if="{{item.cover}}" src="{{item.cover}}" mode="aspectFill" lazy-load="{{true}}"></image>
+          <text class="cuIcon-pic is-ph" wx:else></text>
+          <view class="ci-type">{{item.type === 'video' ? '视频' : '图文'}}</view>
+        </view>
+        <view class="ci-main">
+          <view class="tc-item-title tc-clamp2">{{item.title}}</view>
+          <view class="ci-tags">
+            <text class="tc-tag is-solid" wx:if="{{item.pinned}}">置顶</text>
+            <text class="tc-tag {{item.status === 'off' ? 'is-off' : 'is-on'}}">{{item.status === 'off' ? '已下架' : '展示中'}}</text>
+            <text class="tc-tag is-danger" wx:if="{{item.type === 'video' && !item.feedId}}">缺 feedId</text>
+          </view>
+          <view class="tc-item-meta">来源：{{item.source || '—'}}</view>
+        </view>
+      </view>
+
+      <view class="ops">
+        <view class="op" data-id="{{item._id}}" data-dir="-1" bindtap="move">上移</view>
+        <view class="op" data-id="{{item._id}}" data-dir="1" bindtap="move">下移</view>
+        <view class="op" data-id="{{item._id}}" bindtap="togglePin">{{item.pinned ? '取消置顶' : '置顶'}}</view>
+        <view class="op" data-id="{{item._id}}" bindtap="toggleStatus">{{item.status === 'off' ? '上架' : '下架'}}</view>
+        <view class="op is-key" data-id="{{item._id}}" bindtap="openEdit">编辑</view>
+        <view class="op is-danger" data-id="{{item._id}}" bindtap="remove">删除</view>
+      </view>
+    </view>
+  </block>
+
+  <view class="tc-empty" wx:else>还没有内容，点击上方按钮发布第一条</view>
+
+  <view class="foot-tip">视频需先在视频号发布，再复制 feedId 填入 · 纯图片动态不支持内嵌</view>
+  <view class="tc-safe"></view>
+</view>
+
+<!-- ============ 编辑面板 ============ -->
+<view class="mask" wx:if="{{showForm}}" bindtap="closeForm"></view>
+<view class="sheet" wx:if="{{showForm}}">
+  <view class="sheet-hd">
+    <text class="sheet-title">{{form._id ? '编辑内容' : '新建内容'}}</text>
+    <text class="cuIcon-close sheet-close" bindtap="closeForm"></text>
+  </view>
+
+  <scroll-view class="sheet-body" scroll-y>
+    <view class="fl-label">内容类型</view>
+    <view class="seg">
+      <view class="seg-i {{form.type === 'video' ? 'on' : ''}}" data-type="video" bindtap="setType">视频号视频</view>
+      <view class="seg-i {{form.type === 'article' ? 'on' : ''}}" data-type="article" bindtap="setType">图文</view>
+    </view>
+
+    <view class="fl-label">标题</view>
+    <input
+      class="tc-input"
+      data-field="title"
+      value="{{form.title}}"
+      bindinput="onField"
+      placeholder="请输入标题"
+      placeholder-class="tc-input-ph"
+    />
+
+    <view class="fl-label">摘要 / 简介</view>
+    <textarea
+      class="tc-textarea"
+      data-field="summary"
+      value="{{form.summary}}"
+      bindinput="onField"
+      placeholder="列表页展示的简介，选填"
+      placeholder-class="tc-input-ph"
+      auto-height
+    />
+
+    <view class="fl-label">来源文案</view>
+    <input
+      class="tc-input"
+      data-field="source"
+      value="{{form.source}}"
+      bindinput="onField"
+      placeholder="如：视频号 / {{brand.name}}"
+      placeholder-class="tc-input-ph"
+    />
+
+    <view class="fl-label">封面图（建议 16:9）</view>
+    <view class="cover-row">
+      <view class="cover-box" bindtap="pickCover">
+        <image wx:if="{{form.cover}}" src="{{form.cover}}" mode="aspectFill"></image>
+        <view class="cover-ph" wx:else>
+          <text class="cuIcon-add"></text>
+          <text class="cover-ph-t">{{uploading ? '上传中…' : '上传封面'}}</text>
+        </view>
+      </view>
+      <view class="cover-tip">封面会出现在首页卡片。<block wx:if="{{form.type === 'article'}}">不设置时默认取第一张配图。</block></view>
+    </view>
+
+    <!-- 视频号参数 -->
+    <block wx:if="{{form.type === 'video'}}">
+      <view class="sec-t">视频号参数</view>
+      <view class="fl-label">feedId <text class="req">必填</text></view>
+      <input class="tc-input tc-mono" data-field="feedId" value="{{form.feedId}}" bindinput="onField" placeholder="视频号助手 · 动态管理 复制" placeholder-class="tc-input-ph" />
+
+      <view class="fl-label">finderUserName</view>
+      <input class="tc-input tc-mono" data-field="finderUserName" value="{{form.finderUserName}}" bindinput="onField" placeholder="视频号主页的 finderUserName" placeholder-class="tc-input-ph" />
+
+      <view class="fl-label">feedToken（与小程序非同主体时使用）</view>
+      <input class="tc-input tc-mono" data-field="feedToken" value="{{form.feedToken}}" bindinput="onField" placeholder="选填，非同主体播放需填写" placeholder-class="tc-input-ph" />
+
+      <view class="fl-label">时长文案</view>
+      <input class="tc-input" data-field="duration" value="{{form.duration}}" bindinput="onField" placeholder="如 03:12" placeholder-class="tc-input-ph" />
+
+      <view class="hint">视频必须已发布在你的视频号，纯图片动态不支持内嵌；原视频删除后小程序内会提示「视频已失效」。</view>
+    </block>
+
+    <!-- 图文正文 -->
+    <block wx:else>
+      <view class="sec-t">图文内容</view>
+      <view class="fl-label">正文（支持换行分段）</view>
+      <textarea
+        class="tc-textarea body-ta"
+        value="{{bodyText}}"
+        bindinput="onBody"
+        placeholder="请输入正文内容"
+        placeholder-class="tc-input-ph"
+      />
+
+      <view class="fl-label">配图（最多 9 张）</view>
+      <view class="img-grid">
+        <view class="img-cell" wx:for="{{form.images}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewImage"></image>
+          <view class="img-del" data-index="{{index}}" catchtap="removeImage"><text class="cuIcon-close"></text></view>
+        </view>
+        <view class="img-cell is-add" wx:if="{{form.images.length < 9}}" bindtap="addImages">
+          <text class="cuIcon-add"></text>
+        </view>
+      </view>
+      <view class="hint">未单独上传封面时，列表封面默认取第一张配图。</view>
+    </block>
+
+    <view class="sec-t">展示设置</view>
+    <view class="sw-row">
+      <view class="sw-label">
+        <view class="sw-name">置顶展示</view>
+        <view class="sw-desc">置顶后固定在首页最前</view>
+      </view>
+      <switch checked="{{form.pinned}}" color="#c9a26b" bindchange="onPinned" />
+    </view>
+    <view class="sw-row">
+      <view class="sw-label">
+        <view class="sw-name">是否展示</view>
+        <view class="sw-desc">关闭即从首页下架</view>
+      </view>
+      <switch checked="{{form.status !== 'off'}}" color="#c9a26b" bindchange="onStatus" />
+    </view>
+
+    <view class="sheet-safe"></view>
+  </scroll-view>
+
+  <view class="sheet-ft">
+    <view class="tc-btn-ghost ft-btn" bindtap="closeForm">取消</view>
+    <view class="tc-btn ft-btn {{saving ? 'tc-disabled' : ''}}" bindtap="save">{{saving ? '保存中…' : '保存'}}</view>
+  </view>
+</view>

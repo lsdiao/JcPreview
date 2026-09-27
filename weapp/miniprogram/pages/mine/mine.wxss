@@ -1,0 +1,111 @@
+.me {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background-color: #222228;
+}
+.avatar.is-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5f5b54;
+  font-size: 48rpx;
+  border: 1rpx solid rgba(235, 225, 205, 0.12);
+}
+.me-info {
+  flex: 1;
+  min-width: 0;
+  margin-left: 24rpx;
+}
+.me-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+.me-sub {
+  font-size: 22rpx;
+  color: #8f8a80;
+  margin-top: 12rpx;
+  letter-spacing: 1rpx;
+}
+
+.nick-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18rpx;
+}
+.avatar-btn {
+  width: 88rpx;
+  height: 88rpx;
+  padding: 0;
+  margin: 0 18rpx 0 0;
+  border-radius: 50%;
+  background-color: #0d0d13;
+  border: 1rpx solid rgba(235, 225, 205, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8f8a80;
+  font-size: 38rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.avatar-btn::after { border: none; }
+.avatar-sm {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+}
+.nick-input { flex: 1; min-width: 0; }
+
+.hint {
+  margin-top: 20rpx;
+  font-size: 21rpx;
+  color: #5f5b54;
+  line-height: 1.9;
+}
+
+.lv-row {
+  display: flex;
+}
+.lv-cell {
+  flex: 1;
+  text-align: center;
+  padding: 26rpx 0;
+  border: 1rpx solid rgba(235, 225, 205, 0.10);
+  border-radius: 18rpx;
+  background-color: #0d0d13;
+}
+.lv-cell + .lv-cell { margin-left: 16rpx; }
+.lv-cell.on {
+  border-color: rgba(201, 162, 107, 0.65);
+  background: linear-gradient(135deg, rgba(236, 217, 172, 0.12), rgba(169, 127, 76, 0.06));
+}
+.lv-name { font-size: 25rpx; font-weight: 600; letter-spacing: 1rpx; }
+.lv-cell.on .lv-name { color: #e7d2a4; }
+.lv-desc { font-size: 20rpx; color: #5f5b54; margin-top: 10rpx; }
+
+.cell {
+  display: flex;
+  align-items: center;
+  min-height: 96rpx;
+}
+.cell + .cell { border-top: 1rpx solid rgba(235, 225, 205, 0.10); }
+.cell-hover { background-color: rgba(235, 225, 205, 0.04); }
+.cell-ic { color: #c9a26b; font-size: 36rpx; margin-right: 20rpx; }
+.cell-name { flex: 1; font-size: 28rpx; letter-spacing: 1rpx; }
+.cell-sub { font-size: 22rpx; color: #5f5b54; }
+.cell-arrow { color: #454239; font-size: 28rpx; margin-left: 12rpx; }
+
+.ver {
+  text-align: center;
+  font-size: 21rpx;
+  color: #454239;
+  letter-spacing: 2rpx;
+  margin-top: 40rpx;
+}

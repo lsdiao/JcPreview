@@ -1,0 +1,86 @@
+<!-- 产品详情 · 会员可见本等级价格 -->
+<view class="tc-page">
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:elif="{{needMember}}">
+    <view class="tc-lock">
+      <view class="tc-lock-ic"><text class="cuIcon-lock"></text></view>
+      <view class="tc-lock-title">产品详情仅对会员开放</view>
+      <view class="tc-lock-desc">输入邀请码开通后即可查看产品资料与价格</view>
+      <view class="tc-btn" bindtap="goActivate">去开通会员</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{item}}">
+    <!-- 图片 -->
+    <view class="gallery">
+      <swiper
+        class="swiper"
+        wx:if="{{item.images.length}}"
+        circular="{{item.images.length > 1}}"
+        bindchange="onSwiper"
+      >
+        <swiper-item wx:for="{{item.images}}" wx:key="index">
+          <image
+            src="{{item}}"
+            mode="aspectFill"
+            data-index="{{index}}"
+            bindtap="preview"
+          ></image>
+        </swiper-item>
+      </swiper>
+      <view class="gallery-ph" wx:else><text class="cuIcon-pic"></text></view>
+      <view class="counter" wx:if="{{item.images.length > 1}}">{{current}} / {{item.images.length}}</view>
+    </view>
+
+    <!-- 基本信息 -->
+    <view class="body">
+      <view class="title">{{item.name}}</view>
+
+      <view class="price-box">
+        <view class="pb-l">
+          <view class="pb-label">{{levelText}}价</view>
+          <view class="tc-price pb-num">{{item.price}}<text class="unit">{{item.unit}}</text></view>
+        </view>
+        <view class="tc-tag is-solid">{{levelText}}</view>
+      </view>
+
+      <view class="kvs">
+        <view class="kv">
+          <text class="k">品牌</text>
+          <text class="v">{{item.brand || '—'}}</text>
+        </view>
+        <view class="kv">
+          <text class="k">规格</text>
+          <text class="v">{{item.spec || '—'}}</text>
+        </view>
+        <view class="kv">
+          <text class="k">分类</text>
+          <text class="v">{{item.cat || '—'}}</text>
+        </view>
+        <view class="kv">
+          <text class="k">单价单位</text>
+          <text class="v">{{item.unit || '元/片'}}</text>
+        </view>
+        <view class="kv" bindtap="copyNo">
+          <text class="k">产品编号</text>
+          <text class="v tc-mono tc-gold">{{item.no}} <text class="cuIcon-copy"></text></text>
+        </view>
+      </view>
+
+      <!-- 产品说明 -->
+      <view class="tc-sec" wx:if="{{item.desc}}">产品说明</view>
+      <view class="desc" wx:if="{{item.desc}}">{{item.desc}}</view>
+
+      <view class="note">
+        价格随会员等级变动，当前展示「{{levelText}}」对应价格，请勿外传。
+      </view>
+    </view>
+
+    <view class="tc-safe"></view>
+  </block>
+
+  <view class="tc-empty" wx:else>产品不存在或已下架</view>
+</view>

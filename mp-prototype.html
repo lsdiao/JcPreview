@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>寓见 · 租客端微信小程序原型</title>
+<style>
+/* ============================================================
+   寓见 · 租客端小程序原型 — 设计系统
+   风格：明亮通透 / 渐变霓虹点缀 / 大圆角卡片 / 年轻化
+============================================================ */
+:root{
+  --bg:#f2f4fa;
+  --card:#ffffff;
+  --text:#16181f;
+  --sub:#8a90a3;
+  --sub2:#b6bccb;
+  --line:#eef0f6;
+  --violet:#7c5cfc;
+  --violet-d:#6346e8;
+  --cyan:#19c8e6;
+  --pink:#ff6b9d;
+  --green:#18c07e;
+  --amber:#ffab2e;
+  --red:#ff5a6e;
+  --grad:linear-gradient(135deg,#7c5cfc 0%,#5a7bff 55%,#19c8e6 100%);
+  --grad-warm:linear-gradient(135deg,#ff8a5c 0%,#ff5a9e 100%);
+  --shadow:0 10px 30px rgba(60,70,120,.10);
+  --shadow-lg:0 18px 44px rgba(60,70,120,.16);
+  --r:20px;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--font);background:#0b0e1a;color:var(--text);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:28px 16px;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(130px);z-index:0;pointer-events:none}
+body::before{width:640px;height:640px;background:rgba(124,92,252,.20);top:-200px;left:8%}
+body::after{width:520px;height:520px;background:rgba(25,200,230,.14);bottom:-180px;right:6%}
+::selection{background:rgba(124,92,252,.3)}
+::-webkit-scrollbar{width:0;height:0}
+
+.stage{display:flex;gap:56px;align-items:center;position:relative;z-index:1;flex-wrap:wrap;justify-content:center}
+
+/* ============ 左侧说明面板 ============ */
+.intro{width:300px;color:#eef1f8}
+.intro .logo-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.intro .logo-mark{
+  width:46px;height:46px;border-radius:14px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(124,92,252,.5);
+}
+.intro .logo-mark svg{width:24px;height:24px;color:#fff}
+.intro h1{font-size:26px;font-weight:800;letter-spacing:1px}
+.intro h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.intro .en{font-size:10px;letter-spacing:3px;color:#6a7188;margin-top:2px}
+.intro p{font-size:13px;color:#9aa1b5;line-height:1.9;margin-bottom:18px}
+.intro .feat{display:flex;flex-direction:column;gap:10px}
+.intro .feat-item{
+  display:flex;align-items:center;gap:10px;font-size:12.5px;color:#c6cbdb;
+  background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);
+  padding:10px 14px;border-radius:13px;
+}
+.intro .feat-item b{color:#fff}
+.intro .feat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.intro .hint{margin-top:20px;font-size:11.5px;color:#6a7188;display:flex;align-items:center;gap:7px}
+.intro .hint svg{width:14px;height:14px}
+
+/* ============ 手机壳 ============ */
+.phone{
+  width:390px;height:812px;border-radius:52px;flex-shrink:0;position:relative;
+  background:#000;padding:12px;
+  box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.06),inset 0 0 0 6px #1a1d29;
+}
+.screen{
+  width:100%;height:100%;border-radius:42px;overflow:hidden;position:relative;
+  background:var(--bg);display:flex;flex-direction:column;
+}
+/* 灵动岛 */
+.island{
+  position:absolute;top:11px;left:50%;transform:translateX(-50%);
+  width:112px;height:30px;background:#000;border-radius:20px;z-index:60;
+}
+/* 状态栏 */
+.statusbar{
+  height:52px;flex-shrink:0;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 30px 7px;position:relative;z-index:50;font-size:14px;font-weight:700;
+}
+.statusbar .sb-right{display:flex;align-items:center;gap:6px}
+.statusbar svg{width:16px;height:16px}
+/* 微信胶囊 */
+.capsule{
+  position:absolute;top:58px;right:14px;z-index:55;height:32px;
+  display:flex;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);
+  border:1px solid rgba(0,0,0,.06);border-radius:32px;box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.capsule .cap-btn{width:42px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.capsule .cap-btn svg{width:16px;height:16px;color:#111}
+.capsule .cap-div{width:1px;height:18px;background:rgba(0,0,0,.1)}
+
+/* ============ 页面容器 ============ */
+.pages{flex:1;position:relative;overflow:hidden}
+.page{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  padding:96px 16px 96px;background:var(--bg);
+  transform:translateX(100%);transition:transform .32s cubic-bezier(.32,.72,.28,1);
+  visibility:hidden;
+}
+.page.tab-active{transform:none;visibility:visible}
+.page.stack-active{transform:none;visibility:visible;z-index:20;box-shadow:-12px 0 40px rgba(0,0,0,.12)}
+.page.no-tabbar{padding-bottom:32px}
+
+/* 子页面导航栏 */
+.navbar{
+  position:absolute;top:52px;left:0;right:0;height:44px;z-index:45;
+  display:flex;align-items:center;padding:0 14px;
+}
+.nav-back{
+  width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);margin-right:10px;flex-shrink:0;
+}
+.nav-back svg{width:16px;height:16px;color:#16181f}
+.nav-title{font-size:15px;font-weight:800}
+
+/* ============ TabBar ============ */
+.tabbar{
+  position:absolute;left:0;right:0;bottom:0;z-index:40;height:82px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(24px);
+  border-top:1px solid rgba(0,0,0,.04);
+  display:flex;padding:8px 8px 22px;
+}
+.tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
+  font-size:10px;color:var(--sub2);font-weight:600;transition:.2s;position:relative;
+}
+.tab svg{width:23px;height:23px;transition:.2s}
+.tab.active{color:var(--violet)}
+.tab.active svg{transform:translateY(-1px)}
+.tab .tab-dot{position:absolute;top:2px;right:calc(50% - 16px);width:7px;height:7px;border-radius:50%;background:var(--red)}
+
+/* ============ 通用组件 ============ */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow)}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:20px 4px 12px}
+.sec-title{font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:8px}
+.sec-title::before{content:"";width:4px;height:15px;border-radius:4px;background:var(--grad)}
+.sec-more{font-size:11.5px;color:var(--sub);display:flex;align-items:center;gap:2px;cursor:pointer}
+.sec-more svg{width:12px;height:12px}
+
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2.5px 8px;border-radius:20px}
+.b-violet{background:rgba(124,92,252,.1);color:var(--violet)}
+.b-green{background:rgba(24,192,126,.1);color:var(--green)}
+.b-amber{background:rgba(255,171,46,.12);color:#e08c00}
+.b-red{background:rgba(255,90,110,.1);color:var(--red)}
+.b-cyan{background:rgba(25,200,230,.12);color:#0aa8c2}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;
+  font-family:var(--font);font-weight:700;border-radius:14px;transition:.2s;font-size:13px;
+}
+.btn-grad{background:var(--grad);color:#fff;box-shadow:0 8px 20px rgba(124,92,252,.35)}
+.btn-grad:active{transform:scale(.97)}
+.btn-line{background:#fff;color:var(--violet);border:1.5px solid rgba(124,92,252,.4)}
+.btn-block{width:100%;padding:14px}
+.btn-sm{padding:7px 14px;font-size:12px;border-radius:11px}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px}
+.chip{
+  flex-shrink:0;padding:7px 15px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;
+  background:#fff;color:var(--sub);box-shadow:var(--shadow);transition:.2s;
+}
+.chip.active{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(124,92,252,.35)}
+
+/* ============ 首页 ============ */
+.home-hero{
+  position:relative;border-radius:24px;overflow:hidden;padding:20px;margin-top:4px;
+  background:var(--grad);color:#fff;box-shadow:0 14px 34px rgba(124,92,252,.4);
+}
+.home-hero::after{
+  content:"";position:absolute;width:180px;height:180px;border-radius:50%;
+  background:rgba(255,255,255,.16);filter:blur(46px);right:-40px;top:-60px;
+}
+.home-hero::before{
+  content:"";position:absolute;width:120px;height:120px;border-radius:50%;
+  background:rgba(25,200,230,.35);filter:blur(40px);left:-30px;bottom:-50px;
+}
+.hh-greet{font-size:12px;opacity:.85}
+.hh-title{font-size:20px;font-weight:800;margin:3px 0 14px}
+.hh-card{
+  position:relative;z-index:1;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:13px 15px;
+  display:flex;align-items:center;cursor:pointer;
+}
+.hh-card .hh-ico{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hh-card .hh-ico svg{width:18px;height:18px}
+.hh-card .hh-info{margin-left:11px;flex:1}
+.hh-card .hh-info b{font-size:13.5px;display:block}
+.hh-card .hh-info span{font-size:11px;opacity:.85}
+.hh-card .hh-go{font-size:11px;background:rgba(255,255,255,.9);color:var(--violet);padding:5px 11px;border-radius:20px;font-weight:800}
+
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.quick{
+  background:#fff;border-radius:18px;padding:14px 6px 12px;text-align:center;cursor:pointer;
+  box-shadow:var(--shadow);transition:.2s;
+}
+.quick:active{transform:scale(.95)}
+.quick .q-ico{width:42px;height:42px;border-radius:14px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+.quick .q-ico svg{width:20px;height:20px;color:#fff}
+.quick span{font-size:11.5px;font-weight:700;color:var(--text)}
+.q-violet{background:linear-gradient(135deg,#8f6dff,#6a4df5)}
+.q-cyan{background:linear-gradient(135deg,#2fd4f0,#0ea5d8)}
+.q-warm{background:var(--grad-warm)}
+.q-green{background:linear-gradient(135deg,#2fd88e,#0fa968)}
+
+.notice-bar{
+  margin-top:14px;display:flex;align-items:center;gap:9px;background:#fff;border-radius:14px;
+  padding:11px 14px;box-shadow:var(--shadow);font-size:12px;color:var(--sub);cursor:pointer;
+}
+.notice-bar .n-ico{width:26px;height:26px;border-radius:9px;background:rgba(255,171,46,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.notice-bar .n-ico svg{width:14px;height:14px;color:var(--amber)}
+.notice-bar b{color:var(--text)}
+
+/* 房源卡片 */
+.room-card{display:flex;background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:.2s;margin-bottom:12px}
+.room-card:active{transform:scale(.98)}
+.room-card .rc-img{width:124px;height:112px;flex-shrink:0;position:relative;background:#e8ebf4}
+.room-card .rc-img img{width:100%;height:100%;object-fit:cover;display:block}
+.room-card .rc-img .rc-tag{position:absolute;top:8px;left:8px;font-size:9.5px;font-weight:800;color:#fff;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);padding:2.5px 8px;border-radius:8px}
+.room-card .rc-body{flex:1;padding:11px 13px;display:flex;flex-direction:column;min-width:0}
+.room-card .rc-name{font-size:14.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-card .rc-meta{font-size:11px;color:var(--sub);margin:3px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-card .rc-tags{display:flex;gap:5px;flex-wrap:wrap}
+.room-card .rc-bottom{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between}
+.room-card .rc-price{font-size:18px;font-weight:800;color:var(--violet)}
+.room-card .rc-price small{font-size:10px;color:var(--sub);font-weight:600}
+.room-card .rc-status{font-size:10.5px;font-weight:700}
+
+/* ============ 房源详情 ============ */
+.detail-gallery{position:relative;height:250px;margin:-96px -16px 0;background:#dfe3ee}
+.detail-gallery img{width:100%;height:100%;object-fit:cover;display:block}
+.detail-gallery .dg-mask{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.32),transparent 32%,transparent 70%,rgba(0,0,0,.25))}
+.dg-count{position:absolute;bottom:12px;right:14px;font-size:11px;color:#fff;background:rgba(0,0,0,.4);padding:3px 10px;border-radius:20px;backdrop-filter:blur(6px)}
+.detail-body{position:relative;margin-top:-34px;border-radius:26px 26px 0 0;background:var(--bg);padding:20px 16px 120px}
+.db-title{font-size:20px;font-weight:800}
+.db-sub{font-size:12px;color:var(--sub);margin:5px 0 12px;display:flex;align-items:center;gap:5px}
+.db-sub svg{width:13px;height:13px;flex-shrink:0}
+.db-price-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:14px}
+.db-price{font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.db-price small{font-size:12px;-webkit-text-fill-color:var(--sub);font-weight:600}
+.db-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.db-spec{background:#fff;border-radius:14px;padding:11px 6px;text-align:center;box-shadow:var(--shadow)}
+.db-spec b{font-size:13.5px;display:block}
+.db-spec span{font-size:10px;color:var(--sub)}
+.fee-list{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:4px 16px}
+.fee-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px}
+.fee-row:last-child{border-bottom:none}
+.fee-row span{color:var(--sub)}
+.fee-row b{font-weight:700}
+.amen-grid{display:flex;flex-wrap:wrap;gap:9px}
+.amen{
+  display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);font-weight:600;
+  background:#fff;border-radius:12px;padding:8px 13px;box-shadow:var(--shadow);
+}
+.amen svg{width:14px;height:14px;color:var(--violet)}
+.detail-footbar{
+  position:absolute;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(20px);
+  padding:12px 16px 30px;display:flex;gap:10px;border-top:1px solid var(--line);
+}
+.detail-footbar .dfb-icon{width:48px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--sub);cursor:pointer}
+.detail-footbar .dfb-icon svg{width:20px;height:20px}
+.detail-footbar .btn{flex:1;padding:13px}
+
+/* ============ 账单页 ============ */
+.bill-hero{
+  border-radius:24px;padding:20px;background:linear-gradient(135deg,#1c1f2e,#2a2f45);color:#fff;
+  position:relative;overflow:hidden;box-shadow:0 14px 34px rgba(30,35,60,.35);
+}
+.bill-hero::after{content:"";position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(124,92,252,.4);filter:blur(56px);right:-40px;top:-50px}
+.bill-hero .bh-label{font-size:11.5px;color:#aab0c5}
+.bill-hero .bh-num{font-size:34px;font-weight:800;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.bill-hero .bh-sub{font-size:11px;color:#aab0c5}
+.bill-hero .bh-row{display:flex;gap:10px;margin-top:16px;position:relative;z-index:1}
+.bill-hero .bh-pill{
+  flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:13px;
+  padding:10px 12px;font-size:11px;color:#aab0c5;
+}
+.bill-hero .bh-pill b{display:block;font-size:15px;color:#fff;margin-top:2px}
+.bill-item{
+  display:flex;align-items:center;background:#fff;border-radius:18px;padding:14px;margin-bottom:10px;
+  box-shadow:var(--shadow);
+}
+.bill-item .bi-ico{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bill-item .bi-ico svg{width:19px;height:19px}
+.bill-item .bi-info{margin-left:11px;flex:1;min-width:0}
+.bill-item .bi-info b{font-size:13.5px;display:block}
+.bill-item .bi-info span{font-size:11px;color:var(--sub)}
+.bill-item .bi-right{text-align:right}
+.bill-item .bi-amount{font-size:15.5px;font-weight:800}
+
+/* ============ 服务页 ============ */
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.svc-card{
+  background:#fff;border-radius:18px;padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:.2s;position:relative;overflow:hidden;
+}
+.svc-card:active{transform:scale(.97)}
+.svc-card .sc-ico{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.svc-card .sc-ico svg{width:19px;height:19px;color:#fff}
+.svc-card b{font-size:13.5px;display:block}
+.svc-card span{font-size:10.5px;color:var(--sub)}
+.dev-card{background:#fff;border-radius:18px;padding:15px;box-shadow:var(--shadow);margin-bottom:11px}
+.dev-row1{display:flex;align-items:center;gap:11px}
+.dev-row1 .dv-ico{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dev-row1 .dv-ico svg{width:18px;height:18px}
+.dev-row1 b{font-size:13.5px;display:block}
+.dev-row1 span{font-size:10.5px;color:var(--sub)}
+.dev-row1 .dv-status{margin-left:auto}
+.dev-row2{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:11px;border-top:1px dashed var(--line);font-size:11.5px;color:var(--sub)}
+.dev-row2 b{color:var(--text);font-size:13px}
+.keypad-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;margin-top:11px;width:100%;
+  background:var(--grad);color:#fff;border:none;border-radius:12px;padding:10px;font-weight:700;
+  font-size:12.5px;cursor:pointer;font-family:var(--font);box-shadow:0 6px 16px rgba(124,92,252,.3);
+}
+.order-card{background:#fff;border-radius:18px;padding:15px;box-shadow:var(--shadow);margin-bottom:11px}
+.order-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.order-head b{font-size:13.5px}
+.order-desc{font-size:12px;color:var(--sub);line-height:1.6}
+.timeline{margin-top:11px;padding-left:2px}
+.tl-item{display:flex;gap:10px;position:relative;padding-bottom:13px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:5px;top:14px;bottom:0;width:1.5px;background:var(--line)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:11px;height:11px;border-radius:50%;background:#dfe3ee;flex-shrink:0;margin-top:4px;position:relative;z-index:1}
+.tl-item.on .tl-dot{background:var(--violet);box-shadow:0 0 0 4px rgba(124,92,252,.15)}
+.tl-item .tl-text{font-size:12px}
+.tl-item .tl-text span{color:var(--sub2);font-size:10.5px;display:block}
+
+/* ============ 我的页 ============ */
+.me-head{
+  border-radius:24px;padding:22px 18px;background:var(--grad);color:#fff;position:relative;overflow:hidden;
+  box-shadow:0 14px 34px rgba(124,92,252,.4);display:flex;align-items:center;
+}
+.me-head::after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.15);filter:blur(44px);right:-30px;top:-50px}
+.me-avatar{
+  width:58px;height:58px;border-radius:50%;background:#fff;color:var(--violet);font-weight:800;font-size:22px;
+  display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.5);flex-shrink:0;
+}
+.me-info{margin-left:14px;flex:1}
+.me-info b{font-size:18px;display:block}
+.me-info span{font-size:11.5px;opacity:.9;display:flex;align-items:center;gap:5px;margin-top:3px}
+.me-info .me-badge{background:rgba(255,255,255,.22);padding:1.5px 9px;border-radius:20px;font-size:10px;font-weight:700}
+.me-stats{display:flex;background:#fff;border-radius:var(--r);box-shadow:var(--shadow);margin-top:-26px;position:relative;z-index:2;margin-left:14px;margin-right:14px;padding:15px 0}
+.me-stat{flex:1;text-align:center;border-right:1px solid var(--line)}
+.me-stat:last-child{border-right:none}
+.me-stat b{font-size:17px;display:block;font-variant-numeric:tabular-nums}
+.me-stat span{font-size:10.5px;color:var(--sub)}
+.menu-list{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:2px 16px;margin-top:14px}
+.menu-item{
+  display:flex;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:13.5px;font-weight:600;
+}
+.menu-item:last-child{border-bottom:none}
+.menu-item .mi-ico{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:11px}
+.menu-item .mi-ico svg{width:16px;height:16px;color:#fff}
+.menu-item .mi-arrow{margin-left:auto;color:var(--sub2)}
+.menu-item .mi-arrow svg{width:15px;height:15px}
+.menu-item .mi-extra{margin-left:auto;font-size:11.5px;color:var(--sub);margin-right:6px}
+
+/* ============ 报修表单 ============ */
+.form-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:13px}
+.form-label{font-size:13px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:6px}
+.form-label .req{color:var(--red)}
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.type-opt{
+  border:1.5px solid var(--line);border-radius:14px;padding:11px 4px;text-align:center;cursor:pointer;
+  font-size:12px;font-weight:600;color:var(--sub);transition:.2s;background:#fff;
+}
+.type-opt .to-emoji{font-size:21px;display:block;margin-bottom:5px}
+.type-opt.active{border-color:var(--violet);background:rgba(124,92,252,.06);color:var(--violet)}
+.form-input,.form-textarea{
+  width:100%;border:1.5px solid var(--line);border-radius:13px;padding:11px 13px;font-size:13px;
+  font-family:var(--font);color:var(--text);outline:none;background:#fafbfe;transition:.2s;
+}
+.form-input:focus,.form-textarea:focus{border-color:var(--violet);background:#fff;box-shadow:0 0 0 3px rgba(124,92,252,.1)}
+.form-textarea{resize:none;height:88px}
+.photo-row{display:flex;gap:9px}
+.photo-add{
+  width:72px;height:72px;border-radius:14px;border:1.5px dashed var(--sub2);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;color:var(--sub2);font-size:10px;cursor:pointer;background:#fafbfe;
+}
+.photo-add svg{width:20px;height:20px}
+.photo-item{width:72px;height:72px;border-radius:14px;background:linear-gradient(135deg,#e6e9f5,#d5dbeb);display:flex;align-items:center;justify-content:center;color:var(--sub2);font-size:20px}
+
+/* ============ 租约 / 签约 ============ */
+.lease-hero{
+  border-radius:22px;padding:18px;background:var(--grad);color:#fff;position:relative;overflow:hidden;
+  box-shadow:0 12px 30px rgba(124,92,252,.38);
+}
+.lease-hero::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.14);filter:blur(40px);right:-30px;top:-40px}
+.lease-hero .lh-top{display:flex;justify-content:space-between;align-items:center}
+.lease-hero .lh-room{font-size:18px;font-weight:800}
+.lease-hero .lh-dates{font-size:11.5px;opacity:.9;margin-top:6px}
+.lease-hero .lh-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.25);margin-top:14px;overflow:hidden}
+.lease-hero .lh-bar i{display:block;height:100%;width:81%;background:#fff;border-radius:6px}
+.lease-hero .lh-bar-label{display:flex;justify-content:space-between;font-size:10.5px;opacity:.85;margin-top:6px}
+.kv-list{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:4px 16px}
+.kv-row{display:flex;justify-content:space-between;padding:12.5px 0;border-bottom:1px solid var(--line);font-size:13px}
+.kv-row:last-child{border-bottom:none}
+.kv-row span{color:var(--sub)}
+.kv-row b{font-weight:700}
+.contract-paper{
+  background:#fffdf6;border:1px solid #f0e8d2;border-radius:var(--r);padding:18px;font-size:12px;color:#5a5344;
+  line-height:1.9;box-shadow:var(--shadow);
+}
+.contract-paper h4{text-align:center;font-size:15px;color:#3d3726;margin-bottom:10px;letter-spacing:2px}
+.sign-area{
+  margin-top:13px;border:1.5px dashed #d9cfae;border-radius:14px;height:86px;display:flex;align-items:center;justify-content:center;
+  color:#b9ad89;font-size:12px;cursor:pointer;flex-direction:column;gap:4px;background:#fffef9;
+}
+.sign-area.signed{border-style:solid;border-color:var(--violet);color:var(--violet)}
+.sign-area .sign-name{font-size:26px;font-weight:800;font-family:"STKaiti","KaiTi",serif}
+.check-row{display:flex;align-items:flex-start;gap:8px;font-size:11.5px;color:var(--sub);line-height:1.6;margin:13px 2px}
+.check-row input{margin-top:2px;accent-color:var(--violet)}
+
+/* ============ 底部弹层 / 支付 ============ */
+.sheet-mask{
+  position:absolute;inset:0;background:rgba(10,12,20,.5);z-index:70;opacity:0;pointer-events:none;transition:.25s;
+}
+.sheet-mask.show{opacity:1;pointer-events:auto}
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:26px 26px 0 0;z-index:71;
+  transform:translateY(105%);transition:transform .32s cubic-bezier(.32,.72,.28,1);padding:20px 18px 34px;
+  max-height:78%;overflow-y:auto;
+}
+.sheet.show{transform:none}
+.sheet-handle{width:38px;height:4.5px;border-radius:4px;background:#e6e8f0;margin:0 auto 15px}
+.sheet-title{font-size:16px;font-weight:800;text-align:center;margin-bottom:4px}
+.sheet-sub{font-size:11.5px;color:var(--sub);text-align:center;margin-bottom:16px}
+.pay-amount{text-align:center;margin:8px 0 18px}
+.pay-amount b{font-size:38px;font-weight:800;font-variant-numeric:tabular-nums}
+.pay-method{
+  display:flex;align-items:center;gap:11px;border:1.5px solid var(--line);border-radius:15px;padding:13px;margin-bottom:10px;cursor:pointer;transition:.2s;
+}
+.pay-method.active{border-color:var(--green);background:rgba(24,192,126,.04)}
+.pay-method .pm-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.pay-method b{font-size:13.5px;flex:1}
+.pay-method .pm-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--sub2)}
+.pay-method.active .pm-check{border:none;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px}
+.pay-result{text-align:center;padding:14px 0 6px}
+.pay-result .pr-ico{
+  width:70px;height:70px;border-radius:50%;background:rgba(24,192,126,.12);margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;
+}
+.pay-result .pr-ico svg{width:36px;height:36px;color:var(--green)}
+.pay-result b{font-size:18px;display:block}
+.pay-result span{font-size:12px;color:var(--sub)}
+
+/* 临时密码弹层 */
+.pass-code{
+  display:flex;gap:8px;justify-content:center;margin:18px 0;
+}
+.pass-code .pc-digit{
+  width:44px;height:56px;border-radius:14px;background:linear-gradient(180deg,#f6f7fc,#eef0f8);
+  border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;color:var(--violet);
+}
+
+/* ============ Toast / Loading ============ */
+.wx-toast{
+  position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:90;
+  background:rgba(20,22,30,.88);color:#fff;border-radius:14px;padding:16px 22px;
+  display:none;flex-direction:column;align-items:center;gap:9px;min-width:110px;backdrop-filter:blur(8px);
+}
+.wx-toast.show{display:flex;animation:toastPop .22s ease}
+@keyframes toastPop{from{opacity:0;transform:translate(-50%,-50%) scale(.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.wx-toast svg{width:30px;height:30px;color:#fff}
+.wx-toast span{font-size:12.5px}
+.wx-loading{width:28px;height:28px;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.fade-in{animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+@media (max-width:900px){
+  .intro{display:none}
+  body{padding:12px}
+  .phone{transform:scale(.92);transform-origin:top center}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <!-- 左侧说明 -->
+  <div class="intro">
+    <div class="logo-row">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M14 9h1M14 13h1M10 21v-4h4v4"/></svg>
+      </div>
+      <div>
+        <h1>寓<em>见</em></h1>
+        <div class="en">YUJIAN MINI PROGRAM</div>
+      </div>
+    </div>
+    <p>租客端微信小程序原型 · 依据《公寓出租管理系统需求文档》打造。覆盖看房、签约、缴费、报修、智能设备全场景，轻量化操作，年轻人的租房方式。</p>
+    <div class="feat">
+      <div class="feat-item"><span class="feat-dot" style="background:#7c5cfc"></span><span><b>在线签约</b> · 电子合同 + 手写签名</span></div>
+      <div class="feat-item"><span class="feat-dot" style="background:#19c8e6"></span><span><b>账单缴费</b> · 微信支付一键缴租</span></div>
+      <div class="feat-item"><span class="feat-dot" style="background:#ff6b9d"></span><span><b>自助报修</b> · 拍照上传工单全流程跟踪</span></div>
+      <div class="feat-item"><span class="feat-dot" style="background:#18c07e"></span><span><b>IoT 联动</b> · 门锁临时密码 / 水电用量</span></div>
+    </div>
+    <div class="hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      点击右侧手机即可交互体验完整流程
+    </div>
+  </div>
+
+  <!-- 手机壳 -->
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+
+      <!-- 状态栏 -->
+      <div class="statusbar" id="statusbar">
+        <span>9:41</span>
+        <div class="sb-right">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16h2v4H2zM6 13h2v7H6zM10 10h2v10h-2zM14 7h2v13h-2zM18 4h2v16h-2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM12 4C7.6 4 3.6 5.8.8 8.6l1.9 1.9C5 8.2 8.3 6.7 12 6.7s7 1.5 9.3 3.8l1.9-1.9C20.4 5.8 16.4 4 12 4zm0 5.3c-2.9 0-5.6 1.2-7.4 3.1l1.9 1.9c1.4-1.4 3.3-2.3 5.5-2.3s4.1.9 5.5 2.3l1.9-1.9c-1.8-1.9-4.5-3.1-7.4-3.1z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="8" width="17" height="8" rx="2.5"/><path d="M21.5 10.5v3" stroke-linecap="round"/><rect x="4" y="10" width="10" height="4" rx="1" fill="currentColor" stroke="none"/></svg>
+        </div>
+      </div>
+
+      <!-- 微信胶囊 -->
+      <div class="capsule">
+        <div class="cap-btn" onclick="wxToast('返回小程序首页')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+        </div>
+        <div class="cap-div"></div>
+        <div class="cap-btn" onclick="wxToast('已关闭小程序（演示）')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+        </div>
+      </div>
+
+      <!-- ================= 页面区 ================= -->
+      <div class="pages">
+
+        <!-- ========== 首页 ========== -->
+        <div class="page tab-active" id="page-home">
+          <div class="home-hero fade-in">
+            <div class="hh-greet">Good Morning ☀️ 2026.04.02</div>
+            <div class="hh-title">你好，林晓彤</div>
+            <div class="hh-card" onclick="go('page-lease')">
+              <div class="hh-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M10 21v-4h4v4"/></svg>
+              </div>
+              <div class="hh-info">
+                <b>星河青年社区 · A-1201</b>
+                <span>租约生效中 · 距到期还有 70 天</span>
+              </div>
+              <div class="hh-go">查看</div>
+            </div>
+          </div>
+
+          <div class="quick-grid fade-in">
+            <div class="quick" onclick="go('page-bill');switchTab('bill')">
+              <div class="q-ico q-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+              <span>缴房租</span>
+            </div>
+            <div class="quick" onclick="go('page-repair')">
+              <div class="q-ico q-warm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+              <span>我要报修</span>
+            </div>
+            <div class="quick" onclick="go('page-sign')">
+              <div class="q-ico q-cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></svg></div>
+              <span>在线签约</span>
+            </div>
+            <div class="quick" onclick="go('page-service');switchTab('service')">
+              <div class="q-ico q-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+              <span>智能门锁</span>
+            </div>
+          </div>
+
+          <div class="notice-bar fade-in" onclick="go('page-bill');switchTab('bill')">
+            <div class="n-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+            <div><b>4 月账单已生成</b> · 租金 ¥3,680 + 水电 ¥165.6，4月10日前缴费享免滞纳金</div>
+          </div>
+
+          <div class="sec-head">
+            <div class="sec-title">为你推荐</div>
+            <div class="sec-more" onclick="wxToast('更多房源（演示）')">全部房源<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+          <div class="chips" style="margin-bottom:12px">
+            <div class="chip active">全部</div>
+            <div class="chip">大床房</div>
+            <div class="chip">一室一厅</div>
+            <div class="chip">整租套间</div>
+            <div class="chip">可短租</div>
+          </div>
+          <div id="homeRooms"></div>
+        </div>
+
+        <!-- ========== 账单 ========== -->
+        <div class="page" id="page-bill">
+          <div class="sec-head" style="margin-top:4px">
+            <div class="sec-title">我的账单</div>
+            <div class="sec-more" onclick="wxToast('账单明细导出（演示）')">导出明细<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+          <div class="bill-hero fade-in">
+            <div class="bh-label">本月待缴总额</div>
+            <div class="bh-num">¥ 3,845.60</div>
+            <div class="bh-sub">缴费截止 2026-04-10 · 逾期按 0.05%/天 计收滞纳金</div>
+            <div class="bh-row">
+              <div class="bh-pill">租金<b>¥3,680.00</b></div>
+              <div class="bh-pill">水电燃气<b>¥165.60</b></div>
+              <div class="bh-pill">押金（冻结中）<b>¥3,680.00</b></div>
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <button class="btn btn-grad btn-block" onclick="openPay()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              一键缴清本月账单
+            </button>
+          </div>
+
+          <div class="sec-head"><div class="sec-title">账单记录</div></div>
+          <div id="billList"></div>
+        </div>
+
+        <!-- ========== 服务 ========== -->
+        <div class="page" id="page-service">
+          <div class="sec-head" style="margin-top:4px"><div class="sec-title">生活服务</div></div>
+          <div class="svc-grid fade-in">
+            <div class="svc-card" onclick="go('page-repair')">
+              <div class="sc-ico" style="background:var(--grad-warm)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+              <b>自助报修</b><span>拍照上传 · 全程跟踪</span>
+            </div>
+            <div class="svc-card" onclick="go('page-repair-list')">
+              <div class="sc-ico" style="background:linear-gradient(135deg,#5a7bff,#3b5bdb)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+              <b>报修进度</b><span>1 个工单处理中</span>
+            </div>
+            <div class="svc-card" onclick="wxToast('保洁预约（演示）')">
+              <div class="sc-ico" style="background:linear-gradient(135deg,#2fd88e,#0fa968)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22s1.5-5 4-7 8-2 8-2-1 5-3 7-9 2-9 2zM14 9l6-6M15 4l5 5"/></svg></div>
+              <b>预约保洁</b><span>增值服务 · ¥80/次</span>
+            </div>
+            <div class="svc-card" onclick="go('page-sign')">
+              <div class="sc-ico" style="background:linear-gradient(135deg,#2fd4f0,#0ea5d8)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+              <b>续约申请</b><span>一键续租 · 免中介费</span>
+            </div>
+          </div>
+
+          <div class="sec-head"><div class="sec-title">我的智能设备</div>
+            <div class="sec-more" onclick="wxToast('设备日志溯源（演示）')">操作日志<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
+          </div>
+          <div id="devList"></div>
+        </div>
+
+        <!-- ========== 我的 ========== -->
+        <div class="page" id="page-me">
+          <div class="me-head fade-in">
+            <div class="me-avatar">彤</div>
+            <div class="me-info">
+              <b>林晓彤</b>
+              <span><span class="me-badge">已实名认证</span> 138****6688</span>
+            </div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px;opacity:.8" onclick="wxToast('个人资料编辑（演示）')"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="me-stats fade-in">
+            <div class="me-stat"><b>10</b><span>累计缴费(月)</span></div>
+            <div class="me-stat"><b>¥38,459</b><span>累计金额</span></div>
+            <div class="me-stat"><b>100%</b><span>信用评分</span></div>
+          </div>
+
+          <div class="menu-list fade-in">
+            <div class="menu-item" onclick="go('page-lease')">
+              <div class="mi-ico" style="background:linear-gradient(135deg,#8f6dff,#6a4df5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+              我的租约
+              <span class="mi-extra">生效中 · 2026-06-11 到期</span>
+              <span class="mi-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </div>
+            <div class="menu-item" onclick="go('page-bill');switchTab('bill')">
+              <div class="mi-ico" style="background:linear-gradient(135deg,#2fd4f0,#0ea5d8)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+              缴费记录
+              <span class="mi-extra">无欠费 · 信用良好</span>
+              <span class="mi-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </div>
+            <div class="menu-item" onclick="wxToast('电子合同已下载（演示）')">
+              <div class="mi-ico" style="background:linear-gradient(135deg,#ff8a5c,#ff5a9e)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></div>
+              电子合同下载
+              <span class="mi-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </div>
+            <div class="menu-item" onclick="wxToast('紧急联系人管理（演示）')">
+              <div class="mi-ico" style="background:linear-gradient(135deg,#2fd88e,#0fa968)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+              紧急联系人
+              <span class="mi-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </div>
+            <div class="menu-item" onclick="wxToast('消息中心（演示）')">
+              <div class="mi-ico" style="background:linear-gradient(135deg,#ffab2e,#ff8a2e)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+              消息通知
+              <span class="mi-extra" style="color:var(--red)">2 条未读</span>
+              <span class="mi-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </div>
+            <div class="menu-item" onclick="wxToast('联系管家：王房东 138****0000（演示）')">
+              <div class="mi-ico" style="background:linear-gradient(135deg,#5a7bff,#3b5bdb)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              联系管家
+              <span class="mi-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:10.5px;color:var(--sub2);margin-top:18px">寓见小程序 v2.4.0 · 让租房更简单</div>
+        </div>
+
+        <!-- ========== 房源详情 ========== -->
+        <div class="page no-tabbar" id="page-room">
+          <div class="navbar">
+            <div class="nav-back" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="nav-title">房源详情</div>
+          </div>
+          <div class="detail-gallery">
+            <img id="roomDetailImg" src="" alt="房源图片">
+            <div class="dg-mask"></div>
+            <div class="dg-count">1 / 8</div>
+          </div>
+          <div class="detail-body">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="db-title" id="rdName">云朵公寓 · A-1105</div>
+              <span class="badge b-green">可月付</span>
+            </div>
+            <div class="db-sub">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              南山区科技园南路 88 号 · 距地铁 1 号线 350m
+            </div>
+            <div class="db-price-row">
+              <div class="db-price" id="rdPrice">¥5,600<small> /月 · 押一付一</small></div>
+              <span class="badge b-cyan" style="margin-left:auto">智能门锁</span>
+              <span class="badge b-violet">近地铁</span>
+            </div>
+            <div class="db-specs">
+              <div class="db-spec"><b id="rdType">一室一厅</b><span>户型</span></div>
+              <div class="db-spec"><b id="rdArea">45㎡</b><span>面积</span></div>
+              <div class="db-spec"><b id="rdFloor">11F</b><span>楼层</span></div>
+              <div class="db-spec"><b id="rdFace">朝东</b><span>朝向</span></div>
+            </div>
+
+            <div class="sec-head" style="margin-top:6px"><div class="sec-title">费用明细</div></div>
+            <div class="fee-list">
+              <div class="fee-row"><span>租金</span><b id="rdFeeRent">¥5,600 / 月</b></div>
+              <div class="fee-row"><span>押金</span><b id="rdFeeDeposit">¥5,600（退租核验后退还）</b></div>
+              <div class="fee-row"><span>物业费</span><b>¥120 / 月</b></div>
+              <div class="fee-row"><span>水电燃气</span><b>按表计费 · 电 1.2 / 水 3.5 / 气 4.2</b></div>
+              <div class="fee-row"><span>保洁费（可选）</span><b>¥80 / 月</b></div>
+            </div>
+
+            <div class="sec-head"><div class="sec-title">房间配置</div></div>
+            <div class="amen-grid">
+              <div class="amen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20"/></svg>大床 1.8m</div>
+              <div class="amen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M4 10h16"/></svg>大衣柜</div>
+              <div class="amen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>空调</div>
+              <div class="amen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="12" cy="12" r="5"/></svg>洗衣机</div>
+              <div class="amen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 10h14"/></svg>冰箱</div>
+              <div class="amen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M5.6 5.6l2.1 2.1M3 12h3M18.4 5.6l-2.1 2.1M21 12h-3M12 21a5 5 0 0 0 5-5c0-3-5-9-5-9s-5 6-5 9a5 5 0 0 0 5 5z"/></svg>热水器</div>
+              <div class="amen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>WiFi</div>
+              <div class="amen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>智能门锁</div>
+            </div>
+
+            <div class="sec-head"><div class="sec-title">房源实拍</div></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="rdPhotos"></div>
+          </div>
+          <div class="detail-footbar">
+            <div class="dfb-icon" onclick="wxToast('已收藏该房源')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              收藏
+            </div>
+            <div class="dfb-icon" onclick="wxToast('已预约看房：明天 15:00')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              预约看房
+            </div>
+            <button class="btn btn-grad" onclick="go('page-sign')">立即签约</button>
+          </div>
+        </div>
+
+        <!-- ========== 报修表单 ========== -->
+        <div class="page no-tabbar" id="page-repair">
+          <div class="navbar">
+            <div class="nav-back" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="nav-title">自助报修</div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="form-card">
+              <div class="form-label"><span class="req">*</span> 报修类型</div>
+              <div class="type-grid" id="repairTypes">
+                <div class="type-opt active" data-t="水电"><span class="to-emoji">💧</span>水电</div>
+                <div class="type-opt" data-t="家具"><span class="to-emoji">🪑</span>家具</div>
+                <div class="type-opt" data-t="家电"><span class="to-emoji">📺</span>家电</div>
+                <div class="type-opt" data-t="网络"><span class="to-emoji">📶</span>网络</div>
+              </div>
+            </div>
+            <div class="form-card">
+              <div class="form-label"><span class="req">*</span> 问题描述</div>
+              <textarea class="form-textarea" id="repairDesc" placeholder="请描述故障情况，例如：卫生间水龙头持续滴水…"></textarea>
+            </div>
+            <div class="form-card">
+              <div class="form-label">故障照片（最多 3 张）</div>
+              <div class="photo-row" id="photoRow">
+                <div class="photo-add" onclick="addPhoto()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  上传照片
+                </div>
+              </div>
+            </div>
+            <div class="form-card">
+              <div class="form-label">上门时间</div>
+              <div class="chips">
+                <div class="chip active">尽快上门</div>
+                <div class="chip">今天下午</div>
+                <div class="chip">明天上午</div>
+                <div class="chip">周末</div>
+              </div>
+            </div>
+            <button class="btn btn-grad btn-block" onclick="submitRepair()">提交报修工单</button>
+          </div>
+        </div>
+
+        <!-- ========== 报修进度 ========== -->
+        <div class="page no-tabbar" id="page-repair-list">
+          <div class="navbar">
+            <div class="nav-back" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="nav-title">报修进度</div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="order-card fade-in">
+              <div class="order-head">
+                <b>💧 水电报修 · A-1201</b>
+                <span class="badge b-amber">维修中</span>
+              </div>
+              <div class="order-desc">卫生间水龙头持续滴水，已用盆接住。维修师傅：张工 · 预计今天 16:00 上门</div>
+              <div class="timeline">
+                <div class="tl-item on"><div class="tl-dot"></div><div class="tl-text">已提交报修工单<span>今天 14:20</span></div></div>
+                <div class="tl-item on"><div class="tl-dot"></div><div class="tl-text">管家已接单，派单给张工<span>今天 14:32</span></div></div>
+                <div class="tl-item on"><div class="tl-dot"></div><div class="tl-text">维修师傅已出发，预计 16:00 到达<span>今天 15:10</span></div></div>
+                <div class="tl-item"><div class="tl-dot"></div><div class="tl-text">维修完成，等待验收评价</div></div>
+              </div>
+            </div>
+            <div class="order-card fade-in">
+              <div class="order-head">
+                <b>🧺 家电报修 · A-1201</b>
+                <span class="badge b-green">已完成</span>
+              </div>
+              <div class="order-desc">洗衣机排水堵塞，已疏通。费用 ¥60（租客承担）· 已计入 3 月账单</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+                <span style="font-size:12px;color:var(--sub)">完成于 03-30 · 我的评价</span>
+                <span style="color:var(--amber);font-size:13px;letter-spacing:2px">★★★★★</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== 我的租约 ========== -->
+        <div class="page no-tabbar" id="page-lease">
+          <div class="navbar">
+            <div class="nav-back" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="nav-title">我的租约</div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="lease-hero fade-in">
+              <div class="lh-top">
+                <div class="lh-room">星河青年社区 · A-1201</div>
+                <span class="badge" style="background:rgba(255,255,255,.22);color:#fff">生效中</span>
+              </div>
+              <div class="lh-dates">2025-06-12 起租 · 2026-06-11 到期 · 月付</div>
+              <div class="lh-bar"><i></i></div>
+              <div class="lh-bar-label"><span>已居住 81%</span><span>剩余 70 天</span></div>
+            </div>
+            <div class="sec-head"><div class="sec-title">合同信息</div></div>
+            <div class="kv-list">
+              <div class="kv-row"><span>合同编号</span><b>YZ-2026-0412</b></div>
+              <div class="kv-row"><span>月租金</span><b>¥3,680.00</b></div>
+              <div class="kv-row"><span>押金</span><b>¥3,680.00（冻结中）</b></div>
+              <div class="kv-row"><span>物业费</span><b>¥120.00 / 月</b></div>
+              <div class="kv-row"><span>水电燃气</span><b>按智能表实际用量计费</b></div>
+              <div class="kv-row"><span>付款方式</span><b>月付 · 每月 10 日前</b></div>
+              <div class="kv-row"><span>电子合同</span><b style="color:var(--violet)" onclick="wxToast('合同 PDF 已下载')">下载 PDF</b></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+              <button class="btn btn-line" style="flex:1;padding:13px" onclick="wxToast('退租申请已提交，等待管家核验（演示）')">申请退租</button>
+              <button class="btn btn-grad" style="flex:1;padding:13px" onclick="go('page-sign')">一键续租</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== 在线签约 ========== -->
+        <div class="page no-tabbar" id="page-sign">
+          <div class="navbar">
+            <div class="nav-back" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div class="nav-title">在线签约</div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="contract-paper fade-in">
+              <h4>房 屋 租 赁 电 子 合 同</h4>
+              合同编号：YZ-2026-0488<br>
+              出租方（甲方）：王房东 · 寓见公寓管理<br>
+              承租方（乙方）：林晓彤 · 已实名认证<br>
+              ─────────────────<br>
+              一、房屋坐落：星河青年社区 A 栋 1201 室，大床房 28㎡。<br>
+              二、租赁期限：2026-04-05 至 2027-04-04，共 12 个月。<br>
+              三、租金标准：¥3,680/月，押一付一，每月 10 日前支付。<br>
+              四、水电燃气按智能表实际用量计费；物业费 ¥120/月。<br>
+              五、乙方退租时经资产核验无损坏，押金全额退还。<br>
+              六、双方确认本合同以数据电文形式签署，具有法律效力。
+            </div>
+            <div class="sign-area" id="signArea" onclick="doSign()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M12 19l7-7 3 3-7 7-3-3zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5zM2 2l7.586 7.586"/></svg>
+              <span id="signTip">点击此处手写签名</span>
+            </div>
+            <label class="check-row">
+              <input type="checkbox" id="agreeCheck" checked>
+              我已阅读并同意《房屋租赁合同》《租客服务协议》，确认以上信息真实有效，同意以电子签名方式签署本合同。
+            </label>
+            <button class="btn btn-grad btn-block" onclick="submitSign()">确认签署合同</button>
+          </div>
+        </div>
+
+      </div><!-- /pages -->
+
+      <!-- ================= TabBar ================= -->
+      <div class="tabbar" id="tabbar">
+        <div class="tab active" data-tab="home" onclick="switchTab('home')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M14 9h1M14 13h1M10 21v-4h4v4"/></svg>
+          首页
+        </div>
+        <div class="tab" data-tab="bill" onclick="switchTab('bill')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22M7 15h4"/></svg>
+          账单
+          <span class="tab-dot"></span>
+        </div>
+        <div class="tab" data-tab="service" onclick="switchTab('service')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          服务
+        </div>
+        <div class="tab" data-tab="me" onclick="switchTab('me')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          我的
+        </div>
+      </div>
+
+      <!-- ================= 弹层 ================= -->
+      <div class="sheet-mask" id="sheetMask" onclick="closeSheet()"></div>
+
+      <!-- 支付弹层 -->
+      <div class="sheet" id="paySheet">
+        <div class="sheet-handle"></div>
+        <div id="payStep1">
+          <div class="sheet-title">收银台</div>
+          <div class="sheet-sub">寓见公寓 · 2026年4月账单</div>
+          <div class="pay-amount"><b>¥3,845.60</b></div>
+          <div class="pay-method active" onclick="pickPay(this)">
+            <div class="pm-ico" style="background:rgba(24,192,126,.12)">💚</div>
+            <b>微信支付</b>
+            <div class="pm-check">✓</div>
+          </div>
+          <div class="pay-method" onclick="pickPay(this)">
+            <div class="pm-ico" style="background:rgba(124,92,252,.1)">💳</div>
+            <b>银行卡支付（尾号 6688）</b>
+            <div class="pm-check">✓</div>
+          </div>
+          <button class="btn btn-grad btn-block" style="margin-top:8px" onclick="doPay()">确认支付</button>
+        </div>
+        <div id="payStep2" style="display:none">
+          <div class="pay-result">
+            <div class="pr-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <b>支付成功</b>
+            <span>¥3,845.60 · 4月账单已缴清</span>
+          </div>
+          <div class="kv-list" style="box-shadow:none;border:1px solid var(--line)">
+            <div class="kv-row"><span>交易单号</span><b>WX20260402153022</b></div>
+            <div class="kv-row"><span>支付时间</span><b>2026-04-02 15:30</b></div>
+            <div class="kv-row"><span>缴费凭证</span><b style="color:var(--violet)">查看电子回单</b></div>
+          </div>
+          <button class="btn btn-grad btn-block" style="margin-top:14px" onclick="closeSheet();wxToast('缴费成功，感谢守信 🎉')">完成</button>
+        </div>
+      </div>
+
+      <!-- 门锁临时密码弹层 -->
+      <div class="sheet" id="lockSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">智能门锁 · 临时密码</div>
+        <div class="sheet-sub">A-1201 · 有效期 24 小时 · 租约到期自动失效</div>
+        <div class="pass-code">
+          <div class="pc-digit">8</div><div class="pc-digit">2</div><div class="pc-digit">6</div>
+          <div class="pc-digit">9</div><div class="pc-digit">1</div><div class="pc-digit">7</div>
+        </div>
+        <div class="kv-list" style="box-shadow:none;border:1px solid var(--line)">
+          <div class="kv-row"><span>密码类型</span><b>动态临时密码</b></div>
+          <div class="kv-row"><span>失效时间</span><b>2026-04-03 15:30</b></div>
+          <div class="kv-row"><span>使用次数</span><b>限 3 次</b></div>
+        </div>
+        <button class="btn btn-grad btn-block" style="margin-top:14px" onclick="closeSheet();wxToast('密码已复制，可分享给访客')">复制密码</button>
+      </div>
+
+      <!-- 微信风格 Toast -->
+      <div class="wx-toast" id="wxToast">
+        <div id="toastIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg></div>
+        <span id="toastText">操作成功</span>
+      </div>
+
+    </div><!-- /screen -->
+  </div><!-- /phone -->
+</div>
+<script>
+/* ============================================================
+   寓见 · 租客端小程序原型 — 交互逻辑
+============================================================ */
+const IMG = (prompt, size='landscape_4_3') =>
+  'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=' + encodeURIComponent(prompt) + '&image_size=' + size;
+
+/* ---------- 模拟数据 ---------- */
+const ROOMS = [
+  { name:'云朵公寓 · A-1105', meta:'一室一厅 · 45㎡ · 朝东 · 11F', price:5600, tag:'新上', status:'可入住',
+    img:IMG('Bright modern studio apartment interior, warm sunlight through floor to ceiling window, minimalist scandinavian style, cozy bed and desk, photorealistic interior photography') },
+  { name:'星河青年社区 · B-0605', meta:'大床房 · 25㎡ · 朝东 · 6F', price:3180, tag:'近地铁', status:'可入住',
+    img:IMG('Cozy small apartment bedroom with large bed, warm ambient lighting, modern minimalist design, city view window, photorealistic') },
+  { name:'半山青年驿站 · C-0201', meta:'整租套间 · 62㎡ · 朝南 · 2F', price:8200, tag:'可短租', status:'可入住',
+    img:IMG('Spacious luxury apartment living room, modern furniture, large windows with greenery view, warm natural light, photorealistic interior') },
+  { name:'橘子洲轻奢公寓 · A-0903', meta:'一室一厅 · 42㎡ · 朝南 · 9F', price:5200, tag:'精装修', status:'已预订',
+    img:IMG('Elegant modern apartment with open kitchen and living area, stylish decor, warm evening light, photorealistic interior photography') },
+];
+
+const BILLS = [
+  { ico:'rent', color:'var(--violet)', bg:'rgba(124,92,252,.1)', title:'4月租金', sub:'A-1201 · 账期 2026-04', amount:'¥3,680.00', st:'待缴', stCls:'b-amber' },
+  { ico:'util', color:'var(--cyan)', bg:'rgba(25,200,230,.1)', title:'3月水电燃气', sub:'用电138度 · 用水6.8吨', amount:'¥165.60', st:'待缴', stCls:'b-amber' },
+  { ico:'prop', color:'var(--green)', bg:'rgba(24,192,126,.1)', title:'4月物业费', sub:'A-1201 · 公摊', amount:'¥120.00', st:'已缴', stCls:'b-green' },
+  { ico:'rent', color:'var(--violet)', bg:'rgba(124,92,252,.1)', title:'3月租金', sub:'A-1201 · 账期 2026-03', amount:'¥3,680.00', st:'已缴', stCls:'b-green' },
+  { ico:'util', color:'var(--cyan)', bg:'rgba(25,200,230,.1)', title:'2月水电燃气', sub:'用电126度 · 用水5.9吨', amount:'¥148.20', st:'已缴', stCls:'b-green' },
+];
+const BILL_ICON = {
+  rent:'<path d="M3 21h18M5 21V7l7-4 7 4v14M10 21v-4h4v4"/>',
+  util:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  prop:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>',
+};
+
+const DEVICES = [
+  { ico:'lock', color:'var(--violet)', bg:'rgba(124,92,252,.1)', name:'智能门锁', sub:'SL-Pro · 在线', status:'在线', stCls:'b-green',
+    icon:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    extra:'<button class="keypad-btn" onclick="openSheet(\'lockSheet\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>生成临时密码</button>' },
+  { ico:'elec', color:'var(--amber)', bg:'rgba(255,171,46,.12)', name:'智能电表', sub:'DM-3 · 本月 138 度', status:'在线', stCls:'b-green',
+    icon:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>', extra:'' },
+  { ico:'water', color:'var(--cyan)', bg:'rgba(25,200,230,.1)', name:'智能水表', sub:'WM-2 · 本月 6.8 吨', status:'在线', stCls:'b-green',
+    icon:'<path d="M12 2.69 5.66 9.05a9 9 0 1 0 12.68 0z"/>', extra:'' },
+];
+
+/* ---------- 渲染 ---------- */
+function renderHomeRooms(){
+  document.getElementById('homeRooms').innerHTML = ROOMS.map((r,i)=>`
+    <div class="room-card fade-in" onclick="openRoom(${i})">
+      <div class="rc-img">
+        <img src="${r.img}" alt="${r.name}" loading="lazy" onerror="this.style.display='none'">
+        <div class="rc-tag">${r.tag}</div>
+      </div>
+      <div class="rc-body">
+        <div class="rc-name">${r.name}</div>
+        <div class="rc-meta">${r.meta}</div>
+        <div class="rc-bottom">
+          <div class="rc-price">¥${r.price.toLocaleString()}<small>/月</small></div>
+          <div class="rc-status" style="color:${r.status==='可入住'?'var(--green)':'var(--sub)'}">${r.status}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderBills(){
+  document.getElementById('billList').innerHTML = BILLS.map(b=>`
+    <div class="bill-item fade-in">
+      <div class="bi-ico" style="background:${b.bg}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="${b.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${BILL_ICON[b.ico]}</svg>
+      </div>
+      <div class="bi-info"><b>${b.title}</b><span>${b.sub}</span></div>
+      <div class="bi-right">
+        <div class="bi-amount">${b.amount}</div>
+        <span class="badge ${b.stCls}">${b.st}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderDevices(){
+  document.getElementById('devList').innerHTML = DEVICES.map(d=>`
+    <div class="dev-card fade-in">
+      <div class="dev-row1">
+        <div class="dv-ico" style="background:${d.bg}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="${d.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d.icon}</svg>
+        </div>
+        <div><b>${d.name}</b><span>${d.sub}</span></div>
+        <span class="badge ${d.stCls} dv-status">${d.status}</span>
+      </div>
+      ${d.extra}
+    </div>`).join('');
+}
+
+/* ---------- 页面栈导航 ---------- */
+const TAB_PAGES = { home:'page-home', bill:'page-bill', service:'page-service', me:'page-me' };
+let currentTab = 'home';
+let stack = [];
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>{ p.classList.remove('tab-active','stack-active'); });
+  const el = document.getElementById(id);
+  el.classList.add(Object.values(TAB_PAGES).includes(id) ? 'tab-active' : 'stack-active');
+  el.scrollTop = 0;
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  stack = [];
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  document.getElementById('tabbar').style.display = 'flex';
+  showPage(TAB_PAGES[tab]);
+}
+
+function go(id){
+  stack.push(id);
+  document.getElementById('tabbar').style.display = 'none';
+  showPage(id);
+}
+
+function back(){
+  stack.pop();
+  if(stack.length){ showPage(stack[stack.length-1]); }
+  else { document.getElementById('tabbar').style.display = 'flex'; showPage(TAB_PAGES[currentTab]); }
+}
+
+/* ---------- 房源详情 ---------- */
+function openRoom(i){
+  const r = ROOMS[i];
+  document.getElementById('rdName').textContent = r.name;
+  document.getElementById('roomDetailImg').src = r.img;
+  document.getElementById('rdPrice').innerHTML = `¥${r.price.toLocaleString()}<small> /月 · 押一付一</small>`;
+  document.getElementById('rdFeeRent').textContent = `¥${r.price.toLocaleString()} / 月`;
+  document.getElementById('rdFeeDeposit').textContent = `¥${r.price.toLocaleString()}（退租核验后退还）`;
+  const specs = r.meta.split(' · ');
+  if(specs[0]) document.getElementById('rdType').textContent = specs[0];
+  if(specs[1]) document.getElementById('rdArea').textContent = specs[1];
+  if(specs[3]) document.getElementById('rdFloor').textContent = specs[3];
+  // 实拍图（复用主图 + 生成 2 张）
+  document.getElementById('rdPhotos').innerHTML = [r.img,
+    IMG('Modern apartment kitchen with white cabinets, bright and clean, photorealistic'),
+    IMG('Modern apartment bathroom with glass shower, bright tiles, photorealistic')
+  ].map(src=>`<img src="${src}" style="width:100%;height:80px;object-fit:cover;border-radius:12px" loading="lazy" onerror="this.style.display='none'">`).join('');
+  go('page-room');
+}
+
+/* ---------- 报修 ---------- */
+document.querySelectorAll('#repairTypes .type-opt').forEach(o=>{
+  o.addEventListener('click', ()=>{
+    document.querySelectorAll('#repairTypes .type-opt').forEach(x=>x.classList.remove('active'));
+    o.classList.add('active');
+  });
+});
+let photoCount = 0;
+function addPhoto(){
+  if(photoCount>=3){ wxToast('最多上传 3 张照片'); return; }
+  photoCount++;
+  const div = document.createElement('div');
+  div.className = 'photo-item';
+  div.textContent = '🖼';
+  document.getElementById('photoRow').insertBefore(div, document.querySelector('.photo-add'));
+  wxToast('照片已上传');
+}
+function submitRepair(){
+  const desc = document.getElementById('repairDesc').value.trim();
+  if(!desc){ wxToast('请填写问题描述', true); return; }
+  wxLoading('提交中');
+  setTimeout(()=>{
+    hideToast();
+    wxToast('报修工单已提交，管家将尽快接单');
+    document.getElementById('repairDesc').value = '';
+    setTimeout(()=>back(), 900);
+  }, 900);
+}
+
+/* ---------- 签约 ---------- */
+let signed = false;
+function doSign(){
+  const area = document.getElementById('signArea');
+  area.classList.add('signed');
+  area.innerHTML = '<div class="sign-name">林晓彤</div><span style="font-size:10px">2026-04-02 · 电子签名</span>';
+  signed = true;
+}
+function submitSign(){
+  if(!signed){ wxToast('请先完成手写签名', true); return; }
+  if(!document.getElementById('agreeCheck').checked){ wxToast('请先勾选同意协议', true); return; }
+  wxLoading('签署中');
+  setTimeout(()=>{
+    hideToast();
+    wxToast('合同签署成功，租约已生效 🎉');
+    setTimeout(()=>back(), 1000);
+  }, 1100);
+}
+
+/* ---------- 支付 ---------- */
+function pickPay(el){
+  document.querySelectorAll('.pay-method').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+function openPay(){
+  document.getElementById('payStep1').style.display = 'block';
+  document.getElementById('payStep2').style.display = 'none';
+  openSheet('paySheet');
+}
+function doPay(){
+  closeSheet();
+  wxLoading('支付中');
+  setTimeout(()=>{
+    hideToast();
+    document.getElementById('payStep1').style.display = 'none';
+    document.getElementById('payStep2').style.display = 'block';
+    openSheet('paySheet');
+  }, 1200);
+}
+
+/* ---------- 弹层 ---------- */
+function openSheet(id){
+  document.getElementById('sheetMask').classList.add('show');
+  document.getElementById(id).classList.add('show');
+}
+function closeSheet(){
+  document.getElementById('sheetMask').classList.remove('show');
+  document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));
+}
+
+/* ---------- Toast / Loading ---------- */
+let toastTimer;
+function wxToast(text, warn){
+  const t = document.getElementById('wxToast');
+  document.getElementById('toastText').textContent = text;
+  document.getElementById('toastIcon').innerHTML = warn
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="#ffab2e" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+function wxLoading(text){
+  const t = document.getElementById('wxToast');
+  document.getElementById('toastText').textContent = text || '加载中';
+  document.getElementById('toastIcon').innerHTML = '<div class="wx-loading"></div>';
+  t.classList.add('show');
+}
+function hideToast(){ document.getElementById('wxToast').classList.remove('show'); }
+
+/* ---------- 首页筛选 chips ---------- */
+document.querySelectorAll('#page-home .chips .chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('#page-home .chips .chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+  });
+});
+document.querySelectorAll('#page-repair .chips .chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('#page-repair .chips .chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+  });
+});
+
+/* ---------- 初始化 ---------- */
+renderHomeRooms();
+renderBills();
+renderDevices();
+</script>
+</body>
+</html>

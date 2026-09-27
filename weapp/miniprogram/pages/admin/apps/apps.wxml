@@ -1,0 +1,67 @@
+<!-- 管理后台 · 关联品牌官方小程序（产品库顶部直达） -->
+<view class="tc-page tc-pad">
+  <view class="tc-hero">
+    <view class="tc-hero-k">MINI PROGRAMS</view>
+    <view class="tc-hero-title">关联小程序</view>
+    <view class="tc-hero-desc">配置后展示在产品库顶部，会员一点直达品牌官方小程序</view>
+  </view>
+
+  <!-- 新增 -->
+  <view class="tc-card">
+    <view class="tc-card-hd">新增入口</view>
+
+    <view class="logo-row">
+      <view class="logo-box" bindtap="pickLogo">
+        <image wx:if="{{logo}}" src="{{logo}}" mode="aspectFill"></image>
+        <view class="logo-ph" wx:else>
+          <text class="cuIcon-add"></text>
+          <text class="logo-ph-t">{{uploading ? '上传中…' : 'Logo'}}</text>
+        </view>
+      </view>
+      <view class="logo-tip">选填，建议正方形；不传时列表用名称首字展示</view>
+    </view>
+
+    <view class="fl-label">小程序名称</view>
+    <input class="tc-input" data-field="name" value="{{name}}" bindinput="onField" placeholder="如：马可波罗瓷砖官方" placeholder-class="tc-input-ph" />
+
+    <view class="fl-label">小程序 AppID</view>
+    <input class="tc-input tc-mono" data-field="appid" value="{{appid}}" bindinput="onField" placeholder="wx 开头的 18 位 AppID" placeholder-class="tc-input-ph" />
+
+    <view class="fl-label">跳转路径（选填）</view>
+    <input class="tc-input tc-mono" data-field="path" value="{{path}}" bindinput="onField" placeholder="如 pages/index/index，留空进首页" placeholder-class="tc-input-ph" />
+
+    <view class="tc-btn tc-btn-block mt {{saving ? 'tc-disabled' : ''}}" bindtap="add">{{saving ? '提交中…' : '添加入口'}}</view>
+    <view class="hint">目标小程序需已发布上线。若点击跳转失败，请核对 AppID 是否正确、目标小程序状态是否正常。</view>
+  </view>
+
+  <view class="tc-sec">已配置入口</view>
+
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:elif="{{list.length}}">
+    <view class="tc-item" wx:for="{{list}}" wx:key="_id">
+      <view class="app-row">
+        <view class="app-logo">
+          <image wx:if="{{item.logo}}" src="{{item.logo}}" mode="aspectFill"></image>
+          <text wx:else>{{item.name[0]}}</text>
+        </view>
+        <view class="app-info">
+          <view class="tc-item-title">{{item.name}}</view>
+          <view class="tc-item-meta">{{item.appid}}</view>
+          <view class="tc-item-meta" wx:if="{{item.path}}">path: {{item.path}}</view>
+        </view>
+      </view>
+
+      <view class="tc-item-ops">
+        <view class="tc-btn-ghost" data-appid="{{item.appid}}" bindtap="copyAppid">复制 AppID</view>
+        <view class="tc-btn-danger" data-id="{{item._id}}" data-name="{{item.name}}" bindtap="remove">移除</view>
+      </view>
+    </view>
+  </block>
+
+  <view class="tc-empty" wx:else>还没有配置关联小程序</view>
+
+  <view class="tc-safe"></view>
+</view>

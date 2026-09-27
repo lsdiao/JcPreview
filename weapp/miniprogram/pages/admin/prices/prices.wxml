@@ -1,0 +1,145 @@
+<!-- 管理后台 · 产品与价格（三档会员价 · 上下架） -->
+<view class="tc-page tc-pad">
+  <view class="tc-hero">
+    <view class="tc-hero-k">PRICE</view>
+    <view class="tc-hero-title">价格设置</view>
+    <view class="tc-hero-desc">按会员等级设置三档价格 · 会员端只返回其本等级价格</view>
+  </view>
+
+  <view class="bar">
+    <view class="bar-btn" bindtap="openNew">
+      <text class="cuIcon-add"></text><text class="bar-txt">新增产品</text>
+    </view>
+    <view class="bar-btn is-ghost" bindtap="saveAll">
+      <text class="cuIcon-check"></text><text class="bar-txt">保存全部价格</text>
+    </view>
+  </view>
+
+  <!-- ============ 产品资料表单 ============ -->
+  <view class="tc-card" wx:if="{{formOpen}}">
+    <view class="tc-card-hd">{{form._id ? '编辑产品' : '新增产品'}}</view>
+
+    <view class="two">
+      <view class="two-c">
+        <view class="fl-label">产品编号 <text class="req">必填</text></view>
+        <input class="tc-input tc-mono" data-field="no" value="{{form.no}}" bindinput="onField" placeholder="如 A-8001" placeholder-class="tc-input-ph" />
+      </view>
+      <view class="two-c">
+        <view class="fl-label">品牌</view>
+        <input class="tc-input" data-field="brand" value="{{form.brand}}" bindinput="onField" placeholder="如 马可波罗" placeholder-class="tc-input-ph" />
+      </view>
+    </view>
+
+    <view class="fl-label">产品名称 <text class="req">必填</text></view>
+    <input class="tc-input" data-field="name" value="{{form.name}}" bindinput="onField" placeholder="如 通体大理石瓷砖" placeholder-class="tc-input-ph" />
+
+    <view class="two">
+      <view class="two-c">
+        <view class="fl-label">规格</view>
+        <input class="tc-input" data-field="spec" value="{{form.spec}}" bindinput="onField" placeholder="800×800mm" placeholder-class="tc-input-ph" />
+      </view>
+      <view class="two-c">
+        <view class="fl-label">单位</view>
+        <input class="tc-input" data-field="unit" value="{{form.unit}}" bindinput="onField" placeholder="元/片" placeholder-class="tc-input-ph" />
+      </view>
+    </view>
+
+    <view class="fl-label">分类</view>
+    <input class="tc-input" data-field="cat" value="{{form.cat}}" bindinput="onField" placeholder="如 大理石纹" placeholder-class="tc-input-ph" />
+    <view class="chips" wx:if="{{cats.length}}">
+      <view class="chip" wx:for="{{cats}}" wx:key="*this" data-cat="{{item}}" bindtap="pickCat">{{item}}</view>
+    </view>
+
+    <view class="fl-label">三档会员价（{{levelsShort[0]}} / {{levelsShort[1]}} / {{levelsShort[2]}}）</view>
+    <view class="price-row">
+      <view class="price-c" wx:for="{{levelsShort}}" wx:key="index">
+        <view class="price-lab">{{item}}</view>
+        <input class="tc-input tc-mono price-in" type="digit" data-j="{{index}}" value="{{form.prices[index]}}" bindinput="onPrice" placeholder="0" placeholder-class="tc-input-ph" />
+      </view>
+    </view>
+
+    <view class="fl-label">产品说明</view>
+    <textarea class="tc-textarea" data-field="desc" value="{{form.desc}}" bindinput="onField" placeholder="工艺、适配场景、装箱规格等" placeholder-class="tc-input-ph" auto-height />
+
+    <view class="fl-label">产品图片（最多 9 张）</view>
+    <view class="img-grid">
+      <view class="img-cell" wx:for="{{form.images}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill" data-index="{{index}}" bindtap="previewImage"></image>
+        <view class="img-del" data-index="{{index}}" catchtap="removeImage"><text class="cuIcon-close"></text></view>
+      </view>
+      <view class="img-cell is-add" wx:if="{{form.images.length < 9}}" bindtap="addImages">
+        <text class="cuIcon-add"></text>
+      </view>
+    </view>
+
+    <view class="sw-row">
+      <view class="sw-label">
+        <view class="sw-name">上架展示</view>
+        <view class="sw-desc">关闭后会员端不可见</view>
+      </view>
+      <switch checked="{{!form.off}}" color="#c9a26b" bindchange="onOff" />
+    </view>
+
+    <view class="form-ops">
+      <view class="tc-btn-ghost fop" bindtap="closeForm">取消</view>
+      <view class="tc-btn fop {{saving ? 'tc-disabled' : ''}}" bindtap="save">{{saving ? '保存中…' : '保存产品'}}</view>
+    </view>
+  </view>
+
+  <!-- ============ 搜索 ============ -->
+  <view class="search">
+    <text class="cuIcon-search"></text>
+    <input class="search-input" placeholder="搜索品牌 / 名称 / 编号" placeholder-class="tc-input-ph" value="{{kw}}" bindinput="onKw" />
+  </view>
+
+  <!-- ============ 列表 ============ -->
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:elif="{{view.length}}">
+    <view class="tc-item" wx:for="{{view}}" wx:key="_id">
+      <view class="tc-item-hd">
+        <view class="pi">
+          <view class="pi-thumb">
+            <image wx:if="{{item.images[0]}}" src="{{item.images[0]}}" mode="aspectFill" lazy-load="{{true}}"></image>
+            <text class="cuIcon-pic is-ph" wx:else></text>
+          </view>
+          <view class="pi-main">
+            <view class="tc-item-title tc-clamp2">{{item.name}}</view>
+            <view class="tc-item-meta">{{item.no}} · {{item.brand || '—'}} · {{item.spec || '—'}}</view>
+          </view>
+        </view>
+        <text class="tc-tag {{item.off ? 'is-off' : 'is-on'}}">{{item.offText}}</text>
+      </view>
+
+      <view class="price-row mt">
+        <view class="price-c" wx:for="{{levelsShort}}" wx:for-item="lv" wx:for-index="j" wx:key="j">
+          <view class="price-lab">{{lv}}</view>
+          <input
+            class="tc-input tc-mono price-in"
+            type="digit"
+            data-i="{{item._i}}"
+            data-j="{{j}}"
+            value="{{item.editPrices[j]}}"
+            bindinput="onPriceInput"
+            placeholder="0"
+            placeholder-class="tc-input-ph"
+          />
+        </view>
+      </view>
+
+      <view class="tc-item-ops wrap">
+        <view class="tc-btn-ghost" data-i="{{item._i}}" bindtap="saveOne">保存价格</view>
+        <view class="tc-btn-ghost" data-i="{{item._i}}" bindtap="openEdit">编辑资料</view>
+        <view class="tc-btn-ghost" data-id="{{item._id}}" bindtap="toggleItem">{{item.off ? '上架' : '下架'}}</view>
+        <view class="tc-btn-danger" data-id="{{item._id}}" data-no="{{item.no}}" bindtap="removeItem">删除</view>
+      </view>
+    </view>
+  </block>
+
+  <view class="tc-empty" wx:else>还没有产品，点击「新增产品」开始</view>
+
+  <view class="foot-tip">会员端只会拿到「自己等级」的那一档价格，其余价格不会下发，避免被批量抓取。</view>
+  <view class="tc-safe"></view>
+</view>

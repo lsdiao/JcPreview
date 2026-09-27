@@ -1,0 +1,97 @@
+<!-- 我的 · 会员状态 / 开通 / 入口 -->
+<view class="tc-page tc-pad">
+  <view class="tc-hero">
+    <view class="tc-hero-k">MEMBER CENTER</view>
+    <view class="tc-hero-title">{{brand.name}}</view>
+    <view class="tc-hero-desc">{{brand.en}} · {{brand.slogan}}</view>
+  </view>
+
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:else>
+    <!-- 身份卡 -->
+    <view class="tc-card">
+      <view class="me">
+        <image class="avatar" wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"></image>
+        <view class="avatar is-ph" wx:else><text class="cuIcon-myfill"></text></view>
+        <view class="me-info">
+          <view class="me-name">{{nickname || '微信用户'}}</view>
+          <view class="me-sub" wx:if="{{isMember}}">{{levelText}} · {{me.member.code}}</view>
+          <view class="me-sub" wx:else>尚未开通会员</view>
+        </view>
+        <view class="tc-tag {{isMember ? 'is-on' : 'is-dim'}}">{{isMember ? '已开通' : '未开通'}}</view>
+      </view>
+    </view>
+
+    <!-- 未开通：填写邀请码 -->
+    <view class="tc-card" wx:if="{{!isMember}}">
+      <view class="tc-card-hd">开通会员</view>
+      <view class="tc-fcol">
+        <view class="nick-row">
+          <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+            <image class="avatar-sm" wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill"></image>
+            <text class="cuIcon-cameraadd" wx:else></text>
+          </button>
+          <input
+            class="tc-input nick-input"
+            type="nickname"
+            placeholder="点击填写微信昵称"
+            placeholder-class="tc-input-ph"
+            value="{{nickname}}"
+            bindinput="onNickInput"
+          />
+        </view>
+        <input
+          class="tc-input tc-mono"
+          placeholder="请输入邀请码"
+          placeholder-class="tc-input-ph"
+          value="{{code}}"
+          maxlength="12"
+          bindinput="onCodeInput"
+        />
+        <view class="tc-btn tc-btn-block {{submitting ? 'tc-disabled' : ''}}" bindtap="activate">
+          {{submitting ? '提交中…' : '开通会员'}}
+        </view>
+      </view>
+      <view class="hint">邀请码请向管理员索取 · 一码一会员，开通后等级由邀请码决定</view>
+    </view>
+
+    <!-- 已开通：等级说明 -->
+    <view class="tc-card" wx:else>
+      <view class="tc-card-hd">我的等级</view>
+      <view class="lv-row">
+        <view class="lv-cell {{me.member.level === index ? 'on' : ''}}" wx:for="{{levels}}" wx:key="index">
+          <view class="lv-name">{{item}}</view>
+          <view class="lv-desc">{{index === 2 ? '最优价' : (index === 1 ? '优惠价' : '基础价')}}</view>
+        </view>
+      </view>
+      <view class="hint">等级仅影响价格展示，不影响其他功能</view>
+    </view>
+
+    <!-- 功能入口 -->
+    <view class="tc-card">
+      <view class="cell" wx:if="{{me.isAdmin}}" bindtap="goAdmin" hover-class="cell-hover">
+        <text class="cuIcon-settingsfill cell-ic"></text>
+        <text class="cell-name">管理后台</text>
+        <text class="cuIcon-right cell-arrow"></text>
+      </view>
+      <view class="cell" bindtap="contact" hover-class="cell-hover">
+        <text class="cuIcon-weixin cell-ic"></text>
+        <text class="cell-name">联系客服</text>
+        <text class="cell-sub">{{brand.serviceWx}}</text>
+        <text class="cuIcon-right cell-arrow"></text>
+      </view>
+      <view class="cell" bindtap="copyOpenid" hover-class="cell-hover">
+        <text class="cuIcon-profilefill cell-ic"></text>
+        <text class="cell-name">我的 openid</text>
+        <text class="cuIcon-right cell-arrow"></text>
+      </view>
+    </view>
+
+    <view class="ver">{{brand.name}} · {{brand.version}}</view>
+  </block>
+
+  <view class="tc-safe"></view>
+</view>

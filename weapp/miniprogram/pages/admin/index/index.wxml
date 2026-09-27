@@ -1,0 +1,31 @@
+<!-- 管理后台首页 · 功能宫格 -->
+<view class="tc-page tc-pad">
+  <view class="tc-hero">
+    <view class="tc-hero-k">ADMIN CONSOLE</view>
+    <view class="tc-hero-title">管理后台</view>
+    <view class="tc-hero-desc">内容发布 · 邀请码 · 价格 · 投票 · 关联小程序</view>
+    <view class="tc-hero-desc">仅管理员（admins 集合中的 openid）可见</view>
+  </view>
+
+  <view class="tc-grid2">
+    <view
+      class="adm-cell adm-wide"
+      wx:for="{{cells}}"
+      wx:key="key"
+      data-key="{{item.key}}"
+      bindtap="open"
+      hover-class="adm-cell-hover"
+      hover-stay-time="60"
+      style="{{item.wide ? 'grid-column: span 2;' : ''}}"
+    >
+      <view class="adm-ic"><text class="{{item.icon}}"></text></view>
+      <view class="adm-name">{{item.name}}</view>
+      <view class="adm-desc">{{item.desc}}</view>
+    </view>
+  </view>
+
+  <view class="foot">当前登录 openid：{{openid || '获取中…'}}</view>
+  <view class="foot-tip">需更换管理员时，在云开发控制台 admins 集合中增删 openid 记录即可</view>
+
+  <view class="tc-safe"></view>
+</view>

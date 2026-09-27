@@ -1,0 +1,95 @@
+<!-- 内容详情 · 视频（内嵌视频号） / 图文（站内长图文） -->
+<view class="tc-page">
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:elif="{{item}}">
+    <!-- ============ 视频：内嵌视频号 ============ -->
+    <block wx:if="{{item.type === 'video'}}">
+      <view class="stage" wx:if="{{!failed}}">
+        <!-- 同主体：feed-id + finder-user-name；非同主体（2.31.1+）：feed-token -->
+        <channel-video
+          wx:if="{{item.feedToken}}"
+          feed-token="{{item.feedToken}}"
+          finder-user-name="{{item.finderUserName}}"
+          autoplay="{{false}}"
+          object-fit="contain"
+          binderror="onVideoError"
+          style="width:750rpx;height:422rpx"
+        ></channel-video>
+        <channel-video
+          wx:else
+          feed-id="{{item.feedId}}"
+          finder-user-name="{{item.finderUserName}}"
+          autoplay="{{false}}"
+          object-fit="contain"
+          binderror="onVideoError"
+          style="width:750rpx;height:422rpx"
+        ></channel-video>
+      </view>
+
+      <!-- 视频号参数未配置或视频已失效 -->
+      <view class="stage-fallback" wx:else>
+        <image src="{{item.cover}}" mode="aspectFill"></image>
+        <view class="fb-mask">
+          <view class="fb-ic"><text class="cuIcon-videofill"></text></view>
+          <view class="fb-text">{{failed ? '视频已失效' : '该视频尚未配置视频号参数'}}</view>
+          <view class="fb-sub" wx:if="{{!failed}}">请在「管理后台 · 内容管理」填写 feedId</view>
+        </view>
+      </view>
+
+      <view class="body">
+        <view class="title">{{item.title}}</view>
+        <view class="meta">
+          <text class="src">{{item.source || '视频号'}}</text>
+          <text class="dot"></text>
+          <text>视频号内嵌播放</text>
+          <text class="dot" wx:if="{{item.duration}}"></text>
+          <text wx:if="{{item.duration}}">{{item.duration}}</text>
+        </view>
+        <view class="summary" wx:if="{{item.summary}}">{{item.summary}}</view>
+
+        <view class="act" wx:if="{{canOpenChannels}}">
+          <view class="tc-btn-ghost act-btn" bindtap="openInChannels">
+            <text class="cuIcon-weixin"></text>
+            <text class="act-txt">在视频号中打开</text>
+          </view>
+        </view>
+
+        <view class="note">
+          视频内容引用自视频号，未在小程序内托管。若视频号原视频被删除，此处会提示「视频已失效」，请管理员在管理后台移除该条目。
+        </view>
+      </view>
+    </block>
+
+    <!-- ============ 图文：站内阅读 ============ -->
+    <block wx:else>
+      <image class="cover" src="{{item.cover}}" mode="aspectFill" wx:if="{{item.cover}}"></image>
+      <view class="body">
+        <view class="title">{{item.title}}</view>
+        <view class="meta">
+          <text class="tag-lite">图文</text>
+          <text class="dot"></text>
+          <text>{{item.source || brand.name}}</text>
+        </view>
+
+        <view class="para" wx:for="{{bodyParts}}" wx:for-item="p" wx:key="index">{{p}}</view>
+
+        <image
+          class="inline-img"
+          wx:for="{{inlineImages}}"
+          wx:for-item="img"
+          wx:key="index"
+          src="{{img}}"
+          mode="widthFix"
+          lazy-load="{{true}}"
+        ></image>
+      </view>
+    </block>
+
+    <view class="tc-safe"></view>
+  </block>
+
+  <view class="tc-empty" wx:else>内容不存在或已被移除</view>
+</view>

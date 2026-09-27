@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>寓见 · 智慧公寓管理系统 原型演示汇报</title>
+<style>
+/* ============================================================
+   寓见 · 客户汇报 PPT — 设计系统
+   16:9 深色高端风格，与原型视觉统一
+============================================================ */
+:root{
+  --bg:#0a0d18;
+  --panel:rgba(255,255,255,.035);
+  --panel-line:rgba(255,255,255,.09);
+  --text:#f0f2f8;
+  --sub:#9aa1b5;
+  --sub2:#6a7188;
+  --violet:#8b5cf6;
+  --cyan:#22d3ee;
+  --green:#34d399;
+  --amber:#fbbf24;
+  --red:#fb7185;
+  --grad:linear-gradient(135deg,#8b5cf6 0%,#6366f1 45%,#22d3ee 100%);
+  --grad-warm:linear-gradient(135deg,#fb923c 0%,#fb7185 100%);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  overflow:hidden;-webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(139,92,246,.4)}
+
+/* 舞台：16:9 自适应 */
+.stage{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+}
+.deck{
+  width:min(100vw, 177.78vh);   /* 16:9 */
+  height:min(100vh, 56.25vw);
+  position:relative;overflow:hidden;
+  background:radial-gradient(1200px 700px at 15% -10%, rgba(139,92,246,.16), transparent 60%),
+             radial-gradient(1000px 600px at 110% 110%, rgba(34,211,238,.10), transparent 55%),
+             var(--bg);
+}
+.deck::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+                   linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
+  background-size:56px 56px;
+}
+
+/* 幻灯片 */
+.slide{
+  position:absolute;inset:0;padding:5.2% 6.5%;z-index:1;
+  opacity:0;visibility:hidden;transform:translateX(46px);
+  transition:opacity .5s ease, transform .55s cubic-bezier(.32,.72,.28,1), visibility .5s;
+  display:flex;flex-direction:column;
+}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateX(-46px)}
+
+/* 页眉 */
+.s-head{display:flex;align-items:center;gap:14px;margin-bottom:2.6%}
+.s-kicker{
+  font-size:.78em;font-weight:800;letter-spacing:3px;color:var(--cyan);
+  display:flex;align-items:center;gap:9px;
+}
+.s-kicker::before{content:"";width:26px;height:2px;background:var(--grad);border-radius:2px}
+.s-title{font-size:2.1em;font-weight:800;letter-spacing:.5px;line-height:1.25}
+.s-title em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.s-sub{font-size:.95em;color:var(--sub);margin-top:6px}
+
+/* 通用卡片 */
+.panel{
+  background:var(--panel);border:1px solid var(--panel-line);border-radius:16px;
+  padding:20px 22px;backdrop-filter:blur(6px);
+}
+.panel h4{font-size:1.02em;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.panel p,.panel li{font-size:.86em;color:var(--sub);line-height:1.85}
+.panel b{color:var(--text)}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* 大数字 */
+.big-num{font-size:2em;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.big-num small{font-size:.42em;color:var(--sub);font-weight:600;margin-left:4px}
+
+/* 徽章 */
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:.72em;font-weight:700;padding:4px 11px;border-radius:20px}
+.t-violet{background:rgba(139,92,246,.14);color:#b79bff}
+.t-cyan{background:rgba(34,211,238,.12);color:#67e3f7}
+.t-green{background:rgba(52,211,153,.12);color:#6ee7b7}
+.t-amber{background:rgba(251,191,36,.12);color:#fcd34d}
+.t-red{background:rgba(251,113,133,.12);color:#fda4af}
+
+/* 步骤箭头流 */
+.flow{display:flex;align-items:stretch;gap:0}
+.flow-step{
+  flex:1;background:var(--panel);border:1px solid var(--panel-line);border-radius:14px;
+  padding:16px 14px;position:relative;text-align:center;
+}
+.flow-step .fs-no{
+  width:30px;height:30px;border-radius:10px;background:var(--grad);color:#fff;font-weight:800;font-size:.85em;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 9px;
+}
+.flow-step b{font-size:.92em;display:block;margin-bottom:5px}
+.flow-step span{font-size:.74em;color:var(--sub);line-height:1.6;display:block}
+.flow-arrow{
+  align-self:center;color:var(--sub2);font-size:1.2em;padding:0 7px;flex-shrink:0;
+}
+
+/* 表格风格列表 */
+.kv{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,.09);font-size:.86em}
+.kv:last-child{border-bottom:none}
+.kv span{color:var(--sub)}
+.kv b{font-weight:700}
+
+/* 底部 HUD */
+.hud{
+  position:absolute;left:0;right:0;bottom:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 26px;font-size:.78em;color:var(--sub2);
+}
+.hud .hud-left{display:flex;align-items:center;gap:10px}
+.hud .hud-logo{
+  width:24px;height:24px;border-radius:8px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+}
+.hud .hud-logo svg{width:13px;height:13px;color:#fff}
+.hud .hud-page{font-variant-numeric:tabular-nums;font-weight:700;color:var(--sub)}
+.progress{
+  position:absolute;left:0;bottom:0;height:3px;background:var(--grad);z-index:60;
+  transition:width .45s cubic-bezier(.32,.72,.28,1);border-radius:0 3px 3px 0;
+}
+.hud-btns{display:flex;gap:8px}
+.hud-btn{
+  width:32px;height:32px;border-radius:10px;border:1px solid var(--panel-line);background:var(--panel);
+  color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;
+}
+.hud-btn:hover{color:#fff;border-color:rgba(139,92,246,.5)}
+.hud-btn svg{width:15px;height:15px}
+
+/* 封面专属 */
+.cover{align-items:center;justify-content:center;text-align:center}
+.cover .c-logo{
+  width:76px;height:76px;border-radius:24px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;margin-bottom:26px;
+  box-shadow:0 20px 50px rgba(139,92,246,.45);
+}
+.cover .c-logo svg{width:38px;height:38px;color:#fff}
+.cover h1{font-size:3.1em;font-weight:800;letter-spacing:2px;line-height:1.3}
+.cover h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover .c-sub{font-size:1.15em;color:var(--sub);margin-top:14px;letter-spacing:4px}
+.cover .c-meta{display:flex;gap:14px;margin-top:38px}
+.cover .c-meta .tag{font-size:.85em;padding:7px 16px}
+.cover .c-date{margin-top:44px;font-size:.85em;color:var(--sub2);letter-spacing:2px}
+
+/* 结尾页 */
+.end{align-items:center;justify-content:center;text-align:center}
+.end h1{font-size:2.8em;font-weight:800;letter-spacing:2px}
+.end h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.end .e-sub{color:var(--sub);margin-top:14px;font-size:1.05em;letter-spacing:3px}
+.end .e-links{display:flex;gap:16px;margin-top:40px}
+.end .e-link{
+  background:var(--panel);border:1px solid var(--panel-line);border-radius:14px;padding:16px 26px;
+  font-size:.9em;color:var(--text);text-decoration:none;transition:.2s;
+}
+.end .e-link:hover{border-color:rgba(139,92,246,.55);transform:translateY(-3px)}
+.end .e-link span{display:block;font-size:.72em;color:var(--sub2);margin-top:5px}
+
+/* 网格布局工具 */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.flex-1{flex:1}
+.mt{margin-top:16px}
+.center{display:flex;align-items:center;justify-content:center}
+
+/* 字号随视口缩放 */
+.deck{font-size:clamp(11px, 1.15vw, 17px)}
+
+/* 入场动画 */
+.slide.active .anim{animation:rise .6s cubic-bezier(.22,.68,.32,1) both}
+.slide.active .anim.d1{animation-delay:.08s}
+.slide.active .anim.d2{animation-delay:.16s}
+.slide.active .anim.d3{animation-delay:.24s}
+.slide.active .anim.d4{animation-delay:.32s}
+.slide.active .anim.d5{animation-delay:.40s}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* 迷你条形图 */
+.mini-bars{display:flex;align-items:flex-end;gap:8px;height:88px}
+.mini-bars .mb{flex:1;border-radius:6px 6px 3px 3px;background:var(--grad);opacity:.85;position:relative}
+.mini-bars .mb.hot{background:var(--grad-warm);opacity:1}
+.mini-bars .mb span{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:.68em;color:var(--sub)}
+.mini-bars .mb.hot span{color:var(--amber);font-weight:800}
+
+/* 路线高亮框 */
+.route-shot{
+  border-radius:14px;border:1px solid var(--panel-line);overflow:hidden;position:relative;
+  background:linear-gradient(160deg, rgba(139,92,246,.10), rgba(34,211,238,.05));
+  display:flex;align-items:center;justify-content:center;min-height:120px;
+}
+.route-shot .rs-emoji{font-size:2.6em}
+.route-shot .rs-label{
+  position:absolute;left:10px;top:10px;font-size:.68em;font-weight:800;color:#fff;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(6px);padding:3px 10px;border-radius:8px;
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="deck" id="deck">
+    <!-- ========== P1 封面 ========== -->
+    <div class="slide cover">
+      <div class="c-logo anim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M14 9h1M14 13h1M10 21v-4h4v4"/></svg></div>
+      <h1 class="anim d1">寓<em>见</em> · 智慧公寓管理系统</h1>
+      <div class="c-sub anim d2">前端可运行原型 · 演示汇报</div>
+      <div class="c-meta anim d3">
+        <span class="tag t-violet">财务模块深度强化</span>
+        <span class="tag t-cyan">IoT 智能设备联动</span>
+        <span class="tag t-green">双端原型全覆盖</span>
+      </div>
+      <div class="c-date anim d4">2026.04 · 寓见产品团队</div>
+    </div>
+
+    <!-- ========== P2 汇报背景 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">BACKGROUND</div>
+          <div class="s-title anim d1">汇报背景：聚焦客户<em>核心关切</em></div>
+          <div class="s-sub anim d2">基于需求文档全量实现 10 大模块原型，本轮重点回应客户对资金安全与设备管控的关注</div>
+        </div>
+      </div>
+      <div class="grid-3 flex-1">
+        <div class="panel anim d2">
+          <h4><span class="dot" style="background:var(--violet)"></span>客户关注点 ①</h4>
+          <p><b>财务模块</b> —— 租金收缴是否自动化？押金如何全流程管控？欠费与滞纳金如何计算？空置带来的亏损能否量化？</p>
+        </div>
+        <div class="panel anim d3">
+          <h4><span class="dot" style="background:var(--cyan)"></span>客户关注点 ②</h4>
+          <p><b>IoT 模块</b> —— 门锁安全如何保障？异常开锁能否实时告警？设备权限如何跟随租约自动回收？水电能耗有无异常监测？</p>
+        </div>
+        <div class="panel anim d4">
+          <h4><span class="dot" style="background:var(--green)"></span>本轮交付</h4>
+          <p>针对两大关注模块<b>新增 6 大功能区块、5 个交互弹窗</b>，全部可在可运行原型中实际操作体验，非静态效果图。</p>
+        </div>
+      </div>
+      <div class="panel mt anim d5" style="display:flex;gap:26px;align-items:center">
+        <span class="tag t-amber">原型形态</span>
+        <p style="flex:1"><b>房东管理后台</b>（Web 端 10 大模块） + <b>租客微信小程序</b>（看房/签约/缴费/报修/门锁全流程），双端数据场景打通。</p>
+      </div>
+    </div>
+
+    <!-- ========== P3 原型总览 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">OVERVIEW</div>
+          <div class="s-title anim d1">原型总览：<em>10 大模块</em>全业务闭环</div>
+        </div>
+      </div>
+      <div class="grid-4 anim d2">
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px"><div class="big-num" style="font-size:1.5em">📊</div><b style="font-size:.9em">数据看板</b><span style="font-size:.72em;color:var(--sub)">KPI / 营收趋势 / 到期提醒</span></div>
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px"><div class="big-num" style="font-size:1.5em">🏢</div><b style="font-size:.9em">房源管理</b><span style="font-size:.72em;color:var(--sub)">楼栋资产 / 出租率</span></div>
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px"><div class="big-num" style="font-size:1.5em">🛏</div><b style="font-size:.9em">房间管理</b><span style="font-size:.72em;color:var(--sub)">5 种状态 / 空置预警</span></div>
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px"><div class="big-num" style="font-size:1.5em">👥</div><b style="font-size:.9em">租客管理</b><span style="font-size:.72em;color:var(--sub)">标签 / 档案 / 黑名单</span></div>
+      </div>
+      <div class="grid-4 mt anim d3">
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px;border-color:rgba(139,92,246,.45)"><div class="big-num" style="font-size:1.5em">📄</div><b style="font-size:.9em">租约合同</b><span style="font-size:.72em;color:var(--sub)">电子签约 / 续租退租</span></div>
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px;border-color:rgba(139,92,246,.6);box-shadow:0 0 24px rgba(139,92,246,.15)"><div class="big-num" style="font-size:1.5em">💰</div><b style="font-size:.9em">账单财务 ★</b><span style="font-size:.72em;color:var(--amber)">本轮重点强化</span></div>
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px;border-color:rgba(34,211,238,.6);box-shadow:0 0 24px rgba(34,211,238,.12)"><div class="big-num" style="font-size:1.5em">🔐</div><b style="font-size:.9em">IoT 设备 ★</b><span style="font-size:.72em;color:var(--cyan)">本轮重点强化</span></div>
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px"><div class="big-num" style="font-size:1.5em">🔧</div><b style="font-size:.9em">报修工单</b><span style="font-size:.72em;color:var(--sub)">四列看板流转</span></div>
+      </div>
+      <div class="grid-2 mt anim d4">
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px"><div class="big-num" style="font-size:1.5em">🔔</div><b style="font-size:.9em">消息通知</b><span style="font-size:.72em;color:var(--sub)">双向推送 / 催缴 / 告警</span></div>
+        <div class="panel center" style="flex-direction:column;gap:6px;padding:16px"><div class="big-num" style="font-size:1.5em">⚙️</div><b style="font-size:.9em">系统设置</b><span style="font-size:.72em;color:var(--sub)">角色权限 / 参数 / 审计日志</span></div>
+      </div>
+    </div>
+
+    <!-- ========== P4 财务模块总览 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">FINANCE</div>
+          <div class="s-title anim d1">财务模块：全自动计费 · <em>资金全链路管控</em></div>
+          <div class="s-sub anim d2">对照需求文档逐项补全，杜绝手工记账错漏</div>
+        </div>
+      </div>
+      <div class="grid-4 anim d3">
+        <div class="panel"><div class="big-num" style="color:#b79bff">¥48.6<small>万</small></div><p style="margin-top:6px"><b>本月应收</b><br>租金 / 水电 / 物业公摊自动生成</p></div>
+        <div class="panel"><div class="big-num" style="color:var(--green)">92.1<small>%</small></div><p style="margin-top:6px"><b>回款率</b><br>线上自主缴费 + 线下登记双通道</p></div>
+        <div class="panel"><div class="big-num" style="color:var(--red)">¥3.8<small>万</small></div><p style="margin-top:6px"><b>欠费金额</b><br>自动标记 + 一键催缴 + 滞纳金</p></div>
+        <div class="panel"><div class="big-num" style="color:var(--amber)">¥18.6<small>万</small></div><p style="margin-top:6px"><b>在管押金</b><br>52 笔冻结中，退租自动结算</p></div>
+      </div>
+      <div class="grid-2 mt flex-1">
+        <div class="panel anim d4">
+          <h4>✅ 已覆盖的财务需求</h4>
+          <div class="kv"><span>自动账单生成（租金/水电/杂费）</span><span class="tag t-green">批量生成推送</span></div>
+          <div class="kv"><span>水电抄表计费（手动 + 智能表自动）</span><span class="tag t-green">实时算费</span></div>
+          <div class="kv"><span>五类账单区分（租金/水电/物业/赔付/违约金）</span><span class="tag t-green">筛选管理</span></div>
+          <div class="kv"><span>欠费管控 + 滞纳金 0.05%/天 自动计算</span><span class="tag t-green">测算器</span></div>
+          <div class="kv"><span>押金缴纳 / 冻结 / 抵扣 / 退还全流程</span><span class="tag t-amber">本轮新增</span></div>
+          <div class="kv"><span>空置亏损 / 单房间收益统计</span><span class="tag t-amber">本轮新增</span></div>
+          <div class="kv"><span>Excel 账单与缴费流水导出</span><span class="tag t-green">一键导出</span></div>
+        </div>
+        <div class="panel anim d5" style="display:flex;flex-direction:column;gap:12px">
+          <h4>💡 设计亮点</h4>
+          <p><b>① 账单即工作台</b> —— 逾期账单一键催缴（短信 + 小程序推送），待缴账单可登记线下收款并录入凭证号，线上线下资金流统一对账。</p>
+          <p><b>② 押金不糊涂</b> —— 每一笔押金从缴纳冻结到退租抵扣都有流水号可溯源，退租结算自动提示「抵扣 ¥480 后退还 ¥3,500」。</p>
+          <p><b>③ 亏损可视化</b> —— 空置不再只是数字，系统自动折算为「本月空置亏损 ¥27,405」，倒逼出租决策。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== P5 押金管理 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">FINANCE · DEPOSIT</div>
+          <div class="s-title anim d1">新增① 押金管理：<em>缴纳 → 冻结 → 抵扣 → 退还</em>全流水</div>
+        </div>
+      </div>
+      <div class="grid-4 anim d2">
+        <div class="panel"><div style="font-size:.78em;color:var(--sub)">在管押金总额</div><div class="big-num" style="color:#b79bff">¥186,400</div><div style="font-size:.72em;color:var(--sub2);margin-top:4px">52 笔生效中</div></div>
+        <div class="panel"><div style="font-size:.78em;color:var(--sub)">本月已退还</div><div class="big-num" style="color:var(--green)">¥7,360</div><div style="font-size:.72em;color:var(--sub2);margin-top:4px">2 笔 · 核验无损全额退</div></div>
+        <div class="panel"><div style="font-size:.78em;color:var(--sub)">待结算（退租中）</div><div class="big-num" style="color:var(--amber)">¥3,980</div><div style="font-size:.72em;color:var(--sub2);margin-top:4px">资产核验进行中</div></div>
+        <div class="panel"><div style="font-size:.78em;color:var(--sub)">累计抵扣金额</div><div class="big-num" style="color:var(--red)">¥2,140</div><div style="font-size:.72em;color:var(--sub2);margin-top:4px">维修赔付 / 欠费抵扣</div></div>
+      </div>
+      <div class="panel mt flex-1 anim d3">
+        <h4>押金流水示例（原型内真实可交互表格）</h4>
+        <div class="kv"><span><b>YJ-2026-0412</b> · 林晓彤 A-1201</span><span class="tag t-violet">缴纳冻结 ¥3,680</span></div>
+        <div class="kv"><span><b>YJ-2026-0371</b> · 李慕白 B-0303</span><span class="tag t-amber">退租抵扣 -¥480 → 结算退还 ¥3,500</span></div>
+        <div class="kv"><span><b>YJ-2026-0366</b> · 王梓萱 B-0208</span><span class="tag t-green">核验无损 · 全额退还 ¥3,680</span></div>
+        <p class="mt"><b>客户价值：</b>押金纠纷是租赁行业投诉重灾区。系统为每笔押金建立独立流水与状态机（冻结中 / 部分抵扣 / 已退还），退租结算时自动核算抵扣明细，<b>双方有据可查，从源头避免押金争议</b>。</p>
+      </div>
+    </div>
+
+    <!-- ========== P6 财务统计 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">FINANCE · ANALYTICS</div>
+          <div class="s-title anim d1">新增② 财务统计：<em>收益排行 · 空置亏损 · 滞纳金测算</em></div>
+        </div>
+      </div>
+      <div class="grid-3 flex-1">
+        <div class="panel anim d2">
+          <h4>🏆 单房间收益排行</h4>
+          <div class="kv"><span>C-0201 整租套间</span><b style="color:#b79bff">¥24,600</b></div>
+          <div class="kv"><span>A-0903 整租套间</span><b>¥23,400</b></div>
+          <div class="kv"><span>B-0501 一室一厅</span><b>¥15,600</b></div>
+          <div class="kv"><span>A-1202 双床合租</span><b>¥12,840</b></div>
+          <div class="kv"><span>A-1201 大床房</span><b>¥11,040</b></div>
+          <p class="mt">近 3 个月实收口径，<b>帮客户识别高产房型，指导定价与改造投入</b>。</p>
+        </div>
+        <div class="panel anim d3">
+          <h4>📉 空置亏损估算</h4>
+          <div class="kv"><span>空置房间</span><b>11 间</b></div>
+          <div class="kv"><span>平均日租金</span><b>¥142 / 天</b></div>
+          <div class="kv"><span>平均空置天数</span><b>17.5 天</b></div>
+          <div style="margin-top:14px;padding:14px;border-radius:12px;background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.25);text-align:center">
+            <div style="font-size:.78em;color:var(--sub)">本月空置亏损</div>
+            <div class="big-num" style="color:var(--red)">¥27,405</div>
+          </div>
+          <p class="mt">把空置率<b>折算成真金白银的损失</b>，联动空置预警驱动快速出租。</p>
+        </div>
+        <div class="panel anim d4">
+          <h4>⏱ 滞纳金测算器</h4>
+          <div class="kv"><span>欠费金额</span><b>¥3,280</b></div>
+          <div class="kv"><span>逾期天数</span><b>12 天</b></div>
+          <div class="kv"><span>计算规则</span><b>0.05% / 天</b></div>
+          <div style="margin-top:14px;padding:14px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);text-align:center">
+            <div style="font-size:.78em;color:var(--sub)">自动计算滞纳金</div>
+            <div class="big-num" style="color:var(--amber)">¥19.68</div>
+          </div>
+          <p class="mt">参数在系统设置中统一配置，<b>逾期账单自动挂账并随天数滚动</b>，催缴有据。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== P7 IoT 总览 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">IOT</div>
+          <div class="s-title anim d1">IoT 模块：<em>无人化公寓</em>的设备管控中枢</div>
+          <div class="s-sub anim d2">143 台设备统一接入，权限严格绑定租约生命周期</div>
+        </div>
+      </div>
+      <div class="grid-4 anim d3">
+        <div class="panel"><div class="big-num" style="color:#67e3f7">143<small>台</small></div><p style="margin-top:6px"><b>设备总数</b><br>门锁 62 / 电表 48 / 水表 26 / 门禁 7</p></div>
+        <div class="panel"><div class="big-num" style="color:var(--green)">97.2<small>%</small></div><p style="margin-top:6px"><b>在线率</b><br>离线自动告警并创建运维工单</p></div>
+        <div class="panel"><div class="big-num" style="color:var(--red)">4<small>台</small></div><p style="margin-top:6px"><b>离线 / 故障</b><br>实时推送房东，全程可溯源</p></div>
+        <div class="panel"><div class="big-num" style="color:var(--amber)">2<small>台</small></div><p style="margin-top:6px"><b>低电量提醒</b><br>电量低于 20% 自动预警</p></div>
+      </div>
+      <div class="grid-2 mt flex-1">
+        <div class="panel anim d4">
+          <h4>✅ 已覆盖的 IoT 需求</h4>
+          <div class="kv"><span>门锁 / 电表 / 水表 / 燃气表 / 门禁统一管理</span><span class="tag t-green">卡片式监控</span></div>
+          <div class="kv"><span>临时密码 / 远程开锁 / 租客权限开关</span><span class="tag t-green">一键操作</span></div>
+          <div class="kv"><span>智能表自动采集 → 同步账单计费</span><span class="tag t-green">抄表零人工</span></div>
+          <div class="kv"><span>开锁记录查询 + 异常开锁告警</span><span class="tag t-amber">本轮新增</span></div>
+          <div class="kv"><span>设备绑定向导 + 租约到期自动解绑</span><span class="tag t-amber">本轮新增</span></div>
+          <div class="kv"><span>能耗分析 + 异常用电检测</span><span class="tag t-amber">本轮新增</span></div>
+          <div class="kv"><span>设备操作日志全程溯源</span><span class="tag t-green">审计留痕</span></div>
+        </div>
+        <div class="panel anim d5" style="display:flex;flex-direction:column;gap:12px">
+          <h4>🔗 核心机制：权限跟随租约</h4>
+          <div class="flow" style="flex-direction:column;gap:10px">
+            <div class="flow-step" style="text-align:left;display:flex;gap:12px;align-items:center"><div class="fs-no" style="margin:0">1</div><div><b>租约生效</b><span>自动开通租客门锁/门禁权限，生成入住密码</span></div></div>
+            <div class="flow-step" style="text-align:left;display:flex;gap:12px;align-items:center"><div class="fs-no" style="margin:0">2</div><div><b>租约存续</b><span>临时密码按需生成、到期自动失效，开锁全程留痕</span></div></div>
+            <div class="flow-step" style="text-align:left;display:flex;gap:12px;align-items:center"><div class="fs-no" style="margin:0">3</div><div><b>租约到期 / 退租</b><span>权限自动回收解绑，历史密码全部失效，杜绝「人走权留」</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== P8 开锁记录与告警 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">IOT · SECURITY</div>
+          <div class="s-title anim d1">新增③ 开锁记录查询 + <em>异常开锁告警</em></div>
+        </div>
+      </div>
+      <div class="grid-2 flex-1">
+        <div class="panel anim d2">
+          <h4>🔓 开锁记录（分类筛选 · 全程留痕）</h4>
+          <div class="kv"><span>04-02 14:22 · A-1201</span><span class="tag t-green">指纹开锁 · 正常</span></div>
+          <div class="kv"><span>04-02 11:40 · A-0903</span><span class="tag t-cyan">临时密码（看房）</span></div>
+          <div class="kv"><span>04-02 03:17 · B-0303</span><span class="tag t-red">密码尝试 ×5 失败</span></div>
+          <div class="kv"><span>04-01 20:05 · A-1005</span><span class="tag t-violet">远程开锁（房东）</span></div>
+          <div class="kv"><span>04-01 18:30 · A-1201</span><span class="tag t-cyan">临时密码（保洁）</span></div>
+          <p class="mt">支持按 <b>指纹 / 临时密码 / 远程开锁 / 异常告警</b> 四类筛选，记录可导出存档。</p>
+        </div>
+        <div class="panel anim d3" style="border-color:rgba(251,113,133,.4);display:flex;flex-direction:column">
+          <h4 style="color:#fda4af">🚨 异常告警实战场景（原型演示）</h4>
+          <div style="flex:1;background:rgba(251,113,133,.06);border:1px solid rgba(251,113,133,.25);border-radius:12px;padding:18px;font-size:.88em;line-height:2;color:var(--sub)">
+            <b style="color:var(--text)">凌晨 03:17</b>，已退租空置房 <b style="color:var(--text)">B-0303</b> 门锁连续 <b style="color:var(--red)">5 次密码尝试失败</b>。<br>
+            系统判定为异常开锁 → <b style="color:var(--text)">实时推送房东</b> → 自动生成安防工单。<br>
+            同时校验：该房间租约已到期，<b style="color:var(--green)">设备权限已自动回收</b>，历史临时密码全部失效。
+          </div>
+          <p class="mt"><b>客户价值：</b>空置房安全是房东最担心的盲区。异常开锁秒级告警 + 权限自动回收，<b>让「人走权留」的安全隐患归零</b>。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== P9 绑定向导与能耗 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">IOT · BINDING & ENERGY</div>
+          <div class="s-title anim d1">新增④ 设备绑定向导 · 新增⑤ <em>能耗分析</em></div>
+        </div>
+      </div>
+      <div class="grid-2 flex-1">
+        <div class="panel anim d2">
+          <h4>🧩 设备绑定向导（三步完成）</h4>
+          <div class="flow" style="margin:12px 0">
+            <div class="flow-step"><div class="fs-no">1</div><b>选择设备</b><span>类型 + SN 扫码录入</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fs-no">2</div><b>绑定房间</b><span>一对一 / 一对多合租</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><div class="fs-no">3</div><b>关联租约</b><span>权限跟随租约生命周期</span></div>
+          </div>
+          <div class="kv"><span>绑定模式</span><b>房间独占 / 合租共享</b></div>
+          <div class="kv"><span>租约联动</span><b style="color:var(--amber)">到期自动解绑回收权限</b></div>
+          <div class="kv"><span>临时密码</span><b>随权限同步失效</b></div>
+          <p class="mt"><b>客户价值：</b>新员工 3 步完成设备上线，<b>权限规则由系统强制保障</b>，不依赖人工记忆。</p>
+        </div>
+        <div class="panel anim d3">
+          <h4>⚡ 能耗分析 · A-1005（近 6 个月用电）</h4>
+          <div class="mini-bars mt">
+            <div class="mb" style="height:78%"><span>112</span></div>
+            <div class="mb" style="height:88%"><span>126</span></div>
+            <div class="mb" style="height:100%"><span>143</span></div>
+            <div class="mb" style="height:82%"><span>118</span></div>
+            <div class="mb hot" style="height:91%"><span>130⚠</span></div>
+            <div class="mb" style="height:96%"><span>138</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.68em;color:var(--sub2);margin-top:6px"><span>11月</span><span>12月</span><span>1月</span><span>2月</span><span>3月</span><span>4月</span></div>
+          <div style="margin-top:14px;padding:13px 15px;border-radius:12px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);font-size:.84em;line-height:1.8;color:var(--sub)">
+            <b style="color:var(--amber)">💡 异常检测：</b>03-28 凌晨用电较均值高出 <b style="color:var(--amber)">210%</b>，疑似大功率电器彻夜运行或线路漏电，已提示安排巡检。
+          </div>
+          <p class="mt"><b>客户价值：</b>智能表数据不止用于计费，更能<b>发现偷漏电与安全隐患</b>，对应需求文档增值功能「能耗分析」。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== P10 演示动线 上 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">DEMO ROUTE</div>
+          <div class="s-title anim d1">现场演示动线：<em>资金安全</em>篇（账单 → 押金）</div>
+          <div class="s-sub anim d2">建议演示时长 4 分钟，全部操作均在可运行原型内完成</div>
+        </div>
+      </div>
+      <div class="grid-2 flex-1">
+        <div class="panel anim d3" style="display:flex;flex-direction:column;gap:12px">
+          <div class="route-shot" style="flex:1"><span class="rs-label">STEP 1 · 账单缴费页</span><div class="rs-emoji">💰</div></div>
+          <h4>① 进入「账单缴费」</h4>
+          <p>展示应收 / 已收 / 欠费三大 KPI → 滚动查看账单列表 → 点击页面底部 <b>「押金管理」流水表</b>，演示冻结 / 抵扣 / 退还三种状态与结算按钮。</p>
+        </div>
+        <div class="panel anim d4" style="display:flex;flex-direction:column;gap:12px">
+          <div class="route-shot" style="flex:1"><span class="rs-label">STEP 2 · 线下缴费登记</span><div class="rs-emoji">🧾</div></div>
+          <h4>② 点击逾期账单「登记缴费」</h4>
+          <p>弹出线下缴费登记窗：选择收款方式（现金 / 转账）、录入实收金额与凭证号 → 确认后账单状态流转为已缴费，<b>线上线下资金统一对账</b>。</p>
+        </div>
+      </div>
+      <div class="panel mt anim d5" style="display:flex;align-items:center;gap:14px">
+        <span class="tag t-violet">讲解要点</span>
+        <p style="flex:1">全程强调「<b>系统自动生成、全程留痕、零手工干预</b>」—— 账单由租约驱动生成，滞纳金自动计算，押金每笔可溯源，直击客户「怕错漏、怕纠纷」的核心痛点。</p>
+      </div>
+    </div>
+
+    <!-- ========== P11 演示动线 下 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">DEMO ROUTE</div>
+          <div class="s-title anim d1">现场演示动线：<em>设备管控</em>篇（IoT → 能耗）</div>
+          <div class="s-sub anim d2">建议演示时长 4 分钟，与资金篇形成「钱 + 设备」双闭环</div>
+        </div>
+      </div>
+      <div class="grid-2 flex-1">
+        <div class="panel anim d3" style="display:flex;flex-direction:column;gap:12px">
+          <div class="route-shot" style="flex:1"><span class="rs-label">STEP 3 · 开锁记录查询</span><div class="rs-emoji">🔐</div></div>
+          <h4>③ 切换「IoT 设备」→ 开锁记录查询</h4>
+          <p>展示指纹 / 临时密码 / 远程开锁分类记录 → 重点点开 <b style="color:var(--red)">B-0303 凌晨异常告警</b>：5 次密码尝试失败实时推送 + 租约到期权限已自动回收的安全闭环。</p>
+        </div>
+        <div class="panel anim d4" style="display:flex;flex-direction:column;gap:12px">
+          <div class="route-shot" style="flex:1"><span class="rs-label">STEP 4 · 能耗分析</span><div class="rs-emoji">⚡</div></div>
+          <h4>④ 点击电表卡片「能耗分析」</h4>
+          <p>展示近 6 个月用电趋势柱状图 → 指出 <b style="color:var(--amber)">3 月异常突增 210%</b> 的智能检测结果 → 说明数据自动同步账单计费，<b>抄表零人工、异常零遗漏</b>。</p>
+        </div>
+      </div>
+      <div class="panel mt anim d5" style="display:flex;align-items:center;gap:14px">
+        <span class="tag t-cyan">收尾话术</span>
+        <p style="flex:1">「设备权限跟着租约走，租约到期权限自动回收；能耗数据既算钱又防漏 —— <b>这就是无人化公寓该有的样子</b>。」</p>
+      </div>
+    </div>
+
+    <!-- ========== P12 客户价值 ========== -->
+    <div class="slide">
+      <div class="s-head">
+        <div>
+          <div class="s-kicker anim">VALUE</div>
+          <div class="s-title anim d1">客户价值总结：<em>降本 · 增收 · 控险</em></div>
+        </div>
+      </div>
+      <div class="grid-3 flex-1">
+        <div class="panel anim d2" style="border-top:3px solid var(--green)">
+          <h4 style="color:#6ee7b7">📉 降本</h4>
+          <div class="kv"><span>抄表人力</span><b>智能表自动采集，0 人工</b></div>
+          <div class="kv"><span>对账时间</span><b>账单自动生成导出</b></div>
+          <div class="kv"><span>催缴成本</span><b>系统自动提醒推送</b></div>
+          <p class="mt">告别 Excel 手工记账，<b>单人可管理 500+ 房间</b>。</p>
+        </div>
+        <div class="panel anim d3" style="border-top:3px solid var(--violet)">
+          <h4 style="color:#b79bff">📈 增收</h4>
+          <div class="kv"><span>空置亏损</span><b>量化可见，驱动快租</b></div>
+          <div class="kv"><span>收益排行</span><b>指导定价与改造</b></div>
+          <div class="kv"><span>回款率</span><b>92.1% 且持续提升</b></div>
+          <p class="mt">每一间空置房都被折算成损失，<b>倒逼出租率提升</b>。</p>
+        </div>
+        <div class="panel anim d4" style="border-top:3px solid var(--cyan)">
+          <h4 style="color:#67e3f7">🛡 控险</h4>
+          <div class="kv"><span>押金纠纷</span><b>全流水溯源，有据可查</b></div>
+          <div class="kv"><span>空置房安全</span><b>异常开锁秒级告警</b></div>
+          <div class="kv"><span>权限泄漏</span><b>租约到期自动回收</b></div>
+          <p class="mt">资金、资产、安全三条风险线，<b>全部由系统规则兜底</b>。</p>
+        </div>
+      </div>
+      <div class="panel mt anim d5" style="display:flex;gap:22px;align-items:center">
+        <span class="tag t-green">下一步</span>
+        <p style="flex:1">原型验证通过后，可进入详细设计与开发排期；<b>增值功能</b>（短租日租计费、在线预约看房、发票报税报表、租客评价体系）已预留扩展接口，支持分期迭代。</p>
+      </div>
+    </div>
+
+    <!-- ========== P13 结尾 ========== -->
+    <div class="slide end">
+      <div class="c-logo anim" style="width:64px;height:64px;border-radius:20px;background:var(--grad);display:flex;align-items:center;justify-content:center;margin-bottom:22px;box-shadow:0 16px 40px rgba(139,92,246,.45)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M14 9h1M14 13h1M10 21v-4h4v4"/></svg>
+      </div>
+      <h1 class="anim d1">感谢观看 · <em>欢迎体验原型</em></h1>
+      <div class="e-sub anim d2">寓见 · 让公寓管理更简单</div>
+      <div class="e-links anim d3">
+        <a class="e-link" href="./index.html" target="_blank">🖥 房东管理后台<span>账单财务 / IoT 设备 重点体验</span></a>
+        <a class="e-link" href="./mp-prototype.html" target="_blank">📱 租客小程序原型<span>在线签约 / 缴费 / 智能门锁</span></a>
+      </div>
+      <div class="c-date anim d4" style="margin-top:40px;font-size:.85em;color:var(--sub2);letter-spacing:2px">操作提示：← → 方向键翻页 · F 键全屏</div>
+    </div>
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-left">
+        <div class="hud-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M10 21v-4h4v4"/></svg></div>
+        <span>寓见 · 智慧公寓管理系统 原型汇报</span>
+      </div>
+      <div class="hud-btns">
+        <div class="hud-btn" onclick="go(cur-1)" title="上一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></div>
+        <div class="hud-btn" onclick="go(cur+1)" title="下一页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        <div class="hud-btn" onclick="toggleFull()" title="全屏"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></div>
+      </div>
+      <div class="hud-page"><span id="pageNow">01</span> / <span id="pageAll">13</span></div>
+    </div>
+    <div class="progress" id="progress" style="width:7.7%"></div>
+  </div>
+</div>
+<script>
+/* ============================================================
+   翻页控制
+============================================================ */
+const slides = () => document.querySelectorAll('.slide');
+let cur = 0;
+function go(n){
+  const list = slides();
+  if(n < 0 || n >= list.length) return;
+  list.forEach((s,i)=>{
+    s.classList.remove('active','prev');
+    if(i < n) s.classList.add('prev');
+  });
+  list[n].classList.add('active');
+  cur = n;
+  document.getElementById('pageNow').textContent = String(n+1).padStart(2,'0');
+  document.getElementById('progress').style.width = ((n+1)/list.length*100) + '%';
+}
+function toggleFull(){
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+document.addEventListener('keydown', e=>{
+  if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); go(cur+1); }
+  if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); go(cur-1); }
+  if(e.key==='Home') go(0);
+  if(e.key==='End') go(slides().length-1);
+  if(e.key==='f' || e.key==='F') toggleFull();
+});
+/* 触摸滑动 */
+let touchX = 0;
+document.addEventListener('touchstart', e=>touchX = e.touches[0].clientX);
+document.addEventListener('touchend', e=>{
+  const dx = e.changedTouches[0].clientX - touchX;
+  if(Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1));
+});
+document.getElementById('pageAll').textContent = String(slides().length).padStart(2,'0');
+go(0);
+</script>
+</body>
+</html>

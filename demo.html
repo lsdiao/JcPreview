@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>臻瓷汇 · 瓷砖会员制小程序 Demo</title>
+<style>
+:root{
+  --bg:#0c0c11; --card:#16161d; --card2:#1c1c25;
+  --line:rgba(235,225,205,.10);
+  --ink:#efe9dc; --sub:#8f8a80; --dim:#5f5b54;
+  --gold:#c9a26b; --gold-2:#e7d2a4;
+  --gold-grad:linear-gradient(135deg,#ecd9ac 0%,#c9a26b 55%,#a97f4c 100%);
+  --red:#e0684f;
+  --serif:"Songti SC","STSong","Noto Serif SC","SimSun",serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  background:radial-gradient(1200px 700px at 30% 20%,#17171f 0%,#0a0a0e 60%);
+  min-height:100vh;display:flex;flex-direction:column;gap:26px;align-items:center;justify-content:center;padding:24px 16px;color:var(--ink)}
+
+/* ---------- 顶部切换 ---------- */
+.topbar{display:flex;align-items:center;gap:26px}
+.tb-brand{font-family:var(--serif);font-size:15px;letter-spacing:3px;color:var(--gold-2)}
+.tb-brand span{font-size:9px;letter-spacing:3px;color:var(--dim);margin-left:10px}
+
+
+#memberView{display:flex;gap:48px;align-items:center;justify-content:center;flex-wrap:wrap}
+
+/* ---------- 演示控制台 ---------- */
+.console{width:308px;background:#12121a;border:1px solid var(--line);border-radius:18px;padding:26px}
+.console .kicker{font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:8px}
+.console h1{font-family:var(--serif);font-size:20px;font-weight:700;margin-bottom:6px}
+.console .desc{font-size:12.5px;color:var(--sub);line-height:1.8;margin-bottom:16px}
+.console .step{font-size:12.5px;color:#a39e93;line-height:1.9;margin-bottom:16px;padding-left:14px;border-left:1px solid rgba(201,162,107,.45)}
+.console .step b{color:var(--gold-2)}
+.code-row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.code-row .code{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;color:var(--gold-2);
+  background:#0d0d13;border:1px dashed rgba(201,162,107,.4);border-radius:8px;padding:9px 11px;letter-spacing:2px}
+.code-row .lv{font-size:10.5px;color:#0d0c08;border-radius:4px;padding:3px 8px;white-space:nowrap;font-weight:700;background:var(--gold-grad)}
+.code-row .lv.l1{background:linear-gradient(135deg,#c7cfdd,#8d99ad);color:#141820}
+.code-row .lv.l3{background:linear-gradient(135deg,#565670,#2b2b3a);color:#d8d4e8}
+.copy-btn{border:1px solid var(--line);background:none;border-radius:8px;font-size:12px;padding:8px 10px;cursor:pointer;color:var(--sub)}
+.copy-btn:hover{color:var(--gold-2);border-color:rgba(201,162,107,.4)}
+.console .who{margin-top:16px;font-size:12.5px;color:var(--sub);display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:16px}
+.console .who b{font-family:var(--serif);color:var(--gold-2);font-size:14px}
+.reset-btn{margin-top:14px;width:100%;border:1px solid rgba(224,104,79,.35);background:none;color:#d98a77;border-radius:10px;padding:11px;font-size:13px;cursor:pointer;letter-spacing:1px}
+.reset-btn:hover{background:rgba(224,104,79,.08)}
+
+/* ---------- 手机壳 ---------- */
+.phone{width:392px;height:850px;background:#000;border-radius:56px;padding:11px;
+  box-shadow:0 40px 100px rgba(0,0,0,.6),inset 0 0 0 2px #26262e,0 0 0 1px #000;flex-shrink:0}
+.screen{width:100%;height:100%;background:var(--bg);border-radius:46px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.statusbar{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-size:14px;font-weight:600;color:var(--ink);z-index:20;flex-shrink:0}
+.statusbar .icons{display:flex;gap:6px;align-items:center}
+.navbar{height:46px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;z-index:20}
+.navbar .title{font-family:var(--serif);font-size:16.5px;font-weight:700;letter-spacing:2px}
+.navbar .back{position:absolute;left:14px;width:28px;height:28px;display:none;align-items:center;justify-content:center;cursor:pointer;color:var(--gold-2)}
+.capsule{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.05);overflow:hidden;color:var(--ink)}
+.capsule span{width:38px;height:26px;display:flex;align-items:center;justify-content:center}
+.capsule span+span{border-left:1px solid rgba(255,255,255,.1)}
+
+.pages{flex:1;position:relative;overflow:hidden}
+.page{position:absolute;inset:0;overflow-y:auto;background:var(--bg);display:none;scrollbar-width:none}
+.page::-webkit-scrollbar{display:none}
+.page.active{display:block;animation:fadein .25s ease}
+@keyframes fadein{from{opacity:.3}to{opacity:1}}
+.page.pushed{z-index:15}
+
+/* ---------- 底部 Tab ---------- */
+.tabbar{height:80px;background:#101016;border-top:1px solid var(--line);display:flex;padding-bottom:20px;flex-shrink:0;z-index:20}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;color:#6b6760;cursor:pointer;letter-spacing:1px;transition:color .2s}
+.tab.on{color:var(--gold-2)}
+.tab .bar{width:14px;height:2px;border-radius:1px;background:transparent;margin-bottom:1px;transition:background .2s}
+.tab.on .bar{background:var(--gold-grad)}
+.tab svg{width:23px;height:23px}
+
+/* ---------- 首页视频流 ---------- */
+.home-head{padding:10px 18px 16px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--serif);font-size:21px;font-weight:700;letter-spacing:4px}
+.brand-en{font-size:9.5px;letter-spacing:4px;color:var(--gold);margin-top:4px}
+.video-list{padding:16px 16px 24px;display:flex;flex-direction:column;gap:18px}
+.vcard{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .15s}
+.vcard:active{transform:scale(.985)}
+.vcard .thumb{position:relative;aspect-ratio:16/9;background:#000}
+.vcard .thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92}
+.vcard .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.55))}
+.vcard .thumb .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2}
+.vcard .thumb .play i{width:54px;height:54px;border-radius:50%;background:rgba(10,10,14,.4);border:1px solid rgba(231,210,164,.65);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center}
+.vcard .thumb .dur{position:absolute;right:12px;bottom:12px;z-index:2;font-size:10.5px;color:var(--gold-2);border:1px solid rgba(231,210,164,.4);background:rgba(0,0,0,.5);padding:2px 8px;border-radius:4px;font-family:ui-monospace,Menlo,monospace}
+.vcard .thumb .pin-tag{position:absolute;left:12px;top:12px;z-index:2;font-size:10px;color:#1d1608;background:var(--gold-grad);padding:3px 9px;border-radius:4px;font-weight:800;letter-spacing:1px}
+.vcard .vinfo{padding:13px 15px 15px}
+.vcard .vtitle{font-size:14.5px;font-weight:600;line-height:1.5}
+.vcard .vsrc{margin-top:6px;font-size:11px;color:var(--sub);display:flex;align-items:center;gap:6px;letter-spacing:.5px}
+.vcard .vsrc .dot{width:3px;height:3px;border-radius:50%;background:var(--dim)}
+
+/* ---------- 锁定页 ---------- */
+.locked{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 42px;text-align:center}
+.locked .lock-ic{width:66px;height:66px;border-radius:50%;border:1px solid rgba(201,162,107,.4);display:flex;align-items:center;justify-content:center;margin-bottom:20px;color:var(--gold)}
+.locked h3{font-family:var(--serif);font-size:17px;letter-spacing:2px;margin-bottom:10px}
+.locked p{font-size:12.5px;color:var(--sub);line-height:2;margin-bottom:26px}
+.btn-primary{background:var(--gold-grad);color:#231a0c;border:none;border-radius:24px;padding:12px 36px;font-size:14px;font-weight:800;letter-spacing:2px;cursor:pointer;box-shadow:0 6px 18px rgba(201,162,107,.22)}
+.btn-primary:active{filter:brightness(.92)}
+
+/* ---------- 产品库 ---------- */
+.bstrip{padding:16px 16px 4px}
+.bs-head{font-family:var(--serif);font-size:14px;font-weight:700;letter-spacing:2px;margin-bottom:12px;display:flex;align-items:baseline;gap:8px}
+.bs-head span{font-size:10px;color:var(--dim);font-weight:400;letter-spacing:1px}
+.bs-row{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:6px}
+.bs-row::-webkit-scrollbar{display:none}
+.bs-item{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;width:62px}
+.bs-logo{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#2b2416,#16130d);border:1px solid rgba(201,162,107,.45);
+  display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:19px;font-weight:800;color:var(--gold-2)}
+.bs-item span{font-size:10px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62px}
+.search-wrap{padding:10px 16px;position:sticky;top:0;z-index:5;background:var(--bg)}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:9px 15px}
+.search-box input{border:none;background:none;outline:none;font-size:13px;flex:1;color:var(--ink)}
+.search-box input::placeholder{color:var(--dim)}
+.cats{display:flex;gap:8px;padding:2px 16px 6px;overflow-x:auto;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex-shrink:0;font-size:12px;padding:6px 15px;border-radius:15px;background:var(--card);border:1px solid var(--line);color:var(--sub);cursor:pointer;letter-spacing:1px}
+.cat.on{background:rgba(201,162,107,.14);border-color:rgba(201,162,107,.5);color:var(--gold-2);font-weight:600}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 16px 24px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}
+.pcard .pimg{position:relative}
+.pcard .pimg img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#222}
+.pcard .pbrand{position:absolute;left:8px;top:8px;font-size:9.5px;color:var(--gold-2);border:1px solid rgba(231,210,164,.5);background:rgba(0,0,0,.55);padding:2px 7px;border-radius:4px;letter-spacing:1px}
+.pcard .pbody{padding:10px 12px 13px}
+.pcard .pname{font-size:13px;font-weight:600;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard .pno{font-size:10px;color:var(--dim);margin-top:4px;font-family:ui-monospace,Menlo,monospace;letter-spacing:1px}
+.pcard .pprice{margin-top:7px;color:var(--gold-2);font-size:16px;font-weight:700;font-family:var(--serif)}
+.pcard .pprice small{font-size:10px;color:var(--sub);font-weight:400;margin-left:4px;font-family:inherit}
+.empty-tip{text-align:center;color:var(--dim);font-size:12.5px;padding:50px 0;grid-column:1/-1;letter-spacing:2px}
+
+/* ---------- 产品详情 ---------- */
+.detail-hero{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#222}
+.detail-body{padding:20px 18px}
+.detail-body h2{font-family:var(--serif);font-size:20px;line-height:1.45;letter-spacing:1px}
+.detail-meta{display:flex;gap:8px;align-items:center;margin:9px 0 16px;font-size:11px;color:var(--dim);font-family:ui-monospace,Menlo,monospace;letter-spacing:1px;flex-wrap:wrap}
+.detail-meta .db{color:var(--gold);border:1px solid rgba(201,162,107,.4);border-radius:4px;padding:1px 7px;font-family:var(--serif);font-weight:700}
+.price-box{background:linear-gradient(135deg,rgba(201,162,107,.12),rgba(201,162,107,.03));border:1px solid rgba(201,162,107,.35);border-radius:14px;padding:16px 18px;display:flex;align-items:baseline;justify-content:space-between}
+.price-box .pv{font-size:30px;font-weight:800;color:var(--gold-2);font-family:var(--serif)}
+.price-box .pv::before{content:"¥";font-size:16px;margin-right:3px}
+.price-box .pv i{font-size:12px;font-style:normal;font-weight:400;color:var(--sub);margin-left:2px}
+.price-box .pl{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px}
+.detail-desc{margin-top:18px;font-size:13px;color:#a39e93;line-height:2}
+.detail-desc b{display:block;color:var(--ink);margin-bottom:8px;font-size:13px;letter-spacing:2px}
+.detail-note{margin-top:14px;font-size:11px;color:var(--dim);line-height:1.8;border-top:1px solid var(--line);padding-top:12px}
+
+/* ---------- 查价 ---------- */
+.query-wrap{padding:20px 16px}
+.qkicker{font-size:10px;letter-spacing:3px;color:var(--gold);margin:2px 0 10px}
+.query-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 16px}
+.query-card label{font-family:var(--serif);font-size:14.5px;font-weight:700;display:block;margin-bottom:12px;letter-spacing:1px}
+.query-line{display:flex;gap:9px}
+.query-line input{flex:1;border:1px solid rgba(235,225,205,.18);background:#101016;border-radius:10px;padding:12px 14px;font-size:15px;outline:none;color:var(--gold-2);font-family:ui-monospace,Menlo,monospace;letter-spacing:2px;text-transform:uppercase;min-width:0}
+.query-line input:focus{border-color:var(--gold)}
+.query-line input::placeholder{color:var(--dim)}
+.query-line button{border:none;background:var(--gold-grad);color:#231a0c;border-radius:10px;padding:0 24px;font-size:14px;font-weight:800;letter-spacing:2px;cursor:pointer}
+.query-hint{margin-top:11px;font-size:11px;color:var(--dim);line-height:1.7}
+.qresult{margin-top:16px;background:var(--card);border:1px solid rgba(201,162,107,.35);border-radius:16px;overflow:hidden;display:none}
+.qresult.show{display:block;animation:rise .3s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.qresult img{width:100%;aspect-ratio:16/8;object-fit:cover;display:block}
+.qresult .qb{padding:16px 18px 18px}
+.qresult .qn{font-family:var(--serif);font-size:17px;font-weight:700}
+.qresult .qno{font-size:11px;color:var(--dim);font-family:ui-monospace,Menlo,monospace;margin-top:4px;letter-spacing:1.5px}
+.qresult .qp{margin-top:14px;display:flex;align-items:baseline;justify-content:space-between;border-top:1px dashed rgba(235,225,205,.16);padding-top:14px}
+.qresult .qp .v{font-size:27px;font-weight:800;color:var(--gold-2);font-family:var(--serif)}
+.qresult .qp .v::before{content:"¥";font-size:15px;margin-right:3px}
+.qresult .qp .v i{font-size:12px;font-style:normal;font-weight:400;color:var(--sub)}
+.qresult .qp .t{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px}
+.qerr{margin-top:16px;background:var(--card);border:1px solid rgba(224,104,79,.3);border-radius:16px;padding:26px 16px;text-align:center;display:none}
+.qerr.show{display:block;animation:rise .3s ease}
+.qerr .ic{width:46px;height:46px;border-radius:50%;border:1px solid rgba(224,104,79,.4);color:var(--red);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
+.qerr p{font-size:14px;color:#e08a77;font-weight:600;letter-spacing:1px}
+.qerr span{display:block;font-size:11.5px;color:var(--dim);margin-top:6px}
+
+/* ---------- 投票 ---------- */
+.vote-list{padding:16px;display:flex;flex-direction:column;gap:14px}
+.vote-card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer}
+.vote-card img{width:100%;aspect-ratio:16/8;object-fit:cover;display:block;opacity:.92}
+.vote-card .vb{padding:14px 16px 16px}
+.vote-card .vt{font-family:var(--serif);font-size:15.5px;font-weight:700;line-height:1.5;letter-spacing:.5px}
+.vote-card .vm{margin-top:9px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--sub);letter-spacing:.5px}
+.badge{font-size:10px;padding:2.5px 9px;border-radius:4px;font-weight:800;letter-spacing:1px}
+.badge.doing{background:var(--gold-grad);color:#231a0c}
+.badge.done{background:#26262f;color:#77726a;border:1px solid var(--line)}
+.vote-hero{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.vote-body{padding:20px 18px 26px}
+.vote-body h2{font-family:var(--serif);font-size:19px;line-height:1.5;letter-spacing:1px}
+.vote-body .deadline{font-size:11.5px;color:var(--sub);margin:9px 0 4px;display:flex;align-items:center;gap:8px;letter-spacing:.5px}
+.vote-body .intro{font-size:12.5px;color:#a39e93;line-height:2;margin:12px 0 20px;border-left:2px solid rgba(201,162,107,.35);padding-left:12px}
+.opt{display:flex;align-items:center;gap:11px;border:1px solid rgba(235,225,205,.15);border-radius:12px;padding:14px 15px;margin-bottom:10px;cursor:pointer;transition:all .15s;background:var(--card)}
+.opt.sel{border-color:var(--gold);background:rgba(201,162,107,.1)}
+.opt .radio{width:17px;height:17px;border-radius:50%;border:1.5px solid #55504a;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.opt.sel .radio{border-color:var(--gold)}
+.opt.sel .radio::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--gold-grad)}
+.opt .ot{font-size:13.5px}
+.rbar{border-radius:12px;padding:14px 15px;margin-bottom:10px;background:var(--card);border:1px solid var(--line);position:relative;overflow:hidden}
+.rbar .fill{position:absolute;left:0;top:0;bottom:0;background:rgba(201,162,107,.16);width:0;transition:width .7s cubic-bezier(.2,.7,.3,1)}
+.rbar.mine{border-color:rgba(201,162,107,.5)}
+.rbar.mine .fill{background:rgba(201,162,107,.28)}
+.rbar .rl{position:relative;display:flex;justify-content:space-between;font-size:13px}
+.rbar .rl b{font-weight:700;color:var(--gold-2);font-family:var(--serif)}
+.rbar .mine-tag{font-size:9.5px;color:var(--gold-2);border:1px solid rgba(231,210,164,.5);border-radius:3px;padding:0 5px;margin-left:6px;font-weight:700}
+.vote-btn{width:100%;border:none;background:var(--gold-grad);color:#231a0c;border-radius:26px;padding:14px;font-size:15px;font-weight:800;letter-spacing:4px;cursor:pointer;margin-top:8px;box-shadow:0 6px 18px rgba(201,162,107,.22)}
+.vote-btn:disabled{background:#2a2a33;color:#5f5b54;box-shadow:none;cursor:not-allowed}
+.vote-note{text-align:center;font-size:11px;color:var(--dim);margin-top:12px;letter-spacing:1px}
+.share-row{display:flex;gap:10px;margin-top:18px}
+.share-row button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px;font-size:12.5px;color:#a39e93;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:1px}
+.share-row button:active{background:var(--card2)}
+.vote-count{font-size:11.5px;color:var(--sub);margin:2px 0 14px;letter-spacing:.5px}
+
+/* ---------- 我的 ---------- */
+.mine-head{padding:26px 20px 8px;display:flex;align-items:center;gap:15px}
+.mine-head img{width:58px;height:58px;border-radius:50%;border:1px solid rgba(201,162,107,.5)}
+.mine-head .mn{font-family:var(--serif);font-size:17px;font-weight:700;letter-spacing:1px}
+.mine-head .ms{font-size:11px;color:var(--sub);margin-top:5px;letter-spacing:.5px}
+.member-card{margin:16px;border-radius:18px;padding:24px 22px;position:relative;overflow:hidden;
+  background:linear-gradient(130deg,#2b2416 0%,#191510 55%,#100e0a 100%);
+  border:1px solid rgba(201,162,107,.45);box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.member-card::before{content:"";position:absolute;right:-70px;top:-70px;width:210px;height:210px;border-radius:50%;
+  background:radial-gradient(circle,rgba(231,210,164,.16),transparent 65%)}
+.member-card::after{content:"";position:absolute;right:-40px;bottom:-90px;width:190px;height:190px;border-radius:50%;
+  border:1px solid rgba(201,162,107,.2)}
+.mc-kicker{font-size:9px;letter-spacing:4px;color:var(--gold);margin-bottom:14px}
+.mc-level{font-family:var(--serif);font-size:24px;font-weight:800;color:var(--gold-2);letter-spacing:4px}
+.mc-no{margin-top:16px;font-size:11px;color:#a3906f;font-family:ui-monospace,Menlo,monospace;letter-spacing:3px}
+.mc-row{margin-top:6px;display:flex;justify-content:space-between;font-size:10.5px;color:var(--sub);letter-spacing:1px;position:relative}
+.guest-card{margin:16px;border-radius:18px;padding:24px 22px;background:var(--card);border:1px dashed rgba(201,162,107,.35);text-align:center}
+.guest-card .gt{font-family:var(--serif);font-size:16px;font-weight:700;letter-spacing:2px;margin-bottom:6px}
+.guest-card .gs{font-size:11.5px;color:var(--sub);letter-spacing:.5px}
+.activate-card{margin:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 18px}
+.activate-card h3{font-family:var(--serif);font-size:15.5px;letter-spacing:2px;margin-bottom:5px}
+.activate-card .sub{font-size:11.5px;color:var(--sub);margin-bottom:16px}
+.activate-card input{width:100%;border:1px solid rgba(235,225,205,.18);background:#101016;border-radius:10px;padding:13px 14px;font-size:16px;outline:none;color:var(--gold-2);
+  font-family:ui-monospace,Menlo,monospace;letter-spacing:4px;text-transform:uppercase;margin-bottom:13px;text-align:center}
+.activate-card input:focus{border-color:var(--gold)}
+.activate-card input::placeholder{color:#3d3a34;letter-spacing:6px}
+.activate-card .btn-primary{width:100%;border-radius:12px;padding:13px}
+.activate-card .tip{font-size:11px;color:var(--dim);margin-top:12px;text-align:center;letter-spacing:.5px}
+.menu{margin:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.mi{display:flex;align-items:center;justify-content:space-between;padding:16px 17px;font-size:13.5px;cursor:pointer;letter-spacing:.5px}
+.mi+.mi{border-top:1px solid var(--line)}
+.mi .arrow{color:var(--dim)}
+.mi .val{color:var(--sub);font-size:12px}
+.mi .val.gold{color:var(--gold-2);font-weight:700;font-family:var(--serif)}
+.mi .val.mono{font-family:ui-monospace,Menlo,monospace;letter-spacing:1.5px}
+.foot{text-align:center;font-size:10px;color:#454239;margin:8px 0 26px;letter-spacing:2px}
+
+/* ---------- 弹层 ---------- */
+.mask{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:60;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px)}
+.mask.show{display:flex}
+.sheet{width:100%;background:#15151c;border-top:1px solid rgba(201,162,107,.3);border-radius:20px 20px 0 0;padding:26px 22px 38px;animation:up .28s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.sheet h4{font-family:var(--serif);font-size:16px;text-align:center;margin-bottom:10px;letter-spacing:2px}
+.sheet p{font-size:12.5px;color:var(--sub);line-height:2;text-align:center;margin-bottom:20px}
+.sheet .btn-primary{width:100%;border-radius:12px;padding:13px}
+.dialog{width:78%;background:#15151c;border:1px solid rgba(201,162,107,.3);border-radius:16px;padding:24px 20px 14px;animation:up .25s ease;text-align:center}
+.dialog h4{font-family:var(--serif);font-size:16px;margin-bottom:9px;letter-spacing:2px}
+.dialog p{font-size:12.5px;color:var(--sub);line-height:2;margin-bottom:16px}
+.dialog .dbtns{display:flex;border-top:1px solid var(--line)}
+.dialog .dbtns button{flex:1;border:none;background:none;padding:14px;font-size:14px;cursor:pointer;color:var(--dim);letter-spacing:1px}
+.dialog .dbtns button.ok{color:var(--gold-2);font-weight:800;border-left:1px solid var(--line)}
+.mask.center{align-items:center;justify-content:center}
+
+/* ---------- 播放器 ---------- */
+.player{position:absolute;inset:0;background:#000;z-index:70;display:none;flex-direction:column}
+.player.show{display:flex}
+.player .pstage{flex:1;position:relative;display:flex;align-items:center;justify-content:center}
+.player .pstage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
+.player .pbtn{width:66px;height:66px;border-radius:50%;background:rgba(231,210,164,.12);border:1px solid rgba(231,210,164,.6);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;z-index:2;backdrop-filter:blur(3px)}
+.player .pclose{position:absolute;top:56px;left:16px;z-index:3;color:var(--gold-2);font-size:12px;border:1px solid rgba(231,210,164,.4);border-radius:15px;padding:7px 14px;cursor:pointer;letter-spacing:1px;background:rgba(0,0,0,.4)}
+.player .ptitle{position:absolute;left:18px;bottom:24px;right:18px;color:#fff;z-index:2}
+.player .ptitle b{font-family:var(--serif);font-size:16px;display:block;margin-bottom:5px;letter-spacing:1px}
+.player .ptitle span{font-size:11px;opacity:.7;letter-spacing:1px}
+.progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.15)}
+.progress i{display:block;height:100%;width:0;background:var(--gold-grad)}
+.ch-tag{position:absolute;top:58px;right:16px;z-index:3;font-size:10px;color:var(--gold-2);border:1px solid rgba(231,210,164,.4);background:rgba(0,0,0,.4);padding:4px 10px;border-radius:5px;letter-spacing:1px}
+
+.toast{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);background:rgba(20,20,26,.92);border:1px solid rgba(201,162,107,.4);color:var(--gold-2);
+  font-size:12.5px;padding:12px 22px;border-radius:10px;z-index:90;display:none;max-width:72%;text-align:center;line-height:1.7;letter-spacing:1px}
+.toast.show{display:block;animation:rise .2s ease}
+
+/* ================= 小程序内管理端 ================= */
+.adm-body{padding:14px 14px 30px}
+.adm-hero{margin:2px 2px 14px;padding:20px 18px;border-radius:16px;position:relative;overflow:hidden;
+  background:linear-gradient(130deg,#2b2416 0%,#191510 55%,#100e0a 100%);border:1px solid rgba(201,162,107,.4)}
+.adm-hero::before{content:"";position:absolute;right:-56px;top:-56px;width:170px;height:170px;border-radius:50%;
+  background:radial-gradient(circle,rgba(231,210,164,.15),transparent 65%)}
+.adm-hero .k{font-size:9px;letter-spacing:4px;color:var(--gold);margin-bottom:9px}
+.adm-hero h3{font-family:var(--serif);font-size:19px;letter-spacing:3px;color:var(--gold-2)}
+.adm-hero p{font-size:11px;color:var(--sub);margin-top:8px;line-height:1.8;letter-spacing:.5px}
+.adm-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.adm-cell{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px 14px 15px;cursor:pointer;transition:transform .15s}
+.adm-cell:active{transform:scale(.96)}
+.adm-cell svg{width:22px;height:22px;color:var(--gold)}
+.adm-cell b{display:block;font-size:13.5px;margin:11px 0 5px;letter-spacing:1px}
+.adm-cell span{font-size:10.5px;color:var(--dim);letter-spacing:.5px}
+.adm-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 14px;margin-bottom:12px}
+.adm-card .ap-title{font-size:13px;font-weight:700;letter-spacing:1px;margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.adm-card .ap-title::before{content:"";width:3px;height:13px;background:var(--gold-grad);border-radius:2px}
+.adm-sec{font-size:12px;font-weight:700;letter-spacing:1.5px;margin:18px 2px 10px;display:flex;align-items:center;gap:8px;color:#c9c4b8}
+.adm-sec::before{content:"";width:3px;height:12px;background:var(--gold-grad);border-radius:2px}
+.fcol{display:flex;flex-direction:column;gap:9px}
+.fcol .ainput,.fcol .aselect,.fcol .abtn{width:100%}
+.ainput,.aselect{border:1px solid rgba(235,225,205,.16);background:#0d0d13;border-radius:9px;padding:11px 12px;font-size:13px;color:var(--ink);outline:none}
+.ainput:focus,.aselect:focus{border-color:var(--gold)}
+.ainput::placeholder{color:var(--dim)}
+.aselect{cursor:pointer}
+input[type="date"].ainput{color-scheme:dark}
+.abtn{border:none;background:var(--gold-grad);color:#231a0c;border-radius:9px;padding:11px 22px;font-size:13px;font-weight:800;letter-spacing:2px;cursor:pointer}
+.abtn:active{filter:brightness(.92)}
+.abtn-ghost{border:1px solid var(--line);background:none;color:var(--sub);border-radius:8px;padding:7px 13px;font-size:12px;cursor:pointer;letter-spacing:.5px}
+.abtn-ghost:active{color:var(--gold-2);border-color:rgba(201,162,107,.4)}
+.abtn-danger{border:1px solid rgba(224,104,79,.4);background:none;color:#d98a77;border-radius:8px;padding:7px 13px;font-size:12px;cursor:pointer}
+.abtn-danger:active{background:rgba(224,104,79,.1)}
+.mono{font-family:ui-monospace,Menlo,monospace;letter-spacing:1.5px;color:var(--gold-2)}
+.stag{font-size:10px;padding:2.5px 9px;border-radius:4px;font-weight:700;letter-spacing:1px;white-space:nowrap}
+.stag.unused{color:var(--gold-2);border:1px solid rgba(201,162,107,.5)}
+.stag.used{color:#8f8a80;border:1px solid rgba(143,138,128,.4)}
+.stag.void{color:#d98a77;border:1px solid rgba(224,104,79,.4)}
+.stag.on{color:#7fd8a4;border:1px solid rgba(127,216,164,.35)}
+.stag.off{color:#8f8a80;border:1px solid rgba(143,138,128,.4)}
+.trace{font-size:11px;color:var(--sub);line-height:1.7}
+.trace b{color:#b9b3a6;font-weight:600}
+.plogo{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2b2416,#16130d);border:1px solid rgba(201,162,107,.45);
+  display:inline-flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:15px;font-weight:800;color:var(--gold-2);flex-shrink:0}
+.ck-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ck-code{font-size:15.5px}
+.ck-meta{font-size:11px;color:var(--sub);margin-top:8px;letter-spacing:.5px}
+.ck-ops{display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--line);padding-top:11px}
+.ck-ops button{flex:1}
+.price-input{width:76px;border:1px solid rgba(235,225,205,.16);background:#0d0d13;border-radius:8px;padding:8px 10px;font-size:13px;color:var(--gold-2);outline:none;font-family:ui-monospace,Menlo,monospace;text-align:right}
+.price-input:focus{border-color:var(--gold)}
+.price-input:disabled{opacity:.35}
+.pcell{display:flex;align-items:center;gap:10px;min-width:0}
+.pcell img{width:42px;height:42px;border-radius:8px;object-fit:cover;background:#222;flex-shrink:0}
+.pcell .pn{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcell .ps{font-size:10.5px;color:var(--dim);font-family:ui-monospace,Menlo,monospace;margin-top:2px}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-top:1px dashed rgba(235,225,205,.09)}
+.prow label{font-size:11.5px;color:var(--sub);letter-spacing:1px}
+.mini-bar{height:5px;border-radius:3px;background:rgba(235,225,205,.08);overflow:hidden;margin-top:5px}
+.mini-bar i{display:block;height:100%;background:var(--gold-grad)}
+.va-item{border:1px solid var(--line);border-radius:12px;padding:15px 14px;margin-bottom:12px;background:var(--card)}
+.va-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:11px}
+.va-head b{font-size:13.5px;font-family:var(--serif);letter-spacing:.5px;line-height:1.55}
+.va-ops{display:flex;gap:7px;align-items:center;flex-shrink:0}
+.va-opts{font-size:11.5px;color:var(--sub)}
+.va-opts .vo{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:9px}
+.va-opts .vo span{flex:1;min-width:0;font-size:12px;color:#b9b3a6}
+.va-opts .vo b{color:var(--gold-2);font-family:ui-monospace,Menlo,monospace;font-weight:600}
+.va-opts .vo .mini-bar{flex-basis:100%;margin-top:0}
+textarea.ainput{width:100%;min-height:64px;resize:vertical;font-family:inherit;line-height:1.7}
+.adm-tag{font-size:8.5px;color:#231a0c;background:var(--gold-grad);border-radius:3px;padding:1.5px 6px;font-weight:800;letter-spacing:1px;margin-left:7px;vertical-align:1px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-brand">臻瓷汇<span>TILE · CLUB DEMO</span></div>
+</div>
+
+<!-- ================= 会员端 ================= -->
+<div id="memberView">
+<div class="console">
+  <div class="kicker">INTERACTIVE DEMO</div>
+  <h1>臻瓷汇</h1>
+  <div class="desc">瓷砖授权经销商的会员制小程序原型，数据均为演示数据。会员端与管理端都集成在同一个小程序内。</div>
+  <div class="step">① 默认是<b>游客</b>：可浏览首页视频和投票，产品库与查价被锁定。<br>② 进入「我的」，输入任一邀请码开通会员。<br>③ 「我的」页有<b>管理后台</b>入口：邀请码、关联小程序、价格、投票都在小程序内管理（正式版仅管理员可见）。</div>
+  <div class="code-row"><div class="code">PT8A0001</div><span class="lv l1">普通会员</span><button class="copy-btn" data-c="PT8A0001">复制</button></div>
+  <div class="code-row"><div class="code">GJ8B0002</div><span class="lv">高级会员</span><button class="copy-btn" data-c="GJ8B0002">复制</button></div>
+  <div class="code-row"><div class="code">HX8C0003</div><span class="lv l3">核心会员</span><button class="copy-btn" data-c="HX8C0003">复制</button></div>
+  <div class="who"><span>当前身份</span><b id="whoami">游客</b></div>
+  <button class="reset-btn" id="resetBtn">重置演示</button>
+</div>
+
+<div class="phone"><div class="screen">
+  <div class="statusbar"><span>9:41</span>
+    <div class="icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" opacity=".4"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor"/><path d="M23.5 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity=".5"/></svg>
+    </div>
+  </div>
+  <div class="navbar">
+    <div class="back" id="navBack"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></div>
+    <div class="title" id="navTitle">臻瓷汇</div>
+    <div class="capsule">
+      <span><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span>
+      <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/></svg></span>
+    </div>
+  </div>
+
+  <div class="pages">
+    <div class="page active" id="pg-home">
+      <div class="home-head">
+        <div class="brand">臻瓷汇</div>
+        <div class="brand-en">INVITATION ONLY · 邀请制会员服务</div>
+      </div>
+      <div class="video-list" id="videoList"></div>
+    </div>
+    <div class="page" id="pg-products"><div id="productsInner"></div></div>
+    <div class="page pushed" id="pg-detail"><div id="detailInner"></div></div>
+    <div class="page" id="pg-price"><div id="priceInner"></div></div>
+    <div class="page" id="pg-vote"><div class="vote-list" id="voteList"></div></div>
+    <div class="page pushed" id="pg-voteDetail"><div id="voteDetailInner"></div></div>
+    <div class="page" id="pg-mine"><div id="mineInner"></div></div>
+
+    <!-- 管理端（小程序内页面） -->
+    <div class="page pushed" id="pg-admin">
+      <div class="adm-body">
+        <div class="adm-hero">
+          <div class="k">ADMIN CONSOLE</div>
+          <h3>管理后台</h3>
+          <p>邀请码 · 关联小程序 · 价格 · 投票<br>正式版仅管理员账号可见此入口</p>
+        </div>
+        <div class="adm-grid">
+          <div class="adm-cell" data-adm="codes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 10h6M7 14h4" stroke-linecap="round"/></svg><b>邀请码管理</b><span>生成 · 追溯 · 作废</span></div>
+          <div class="adm-cell" data-adm="apps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><path d="M17 13.5v7M13.5 17h7" stroke-linecap="round"/></svg><b>关联小程序</b><span>增减品牌直达</span></div>
+          <div class="adm-cell" data-adm="prices"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.6 13.4L12 4.8A2 2 0 0 0 10.6 4H5a1 1 0 0 0-1 1v5.6c0 .5.2 1 .6 1.4l8.6 8.6a2 2 0 0 0 2.8 0l4.6-4.6a2 2 0 0 0 0-2.8z"/><circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>价格设置</b><span>三档会员价 · 上下架</span></div>
+          <div class="adm-cell" data-adm="votes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8.5 12l2.4 2.4L15.7 9.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>投票管理</b><span>发起 · 截止 · 结果</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page pushed" id="pg-adm-codes">
+      <div class="adm-body">
+        <div class="adm-card">
+          <div class="ap-title">生成邀请码 · 一码一会员</div>
+          <div class="fcol">
+            <select class="aselect" id="ncLevel">
+              <option value="0">普通会员</option><option value="1" selected>高级会员</option><option value="2">核心会员</option>
+            </select>
+            <input class="ainput" id="ncRemark" placeholder="备注：发给谁（如 佛山陈总）">
+            <button class="abtn" id="ncBtn">生成邀请码</button>
+          </div>
+        </div>
+        <div class="adm-sec">邀请码列表 · 使用追溯</div>
+        <div id="codeRows"></div>
+      </div>
+    </div>
+
+    <div class="page pushed" id="pg-adm-apps">
+      <div class="adm-body">
+        <div class="adm-card">
+          <div class="ap-title">新增关联小程序</div>
+          <div class="fcol">
+            <input class="ainput" id="naName" placeholder="小程序名称（如 马可波罗瓷砖官方）">
+            <input class="ainput" id="naAppid" placeholder="AppID（选填，留空自动生成演示值）">
+            <button class="abtn" id="naBtn">添加关联</button>
+          </div>
+        </div>
+        <div class="adm-sec">已关联小程序 · 会员端品牌直达同步</div>
+        <div id="appRows"></div>
+      </div>
+    </div>
+
+    <div class="page pushed" id="pg-adm-prices">
+      <div class="adm-body">
+        <div class="adm-card">
+          <div class="ap-title">产品价格表 · 三档会员价</div>
+          <div style="font-size:11px;color:var(--sub);line-height:1.7;margin-bottom:12px">修改价格后点击保存，会员端实时生效</div>
+          <button class="abtn" id="savePrices" style="width:100%">保存全部价格</button>
+        </div>
+        <div id="priceRows"></div>
+      </div>
+    </div>
+
+    <div class="page pushed" id="pg-adm-votes">
+      <div class="adm-body">
+        <div class="adm-card">
+          <div class="ap-title">发起投票</div>
+          <div class="fcol">
+            <input class="ainput" id="nvTitle" placeholder="投票标题（如 新品「柔光微水泥砖」是否上架？）">
+            <input class="ainput" id="nvDeadline" type="date">
+            <textarea class="ainput" id="nvIntro" placeholder="新品介绍（规格、卖点、预计价位）"></textarea>
+            <input class="ainput" id="nvOpt0" placeholder="选项 1（必填）">
+            <input class="ainput" id="nvOpt1" placeholder="选项 2（必填）">
+            <input class="ainput" id="nvOpt2" placeholder="选项 3（选填）">
+            <button class="abtn" id="nvBtn">发布投票</button>
+          </div>
+        </div>
+        <div class="adm-sec">投票列表 · 结果汇总</div>
+        <div id="voteAdminList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabbar" id="tabbar">
+    <div class="tab on" data-tab="home"><span class="bar"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9.2l5 2.8-5 2.8z" fill="currentColor" stroke="none"/></svg>首页</div>
+    <div class="tab" data-tab="products"><span class="bar"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>产品</div>
+    <div class="tab" data-tab="price"><span class="bar"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.6 13.4L12 4.8A2 2 0 0 0 10.6 4H5a1 1 0 0 0-1 1v5.6c0 .5.2 1 .6 1.4l8.6 8.6a2 2 0 0 0 2.8 0l4.6-4.6a2 2 0 0 0 0-2.8z"/><circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" stroke="none"/></svg>查价</div>
+    <div class="tab" data-tab="vote"><span class="bar"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8.5 12l2.4 2.4L15.7 9.5" stroke-linecap="round" stroke-linejoin="round"/></svg>投票</div>
+    <div class="tab" data-tab="mine"><span class="bar"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.4 3.9-5 7-5s5.8 1.6 7 5" stroke-linecap="round"/></svg>我的</div>
+  </div>
+
+  <div class="player" id="player">
+    <div class="pclose" id="pclose">关闭</div>
+    <div class="ch-tag">视频号 · 内嵌播放</div>
+    <div class="pstage">
+      <img id="playerImg" src="" alt="">
+      <div class="pbtn" id="pbtn">
+        <svg id="pPlayIc" width="25" height="25" viewBox="0 0 24 24" fill="#e7d2a4"><path d="M8 5.5v13l11-6.5z"/></svg>
+        <svg id="pPauseIc" width="23" height="23" viewBox="0 0 24 24" fill="#e7d2a4" style="display:none"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      </div>
+      <div class="ptitle"><b id="pTitle"></b><span id="pSub"></span></div>
+      <div class="progress"><i id="pBar"></i></div>
+    </div>
+  </div>
+
+  <div class="mask" id="sheetMask"><div class="sheet" id="sheetBox"></div></div>
+  <div class="mask center" id="dlgMask"><div class="dialog" id="dlgBox"></div></div>
+  <div class="toast" id="toast"></div>
+</div></div>
+</div>
+
+<script>
+/* ================= 数据 ================= */
+const IMG = p => `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(p)}&image_size=`;
+const videos = [
+  {pin:true, title:"3 分钟了解这个小程序：查价、选砖、新品投票", dur:"03:12", sub:"置顶介绍 · 来自视频号「臻瓷汇」",
+   cover:IMG("elegant tile showroom interior with large porcelain tile displays on walls, warm spot lighting, luxury retail space, photorealistic")+"landscape_16_9"},
+  {title:"展厅实拍：750×1500 大板通铺效果", dur:"01:48", sub:"来自视频号「臻瓷汇」",
+   cover:IMG("spacious living room with large format marble look porcelain tiles floor, modern luxury interior, natural light, photorealistic")+"landscape_16_9"},
+  {title:"仓库直拍：瓷砖打包发货与破损补发流程", dur:"02:35", sub:"来自视频号「臻瓷汇」",
+   cover:IMG("warehouse with stacks of porcelain tile boxes on wooden pallets, worker packing, dramatic daylight, photorealistic")+"landscape_16_9"},
+  {title:"铺贴指南：柔光砖美缝配色怎么选", dur:"04:02", sub:"来自视频号「臻瓷汇」",
+   cover:IMG("professional tiler installing large beige porcelain floor tiles in bright modern room, close up detail, photorealistic")+"landscape_16_9"},
+];
+const LEVELS = ["普通会员","高级会员","核心会员"];
+const LVSHORT = ["普通","高级","核心"];
+const CATS = ["全部","大理石纹","柔光素色","岩板大板","仿古木纹"];
+const productsInit = [
+  {no:"A-8001", brand:"马可波罗", name:"通体大理石瓷砖", spec:"800×800mm", cat:"大理石纹", prices:[58,49,42], unit:"元/片", off:false,
+   desc:"通体坯体，表里如一，可深加工拉槽倒角。一石多面随机纹理，客厅地砖主推款。整箱 3 片，约 0.64㎡/片。",
+   img:IMG("polished marble look porcelain tile with white grey veining on luxury living room floor, interior photography, elegant")+"square"},
+  {no:"A-8002", brand:"东鹏", name:"柔光肌肤砖", spec:"600×1200mm", cat:"柔光素色", prices:[88,76,66], unit:"元/片", off:false,
+   desc:"25° 柔光面，触感细腻不反光，奶油风/侘寂风适配，墙地通用。抗污釉面，好打理。",
+   img:IMG("soft matte beige porcelain tiles on modern bathroom wall and floor, warm cozy light, minimalist interior photography")+"square"},
+  {no:"A-8003", brand:"诺贝尔", name:"瓷抛砖 · 鱼肚白", spec:"750×1500mm", cat:"大理石纹", prices:[128,112,98], unit:"元/片", off:false,
+   desc:"鱼肚白经典纹路，瓷抛工艺高耐磨，大规格留缝少，客餐厅通铺显大。",
+   img:IMG("large format statuario white porcelain slab tiles in elegant bright living room, luxury interior photography")+"square"},
+  {no:"B-9001", brand:"蒙娜丽莎", name:"连纹岩板大板", spec:"900×1800mm", cat:"岩板大板", prices:[268,238,208], unit:"元/片", off:false,
+   desc:"连纹设计可无限拼接，电视背景墙首选。岩板材质耐高温抗刮擦，可上墙可铺地。",
+   img:IMG("large format grey marble sintered stone slab wall in modern luxury living room with tv, interior photography")+"square"},
+  {no:"B-9002", brand:"冠珠", name:"微水泥仿古砖", spec:"600×600mm", cat:"仿古木纹", prices:[42,36,31], unit:"元/片", off:false,
+   desc:"微水泥质感，工业风/极简风通用，防滑 R10，厨卫阳台均可铺。",
+   img:IMG("cement look grey porcelain tiles in industrial minimalist bathroom, concrete texture, interior photography")+"square"},
+  {no:"B-9003", brand:"欧神诺", name:"北欧木纹砖", spec:"200×1200mm", cat:"仿古木纹", prices:[35,30,26], unit:"元/片", off:false,
+   desc:"橡木纹理逼真，脚感温润，卧室书房适用，防水防潮不怕地暖。",
+   img:IMG("wood look porcelain plank tiles floor in cozy scandinavian bedroom, natural oak texture, warm light, interior photography")+"square"},
+  {no:"A-8099", brand:"工程尾货", name:"旧款抛光砖", spec:"600×600mm", cat:"大理石纹", prices:[28,24,20], unit:"元/片", off:true, desc:"已停产下架。", img:""},
+];
+const votesInit = [
+  {id:1, title:"新品「柔光微水泥瓷砖」是否上架？", deadline:"截止 9 月 30 日 23:59", doing:true, voted:86, counts:[39,33,14],
+   intro:"750×1500mm 柔光微水泥砖，侘寂风/奶油风适配，预计普通会员价 ¥98/片起，上市前想听听大家的拿货意向。",
+   options:["会上架，期待","观望，看价格再定","不感兴趣"],
+   img:IMG("micro cement texture large porcelain tiles in minimalist warm bathroom, soft neutral tones, interior design photography")+"landscape_16_9"},
+  {id:2, title:"新品「900×1800 连纹岩板」上架意向", deadline:"已于 9 月 15 日截止", doing:false, voted:124, counts:[72,38,14],
+   intro:"连纹岩板大板，电视背景墙方向。投票已结束，结果供选品参考。",
+   options:["会上架，期待","观望，看价格再定","不感兴趣"],
+   img:IMG("seamless bookmatched marble sintered stone slab wall in luxury hotel lobby, elegant interior photography")+"landscape_16_9"},
+];
+const miniAppsInit = [
+  {name:"马可波罗瓷砖官方", appid:"wx8f3a1c92e6b40001"},
+  {name:"东鹏瓷砖官方商城", appid:"wx8f3a1c92e6b40002"},
+  {name:"诺贝尔瓷砖", appid:"wx8f3a1c92e6b40003"},
+  {name:"蒙娜丽莎官方", appid:"wx8f3a1c92e6b40004"},
+];
+const codesInit = [
+  {code:"HX8C0003", level:2, remark:"演示邀请码", createdAt:"2026-09-24 10:00", status:"unused"},
+  {code:"GJ8B0002", level:1, remark:"演示邀请码", createdAt:"2026-09-24 10:00", status:"unused"},
+  {code:"PT8A0001", level:0, remark:"演示邀请码", createdAt:"2026-09-24 10:00", status:"unused"},
+  {code:"K3F9A2B1", level:1, remark:"发给佛山陈总", createdAt:"2026-09-19 16:20", status:"used", usedBy:"陈**", usedAt:"2026-09-20 14:32"},
+  {code:"X7M2P8Q4", level:0, remark:"发给东莞李姐", createdAt:"2026-09-17 11:05", status:"used", usedBy:"李**", usedAt:"2026-09-18 09:15"},
+];
+const VOTE_IMG_POOL = [
+  IMG("micro cement texture large porcelain tiles in minimalist warm bathroom, soft neutral tones, interior design photography")+"landscape_16_9",
+  IMG("green marble look porcelain tiles in elegant modern bathroom, luxury interior photography")+"landscape_16_9",
+  IMG("terrazzo look porcelain tiles in stylish cafe interior, warm lighting, interior photography")+"landscape_16_9",
+];
+
+/* ================= 运行状态 ================= */
+let products, votes, miniApps, codes;
+function snapshot(){ products=JSON.parse(JSON.stringify(productsInit)); votes=JSON.parse(JSON.stringify(votesInit)); miniApps=[...miniAppsInit.map(x=>({...x}))]; codes=JSON.parse(JSON.stringify(codesInit)); }
+snapshot();
+let state = { member:null, voted:{}, selOpt:{}, tab:"home" };
+let playerTimer=null;
+
+/* ================= 工具 ================= */
+const $ = id => document.getElementById(id);
+function toast(msg, ms=1800){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),ms); }
+function atoast(msg, ms){ toast(msg, ms||2000); }
+function openSheet(html){ $("sheetBox").innerHTML=html; $("sheetMask").classList.add("show"); }
+function openDlg(html){ $("dlgBox").innerHTML=html; $("dlgMask").classList.add("show"); }
+$("sheetMask").addEventListener("click",e=>{ if(e.target.id==="sheetMask") $("sheetMask").classList.remove("show"); });
+$("dlgMask").addEventListener("click",e=>{ if(e.target.id==="dlgMask") $("dlgMask").classList.remove("show"); });
+function nowStr(){ const d=new Date(); const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+
+/* ================= 导航（页面栈） ================= */
+const TITLES = {home:"臻瓷汇",products:"产品库",price:"价格查询",vote:"新品投票",mine:"我的"};
+let stack=[];
+function go(tab){
+  state.tab=tab;
+  stack.forEach(s=>$(s.id).classList.remove("active"));
+  stack=[];
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.tab===tab));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  $("pg-"+tab).classList.add("active");
+  $("navTitle").textContent=TITLES[tab];
+  $("navBack").style.display="none";
+}
+function push(id,title){
+  stack.push({id,title});
+  $(id).classList.add("active"); $(id).scrollTop=0;
+  $("navTitle").textContent=title;
+  $("navBack").style.display="flex";
+}
+$("navBack").addEventListener("click",()=>{
+  const cur=stack.pop();
+  if(!cur) return;
+  $(cur.id).classList.remove("active");
+  if(stack.length){ $("navTitle").textContent=stack[stack.length-1].title; }
+  else{ $("navTitle").textContent=TITLES[state.tab]; $("navBack").style.display="none"; }
+});
+$("tabbar").addEventListener("click",e=>{ const t=e.target.closest(".tab"); if(t) go(t.dataset.tab); });
+
+/* ================= 首页视频流 ================= */
+function renderVideos(){
+  $("videoList").innerHTML = videos.map((v,i)=>`
+    <div class="vcard" data-v="${i}">
+      <div class="thumb">
+        <img src="${v.cover}" alt="" loading="lazy">
+        ${v.pin?'<span class="pin-tag">置顶介绍</span>':""}
+        <div class="play"><i><svg width="21" height="21" viewBox="0 0 24 24" fill="#e7d2a4"><path d="M8 5.5v13l11-6.5z"/></svg></i></div>
+        <span class="dur">${v.dur}</span>
+      </div>
+      <div class="vinfo">
+        <div class="vtitle">${v.title}</div>
+        <div class="vsrc">${v.sub}<span class="dot"></span>视频号</div>
+      </div>
+    </div>`).join("");
+}
+$("videoList").addEventListener("click",e=>{
+  const c=e.target.closest(".vcard"); if(!c) return;
+  const v=videos[+c.dataset.v];
+  $("playerImg").src=v.cover; $("pTitle").textContent=v.title; $("pSub").textContent=v.sub;
+  $("player").classList.add("show");
+  setPlay(false);
+});
+function setPlay(playing){
+  $("pPlayIc").style.display=playing?"none":"block";
+  $("pPauseIc").style.display=playing?"block":"none";
+  clearInterval(playerTimer);
+  if(playing){ playerTimer=setInterval(()=>{ const b=$("pBar"); const w=Math.min(100,parseFloat(b.style.width||0)+0.5); b.style.width=w+"%"; if(w>=100) setPlay(false); },80); }
+}
+$("pbtn").addEventListener("click",()=>{ if(!$("pBar").style.width) $("pBar").style.width="0%"; setPlay($("pPlayIc").style.display!=="none"); });
+$("pclose").addEventListener("click",()=>{ setPlay(false); $("player").classList.remove("show"); $("pBar").style.width="0%"; });
+
+/* ================= 锁定页 ================= */
+function lockHTML(what){
+  return `<div class="locked">
+    <div class="lock-ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4.5" y="10" width="15" height="10" rx="2.5"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg></div>
+    <h3>开通会员后查看</h3>
+    <p>${what}仅对受邀会员开放<br>请向管理员索取邀请码，在「我的」页面开通</p>
+    <button class="btn-primary" onclick="go('mine')">去开通会员</button>
+  </div>`;
+}
+
+/* ================= 产品库 ================= */
+let curCat="全部", curKw="";
+function renderProducts(){
+  if(!state.member){ $("productsInner").innerHTML=lockHTML("产品库"); return; }
+  const lv=state.member.level;
+  const list=products.filter(p=>!p.off)
+    .filter(p=>curCat==="全部"||p.cat===curCat)
+    .filter(p=>!curKw||p.name.includes(curKw)||p.brand.includes(curKw)||p.no.toLowerCase().includes(curKw.toLowerCase()));
+  $("productsInner").innerHTML=`
+    <div class="bstrip">
+      <div class="bs-head">品牌直达<span>授权品牌官方小程序</span></div>
+      <div class="bs-row">${miniApps.map(a=>`
+        <div class="bs-item" data-app="${a.name}"><div class="bs-logo">${a.name[0]}</div><span>${a.name}</span></div>`).join("")}
+      </div>
+    </div>
+    <div class="search-wrap"><div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5f5b54" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8" stroke-linecap="round"/></svg>
+      <input id="searchInput" placeholder="搜索：品牌 / 名称 / 编号" value="${curKw}">
+    </div></div>
+    <div class="cats">${CATS.map(c=>`<div class="cat ${c===curCat?"on":""}" data-c="${c}">${c}</div>`).join("")}</div>
+    <div class="pgrid">
+      ${list.length?list.map(p=>`
+        <div class="pcard" data-no="${p.no}">
+          <div class="pimg"><img src="${p.img}" alt="" loading="lazy"><span class="pbrand">${p.brand}</span></div>
+          <div class="pbody">
+            <div class="pname">${p.name}</div>
+            <div class="pno">NO. ${p.no} · ${p.spec}</div>
+            <div class="pprice">¥${p.prices[lv]}<small>/${p.unit.replace("元/","")} · ${LEVELS[lv]}价</small></div>
+          </div>
+        </div>`).join(""):'<div class="empty-tip">没有匹配的产品</div>'}
+    </div>`;
+  const si=$("searchInput");
+  si.addEventListener("input",()=>{ curKw=si.value.trim(); renderProducts(); const n=$("searchInput"); n.focus(); n.setSelectionRange(n.value.length,n.value.length); });
+  $("productsInner").querySelectorAll(".cat").forEach(el=>el.addEventListener("click",()=>{ curCat=el.dataset.c; renderProducts(); }));
+  $("productsInner").querySelectorAll(".pcard").forEach(el=>el.addEventListener("click",()=>openDetail(el.dataset.no)));
+  $("productsInner").querySelectorAll(".bs-item").forEach(el=>el.addEventListener("click",()=>toast(`跳转「${el.dataset.app}」小程序（演示）`,2200)));
+}
+function openDetail(no){
+  const p=products.find(x=>x.no===no); if(!p) return;
+  const lv=state.member.level;
+  $("detailInner").innerHTML=`
+    <img class="detail-hero" src="${p.img}" alt="">
+    <div class="detail-body">
+      <h2>${p.name}</h2>
+      <div class="detail-meta"><span class="db">${p.brand}</span>NO. ${p.no} · ${p.spec} · ${p.cat}</div>
+      <div class="price-box"><span class="pv">${p.prices[lv]}<i> ${p.unit}</i></span><span class="pl">${LEVELS[lv]}专属价</span></div>
+      <div class="detail-desc"><b>产品介绍</b>${p.desc}</div>
+      <div class="detail-note">价格已按你的会员等级展示，其他等级价格不可见。</div>
+    </div>`;
+  push("pg-detail","产品详情");
+}
+
+/* ================= 查价 ================= */
+function renderPrice(){
+  if(!state.member){ $("priceInner").innerHTML=lockHTML("价格查询"); return; }
+  const lv=state.member.level;
+  $("priceInner").innerHTML=`
+    <div class="query-wrap">
+      <div class="qkicker">PRICE INQUIRY</div>
+      <div class="query-card">
+        <label>输入产品编号 · 查询${LEVELS[lv]}价格</label>
+        <div class="query-line">
+          <input id="qInput" placeholder="A-8001" maxlength="10">
+          <button id="qBtn">查询</button>
+        </div>
+        <div class="query-hint">编号见产品包装或产品库列表，精确匹配。</div>
+      </div>
+      <div class="qresult" id="qResult"></div>
+      <div class="qerr" id="qErr"></div>
+    </div>`;
+  const doQuery=()=>{
+    const no=$("qInput").value.trim().toUpperCase();
+    const r=$("qResult"), er=$("qErr");
+    r.classList.remove("show"); er.classList.remove("show");
+    if(!no){ toast("请输入产品编号"); return; }
+    const p=products.find(x=>x.no===no);
+    if(!p){ er.innerHTML=`<div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8" stroke-linecap="round"/><path d="M8.5 8.5l5 5M13.5 8.5l-5 5" stroke-linecap="round"/></svg></div><p>未找到该产品</p><span>请核对编号后重试</span>`; er.classList.add("show"); return; }
+    if(p.off){ er.innerHTML=`<div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8" stroke-linecap="round"/></svg></div><p>该产品已下架</p><span>编号 ${p.no} · ${p.name}</span>`; er.classList.add("show"); return; }
+    r.innerHTML=`<img src="${p.img}" alt=""><div class="qb">
+      <div class="qn">${p.brand} · ${p.name}</div><div class="qno">NO. ${p.no} · ${p.spec}</div>
+      <div class="qp"><span class="v">${p.prices[lv]}<i> ${p.unit}</i></span><span class="t">${LEVELS[lv]}价</span></div></div>`;
+    r.classList.add("show");
+  };
+  $("qBtn").addEventListener("click",doQuery);
+  $("qInput").addEventListener("keydown",e=>{ if(e.key==="Enter") doQuery(); });
+}
+
+/* ================= 投票 ================= */
+function pct(v,i){ return v.voted? Math.round(v.counts[i]/v.voted*100):0; }
+function renderVotes(){
+  $("voteList").innerHTML = votes.map(v=>`
+    <div class="vote-card" data-id="${v.id}">
+      <img src="${v.img}" alt="" loading="lazy">
+      <div class="vb">
+        <div class="vt">${v.title}</div>
+        <div class="vm"><span class="badge ${v.doing?"doing":"done"}">${v.doing?"进行中":"已结束"}</span>${v.deadline} · ${v.voted} 人参与</div>
+      </div>
+    </div>`).join("");
+  $("voteList").querySelectorAll(".vote-card").forEach(el=>el.addEventListener("click",()=>openVote(+el.dataset.id)));
+}
+function openVote(id){
+  const v=votes.find(x=>x.id===id);
+  const myVote=state.voted[id];
+  const showResult = myVote!==undefined || !v.doing;
+  $("voteDetailInner").innerHTML=`
+    <img class="vote-hero" src="${v.img}" alt="">
+    <div class="vote-body">
+      <h2>${v.title}</h2>
+      <div class="deadline"><span class="badge ${v.doing?"doing":"done"}">${v.doing?"进行中":"已结束"}</span>${v.deadline}</div>
+      <div class="intro">${v.intro}</div>
+      <div class="vote-count">${v.voted} 人已参与${showResult?" · 占比公示如下":" · 投票后可查看占比"}</div>
+      ${showResult ? v.options.map((o,i)=>`
+        <div class="rbar ${myVote===i?"mine":""}"><div class="fill" data-w="${pct(v,i)}"></div>
+          <div class="rl"><span>${o}${myVote===i?'<span class="mine-tag">我的选择</span>':""}</span><b>${pct(v,i)}%</b></div>
+        </div>`).join("")
+      : v.options.map((o,i)=>`
+        <div class="opt ${state.selOpt[id]===i?"sel":""}" data-i="${i}">
+          <span class="radio"></span><span class="ot">${o}</span>
+        </div>`).join("")}
+      ${showResult
+        ? `<div class="vote-note">${v.doing?"你已投过票 · 每人限投一票":"投票已结束 · 结果公示"}</div>`
+        : `<button class="vote-btn" id="voteBtn" ${state.selOpt[id]===undefined?"disabled":""}>投 票</button>
+           <div class="vote-note">每人限投一票 · 提交后不可更改</div>`}
+      <div class="share-row">
+        <button id="shareGroup"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-8 8H4l2-3a8 8 0 1 1 15-5z" stroke-linejoin="round"/></svg>发给群</button>
+        <button id="shareMoment"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.3 3.8 5.2 3.8 8.5s-1.2 6.2-3.8 8.5c-2.6-2.3-3.8-5.2-3.8-8.5s1.2-6.2 3.8-8.5z"/></svg>分享朋友圈</button>
+      </div>
+      <div class="vote-note">分享内容不含任何价格信息</div>
+    </div>`;
+  push("pg-voteDetail","投票详情");
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    $("voteDetailInner").querySelectorAll(".fill").forEach(f=>f.style.width=f.dataset.w+"%");
+  }));
+  $("voteDetailInner").querySelectorAll(".opt").forEach(el=>el.addEventListener("click",()=>{
+    state.selOpt[id]=+el.dataset.i; openVote(id);
+  }));
+  const vb=$("voteBtn");
+  if(vb) vb.addEventListener("click",()=>{
+    if(!state.member){
+      openDlg(`<h4>投票仅限会员</h4><p>你是游客身份，请输入邀请码开通会员后再参与投票。</p>
+        <div class="dbtns"><button onclick="document.getElementById('dlgMask').classList.remove('show')">取消</button>
+        <button class="ok" onclick="document.getElementById('dlgMask').classList.remove('show');go('mine')">去开通</button></div>`);
+      return;
+    }
+    const i=state.selOpt[id];
+    state.voted[id]=i;
+    v.counts[i]++; v.voted++;
+    toast("投票成功");
+    openVote(id);
+  });
+  $("shareGroup").addEventListener("click",()=>toast("已唤起微信群分享（演示环境）"));
+  $("shareMoment").addEventListener("click",()=>openSheet(`
+    <h4>朋友圈分享说明</h4>
+    <p>朋友圈打开的小程序处于「单页模式」：用户只能看到本投票页，无法切换其他页面，顶部常驻「进入小程序」引导，点击后进入完整小程序。</p>
+    <button class="btn-primary" onclick="document.getElementById('sheetMask').classList.remove('show')">知道了</button>`));
+}
+
+/* ================= 我的 ================= */
+function renderMine(){
+  const m=state.member;
+  $("mineInner").innerHTML=`
+    <div class="mine-head">
+      <img src="${IMG("elegant minimal flat vector avatar portrait of a person silhouette in gold on dark background, luxury style illustration")+"square"}" alt="">
+      <div><div class="mn">微信用户_8848</div>
+        <div class="ms">${m?"已开通会员 · 2026-09-24 加入":"游客身份 · 核心功能未解锁"}</div>
+      </div>
+    </div>
+    ${m?`<div class="member-card">
+      <div class="mc-kicker">MEMBERSHIP CARD</div>
+      <div class="mc-level">${LEVELS[m.level]}</div>
+      <div class="mc-no">NO. 2026 0924 ${m.code.slice(-4)}</div>
+      <div class="mc-row"><span>臻瓷汇 · 授权会员</span><span>长期有效</span></div>
+    </div>
+    <div class="menu">
+      <div class="mi" id="miLevel"><span>我的等级</span><span class="val gold">${LEVELS[m.level]}</span></div>
+      <div class="mi" id="miCode"><span>开通所用邀请码</span><span class="val mono">${m.code}</span></div>
+    </div>`:`<div class="guest-card">
+      <div class="gt">尚未开通会员</div>
+      <div class="gs">开通后解锁产品库 · 分级价格 · 新品投票</div>
+    </div>
+    <div class="activate-card">
+      <h3>开通会员</h3>
+      <div class="sub">输入管理员发给你的 8 位邀请码</div>
+      <input id="codeInput" placeholder="········" maxlength="8">
+      <button class="btn-primary" id="actBtn">开通会员</button>
+      <div class="tip">没有邀请码？请向管理员索取</div>
+    </div>`}
+    <div class="menu">
+      <div class="mi" id="miAdmin"><span>管理后台<span class="adm-tag">ADMIN</span></span><span class="arrow">›</span></div>
+      <div class="mi" id="miKefu"><span>联系客服</span><span class="arrow">›</span></div>
+      <div class="mi" id="miAbout"><span>关于小程序</span><span class="arrow">›</span></div>
+    </div>
+    <div class="foot">臻瓷汇 · 邀请制会员服务</div>`;
+  $("miAdmin").addEventListener("click",()=>{ renderAdmin(); push("pg-admin","管理后台"); });
+  if(!m){
+    $("actBtn").addEventListener("click",()=>{
+      const code=$("codeInput").value.trim().toUpperCase();
+      if(!code){ toast("请输入邀请码"); return; }
+      const c=codes.find(x=>x.code===code);
+      if(c && c.status==="used"){ toast("该邀请码已被使用 · 一码一会员",2400); return; }
+      if(c && c.status==="void"){ toast("该邀请码已作废",2200); return; }
+      if(!c){ toast("邀请码不存在，请核对后重试",2200); return; }
+      c.status="used"; c.usedBy="微信用户_8848"; c.usedAt=nowStr();
+      state.member={level:c.level,code:c.code};
+      syncAll(); renderCodeRows();
+      openSheet(`<h4>开通成功</h4><p>你已成为「${LEVELS[state.member.level]}」<br>产品库与查价功能已解锁</p>
+        <button class="btn-primary" onclick="document.getElementById('sheetMask').classList.remove('show');go('products')">去产品库看看</button>`);
+    });
+  }else{
+    $("miCode").addEventListener("click",()=>toast("同一微信账号只需开通一次，你已是会员",2200));
+    $("miLevel").addEventListener("click",()=>toast("等级调整请联系管理员"));
+  }
+  $("miKefu").addEventListener("click",()=>openSheet(`
+    <h4>联系客服</h4><p>添加管理员微信咨询（演示）<br><b style="color:var(--gold-2);font-size:16px;letter-spacing:2px">zhenci-kefu</b></p>
+    <button class="btn-primary" onclick="document.getElementById('sheetMask').classList.remove('show')">关闭</button>`));
+  $("miAbout").addEventListener("click",()=>openSheet(`
+    <h4>臻瓷汇</h4><p>邀请制授权瓷砖会员服务小程序<br>版本 v1.0.0（Demo）</p>
+    <button class="btn-primary" onclick="document.getElementById('sheetMask').classList.remove('show')">关闭</button>`));
+}
+
+/* ================= 管理端（小程序内） ================= */
+const ADM_PAGES={codes:["pg-adm-codes","邀请码管理"],apps:["pg-adm-apps","关联小程序"],prices:["pg-adm-prices","价格设置"],votes:["pg-adm-votes","投票管理"]};
+document.querySelectorAll(".adm-cell").forEach(el=>el.addEventListener("click",()=>{
+  const p=ADM_PAGES[el.dataset.adm];
+  renderAdmin();
+  push(p[0],p[1]);
+}));
+function renderAdmin(){ renderCodeRows(); renderAppRows(); renderPriceRows(); renderVoteAdmin(); }
+
+/* ---- 邀请码 ---- */
+function renderCodeRows(){
+  $("codeRows").innerHTML = codes.map((c,i)=>`
+    <div class="adm-card">
+      <div class="ck-top"><span class="mono ck-code">${c.code}</span><span class="stag ${c.status}">${c.status==="unused"?"未使用":c.status==="used"?"已使用":"已作废"}</span></div>
+      <div class="ck-meta">${LEVELS[c.level]} · ${c.remark||"无备注"}</div>
+      <div class="trace" style="margin-top:7px">${c.status==="used"?`<b>${c.usedBy}</b> 于 ${c.usedAt} 开通`:`生成于 ${c.createdAt} · 待使用`}</div>
+      <div class="ck-ops">
+        <button class="abtn-ghost" data-copy="${c.code}">复制</button>
+        ${c.status==="unused"?`<button class="abtn-danger" data-void="${i}">作废</button>`:""}
+      </div>
+    </div>`).join("");
+  $("codeRows").querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",()=>{ navigator.clipboard?.writeText(b.dataset.copy); atoast("已复制："+b.dataset.copy); }));
+  $("codeRows").querySelectorAll("[data-void]").forEach(b=>b.addEventListener("click",()=>{ codes[+b.dataset.void].status="void"; renderCodeRows(); atoast("邀请码已作废"); }));
+}
+$("ncBtn").addEventListener("click",()=>{
+  const chars="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let code; do{ code=Array.from({length:8},()=>chars[Math.floor(Math.random()*chars.length)]).join(""); }while(codes.some(c=>c.code===code));
+  codes.unshift({code, level:+$("ncLevel").value, remark:$("ncRemark").value.trim(), createdAt:nowStr(), status:"unused"});
+  $("ncRemark").value="";
+  renderCodeRows();
+  atoast("已生成邀请码："+code+" · 可复制发给客户");
+});
+
+/* ---- 关联小程序 ---- */
+function renderAppRows(){
+  $("appRows").innerHTML = miniApps.map((a,i)=>`
+    <div class="adm-card"><div class="ck-top">
+      <div class="pcell"><span class="plogo">${a.name[0]}</span><div><div class="pn">${a.name}</div><div class="ps">${a.appid} · 展示中</div></div></div>
+      <button class="abtn-danger" data-delapp="${i}">删除</button>
+    </div></div>`).join("");
+  $("appRows").querySelectorAll("[data-delapp]").forEach(b=>b.addEventListener("click",()=>{
+    const name=miniApps[+b.dataset.delapp].name;
+    miniApps.splice(+b.dataset.delapp,1);
+    renderAppRows(); renderProducts();
+    atoast(`已删除「${name}」，会员端品牌直达同步更新`);
+  }));
+}
+$("naBtn").addEventListener("click",()=>{
+  const name=$("naName").value.trim();
+  if(!name){ atoast("请填写小程序名称"); return; }
+  const appid=$("naAppid").value.trim()||("wx"+Array.from({length:16},()=>"0123456789abcdef"[Math.floor(Math.random()*16)]).join(""));
+  miniApps.push({name, appid});
+  $("naName").value=""; $("naAppid").value="";
+  renderAppRows(); renderProducts();
+  atoast(`已关联「${name}」，会员端品牌直达同步更新`);
+});
+
+/* ---- 价格设置 ---- */
+function renderPriceRows(){
+  $("priceRows").innerHTML = products.map((p,i)=>`
+    <div class="adm-card">
+      <div class="ck-top" style="margin-bottom:6px">
+        <div class="pcell">${p.img?`<img src="${p.img}" alt="">`:""}<div><div class="pn">${p.brand} · ${p.name}</div><div class="ps">NO. ${p.no} · ${p.spec} · ${p.unit}</div></div></div>
+        <span class="stag ${p.off?"off":"on"}">${p.off?"已下架":"在售"}</span>
+      </div>
+      <div class="prow"><label>普通会员价</label><input class="price-input" data-p="${i}" data-lv="0" value="${p.prices[0]}" ${p.off?"disabled":""}></div>
+      <div class="prow"><label>高级会员价</label><input class="price-input" data-p="${i}" data-lv="1" value="${p.prices[1]}" ${p.off?"disabled":""}></div>
+      <div class="prow"><label>核心会员价</label><input class="price-input" data-p="${i}" data-lv="2" value="${p.prices[2]}" ${p.off?"disabled":""}></div>
+      <div class="ck-ops"><button class="abtn-ghost" data-toggle="${i}">${p.off?"重新上架":"下架"}</button></div>
+    </div>`).join("");
+  $("priceRows").querySelectorAll("[data-toggle]").forEach(b=>b.addEventListener("click",()=>{
+    const p=products[+b.dataset.toggle];
+    p.off=!p.off;
+    renderPriceRows(); renderProducts();
+    atoast(p.off?`「${p.name}」已下架，会员端不可见`:`「${p.name}」已重新上架`);
+  }));
+}
+$("savePrices").addEventListener("click",()=>{
+  document.querySelectorAll(".price-input").forEach(inp=>{
+    const v=parseFloat(inp.value);
+    if(!isNaN(v)&&v>0) products[+inp.dataset.p].prices[+inp.dataset.lv]=v;
+  });
+  renderProducts(); renderPrice();
+  atoast("价格已保存，会员端实时生效");
+});
+
+/* ---- 投票管理 ---- */
+function renderVoteAdmin(){
+  $("voteAdminList").innerHTML = votes.map((v,i)=>`
+    <div class="va-item">
+      <div class="va-head"><b>${v.title}</b>
+        <div class="va-ops">
+          <span class="stag ${v.doing?"unused":"used"}">${v.doing?"进行中":"已结束"}</span>
+          ${v.doing?`<button class="abtn-ghost" data-close="${i}">截止</button>`:""}
+        </div>
+      </div>
+      <div class="va-opts">${v.options.map((o,j)=>`
+        <div class="vo"><span>${o}</span><b>${pct(v,j)}%</b><div class="mini-bar"><i style="width:${pct(v,j)}%"></i></div></div>`).join("")}
+      </div>
+      <div style="font-size:11px;color:var(--dim);margin-top:6px">${v.deadline} · ${v.voted} 人参与</div>
+    </div>`).join("");
+  $("voteAdminList").querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>{
+    const v=votes[+b.dataset.close];
+    v.doing=false; v.deadline="已于 "+nowStr().slice(0,10)+" 提前截止";
+    renderVoteAdmin(); renderVotes();
+    atoast("投票已截止，结果继续公示");
+  }));
+}
+$("nvBtn").addEventListener("click",()=>{
+  const title=$("nvTitle").value.trim();
+  const opts=[$("nvOpt0").value.trim(),$("nvOpt1").value.trim(),$("nvOpt2").value.trim()].filter(Boolean);
+  if(!title){ atoast("请填写投票标题"); return; }
+  if(opts.length<2){ atoast("至少需要 2 个选项"); return; }
+  const dl=$("nvDeadline").value;
+  votes.unshift({
+    id:Date.now(), title, doing:true, voted:0, counts:opts.map(()=>0),
+    deadline:dl?("截止 "+dl.replace(/-/g,"/")+" 23:59"):"截止 10 月 8 日 23:59",
+    intro:$("nvIntro").value.trim()||"新品意向征集中，欢迎投票。",
+    options:opts, img:VOTE_IMG_POOL[Math.floor(Math.random()*VOTE_IMG_POOL.length)]
+  });
+  $("nvTitle").value=""; $("nvIntro").value=""; $("nvOpt0").value=""; $("nvOpt1").value=""; $("nvOpt2").value=""; $("nvDeadline").value="";
+  renderVoteAdmin(); renderVotes();
+  atoast("投票已发布，会员端立即可见");
+});
+
+/* ================= 全局同步 ================= */
+function syncAll(){
+  renderMine(); renderProducts(); renderPrice();
+  $("whoami").textContent = state.member? LEVELS[state.member.level] : "游客";
+}
+document.querySelectorAll(".copy-btn").forEach(b=>b.addEventListener("click",()=>{
+  navigator.clipboard?.writeText(b.dataset.c); toast("已复制："+b.dataset.c);
+}));
+$("resetBtn").addEventListener("click",()=>{
+  snapshot();
+  state={member:null,voted:{},selOpt:{},tab:"home"};
+  syncAll(); renderVotes(); go("home"); toast("已重置为游客身份");
+});
+
+/* ================= 初始化 ================= */
+renderVideos(); renderVotes(); syncAll();
+</script>
+</body>
+</html>

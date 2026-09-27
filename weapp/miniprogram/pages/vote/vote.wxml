@@ -1,0 +1,51 @@
+<!-- 投票列表 · 会员可投，游客可看 -->
+<view class="tc-page">
+  <view class="head">
+    <view class="head-t">{{brand.name}} · 新品投票</view>
+    <view class="head-s">新品是否上架，投票说了算 · 每人限投一票</view>
+  </view>
+
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:elif="{{list.length}}">
+    <view class="vlist">
+      <view
+        class="vcard"
+        wx:for="{{list}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="open"
+        hover-class="vcard-hover"
+        hover-stay-time="60"
+      >
+        <view class="vthumb" wx:if="{{item.images.length}}">
+          <image src="{{item.images[0]}}" mode="aspectFill" lazy-load="{{true}}"></image>
+          <view class="vstate {{item.doing ? 'on' : ''}}">{{item.doing ? '进行中' : '已结束'}}</view>
+        </view>
+
+        <view class="vbody">
+          <view class="vtitle tc-clamp2">{{item.title}}</view>
+          <view class="vintro tc-clamp2" wx:if="{{item.intro}}">{{item.intro}}</view>
+
+          <view class="vmeta">
+            <text class="vm-num">{{item.total}}</text>
+            <text class="vm-lab">人参与</text>
+            <text class="dot"></text>
+            <text class="vm-time">{{item.deadlineText}}</text>
+          </view>
+
+          <view class="vmine" wx:if="{{item.hasVoted}}">
+            <text class="cuIcon-roundcheckfill"></text>
+            <text class="vmine-txt">我已投「{{item.myText}}」</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view class="tc-empty" wx:else>还没有进行中的投票</view>
+
+  <view class="tc-safe"></view>
+</view>

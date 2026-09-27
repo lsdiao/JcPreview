@@ -1,0 +1,62 @@
+<!-- 首页 · 内容流（视频 / 图文 统一发布，均来自管理员后台配置） -->
+<view class="tc-page">
+  <view class="home-head">
+    <view class="brand">{{brand.name}}</view>
+    <view class="brand-en">{{brand.en}} · {{brand.slogan}}</view>
+  </view>
+
+  <view class="feed">
+    <block wx:if="{{loading}}">
+      <view class="tc-loading">加载中…</view>
+    </block>
+
+    <block wx:elif="{{items.length}}">
+      <view
+        class="feed-item"
+        wx:for="{{items}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="openContent"
+        hover-class="feed-item-hover"
+        hover-stay-time="80"
+      >
+        <view class="thumb tc-ratio tc-ratio-169">
+          <image src="{{item.cover}}" mode="aspectFill" lazy-load="{{true}}"></image>
+          <view class="tdim"></view>
+
+          <view class="pin-tag" wx:if="{{item.pinned}}">置顶</view>
+
+          <!-- 视频：播放按钮 + 时长 -->
+          <block wx:if="{{item.type === 'video'}}">
+            <view class="play">
+              <view class="play-ic"><text class="cuIcon-playfill"></text></view>
+            </view>
+            <view class="dur" wx:if="{{item.duration}}">{{item.duration}}</view>
+          </block>
+
+          <!-- 图文：类型角标 -->
+          <block wx:else>
+            <view class="kind">图文</view>
+          </block>
+        </view>
+
+        <view class="info">
+          <view class="title tc-clamp2">{{item.title}}</view>
+          <view class="meta" wx:if="{{item.type === 'article' && item.summary}}">
+            <text class="tc-clamp2">{{item.summary}}</text>
+          </view>
+          <view class="src">
+            <text class="dot"></text>
+            <text>{{item.type === 'video' ? (item.source || '视频号') : '图文 · ' + (item.source || brand.name)}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="tc-empty">管理员还没有发布内容</view>
+    </block>
+  </view>
+
+  <view class="tc-safe"></view>
+</view>

@@ -1,0 +1,137 @@
+.home-head {
+  padding: 24rpx 36rpx 34rpx;
+  border-bottom: 1rpx solid rgba(235, 225, 205, 0.10);
+}
+.brand {
+  font-family: "Songti SC", "STSong", serif;
+  font-size: 42rpx;
+  font-weight: 700;
+  letter-spacing: 8rpx;
+}
+.brand-en {
+  font-size: 19rpx;
+  letter-spacing: 4rpx;
+  color: #c9a26b;
+  margin-top: 10rpx;
+}
+
+.feed {
+  padding: 32rpx 32rpx 20rpx;
+}
+.feed-item {
+  background-color: #16161d;
+  border: 1rpx solid rgba(235, 225, 205, 0.10);
+  border-radius: 32rpx;
+  overflow: hidden;
+  margin-bottom: 36rpx;
+}
+.feed-item-hover {
+  transform: scale(0.985);
+}
+
+.thumb image {
+  opacity: 0.92;
+}
+.tdim {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.pin-tag {
+  position: absolute;
+  left: 24rpx;
+  top: 24rpx;
+  height: 42rpx;
+  padding: 0 18rpx;
+  display: flex;
+  align-items: center;
+  border-radius: 8rpx;
+  background: linear-gradient(135deg, #ecd9ac 0%, #c9a26b 55%, #a97f4c 100%);
+  color: #1d1608;
+  font-size: 20rpx;
+  font-weight: 800;
+  letter-spacing: 2rpx;
+}
+
+.play {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.play-ic {
+  width: 108rpx;
+  height: 108rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 14, 0.4);
+  border: 1rpx solid rgba(231, 210, 164, 0.65);
+  color: #e7d2a4;
+  font-size: 44rpx;
+}
+
+.dur {
+  position: absolute;
+  right: 24rpx;
+  bottom: 24rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid rgba(231, 210, 164, 0.4);
+  background: rgba(0, 0, 0, 0.5);
+  color: #e7d2a4;
+  font-size: 21rpx;
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+.kind {
+  position: absolute;
+  right: 24rpx;
+  bottom: 24rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  border: 1rpx solid rgba(231, 210, 164, 0.4);
+  background: rgba(0, 0, 0, 0.5);
+  color: #e7d2a4;
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+}
+
+.info {
+  padding: 26rpx 30rpx 30rpx;
+}
+.title {
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.meta {
+  margin-top: 14rpx;
+  font-size: 23rpx;
+  color: #8f8a80;
+  line-height: 1.7;
+}
+.src {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+  font-size: 21rpx;
+  color: #8f8a80;
+  letter-spacing: 1rpx;
+}
+.src .dot {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #5f5b54;
+  margin-right: 12rpx;
+}

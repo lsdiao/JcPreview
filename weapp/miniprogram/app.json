@@ -1,0 +1,73 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/content-detail/content-detail",
+    "pages/products/products",
+    "pages/product-detail/product-detail",
+    "pages/price/price",
+    "pages/vote/vote",
+    "pages/vote-detail/vote-detail",
+    "pages/mine/mine",
+    "pages/admin/index/index",
+    "pages/admin/codes/codes",
+    "pages/admin/apps/apps",
+    "pages/admin/prices/prices",
+    "pages/admin/votes/votes",
+    "pages/admin/contents/contents"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#0c0c11",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "臻瓷汇",
+    "backgroundColor": "#0c0c11",
+    "backgroundTextStyle": "light",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#6b6760",
+    "selectedColor": "#e7d2a4",
+    "backgroundColor": "#101016",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页",
+        "iconPath": "images/tab/home.png",
+        "selectedIconPath": "images/tab/home-on.png"
+      },
+      {
+        "pagePath": "pages/products/products",
+        "text": "产品",
+        "iconPath": "images/tab/grid.png",
+        "selectedIconPath": "images/tab/grid-on.png"
+      },
+      {
+        "pagePath": "pages/price/price",
+        "text": "查价",
+        "iconPath": "images/tab/tag.png",
+        "selectedIconPath": "images/tab/tag-on.png"
+      },
+      {
+        "pagePath": "pages/vote/vote",
+        "text": "投票",
+        "iconPath": "images/tab/vote.png",
+        "selectedIconPath": "images/tab/vote-on.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "images/tab/mine.png",
+        "selectedIconPath": "images/tab/mine-on.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于就近门店推荐（本期未使用）"
+    }
+  },
+  "requiredPrivateInfos": [],
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

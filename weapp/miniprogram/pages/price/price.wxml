@@ -1,0 +1,76 @@
+<!-- 查价 · 输入产品编号精确查询本等级价格 -->
+<view class="tc-page tc-pad">
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <!-- 非会员 -->
+  <block wx:elif="{{needMember}}">
+    <view class="tc-lock">
+      <view class="tc-lock-ic"><text class="cuIcon-lock"></text></view>
+      <view class="tc-lock-title">查价仅对会员开放</view>
+      <view class="tc-lock-desc">输入邀请码开通后即可按编号查询本等级价格</view>
+      <view class="tc-btn" bindtap="goActivate">去开通会员</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="tc-hero">
+      <view class="tc-hero-k">PRICE CHECK</view>
+      <view class="tc-hero-title">产品查价</view>
+      <view class="tc-hero-desc">输入产品编号（如 A-8001），实时查询「{{levelText}}」对应价格</view>
+    </view>
+
+    <view class="tc-card">
+      <view class="tc-card-hd">产品编号</view>
+      <input
+        class="tc-input tc-mono"
+        placeholder="请输入产品编号"
+        placeholder-class="tc-input-ph"
+        value="{{no}}"
+        bindinput="onInput"
+        bindconfirm="search"
+        confirm-type="search"
+      />
+      <view class="tc-btn tc-btn-block mt {{searching ? 'tc-disabled' : ''}}" bindtap="search">
+        {{searching ? '查询中…' : '查询价格'}}
+      </view>
+      <view class="hint">编号可在产品详情页或产品包装上查看</view>
+    </view>
+
+    <!-- 查询结果 -->
+    <view class="tc-card" wx:if="{{searched && result}}">
+      <view class="tc-card-hd">查询结果</view>
+      <view class="res" bindtap="openDetail" hover-class="res-hover">
+        <view class="res-img">
+          <image wx:if="{{result.images[0]}}" src="{{result.images[0]}}" mode="aspectFill"></image>
+          <text class="cuIcon-pic is-ph" wx:else></text>
+        </view>
+        <view class="res-info">
+          <view class="res-name tc-clamp2">{{result.name}}</view>
+          <view class="res-sub">{{result.brand || '—'}} · {{result.spec || '—'}}</view>
+          <view class="res-no tc-mono">{{result.no}}</view>
+        </view>
+      </view>
+
+      <view class="price-box">
+        <view>
+          <view class="pb-label">{{levelText}}价</view>
+          <view class="tc-price pb-num">{{result.price}}<text class="unit">{{result.unit}}</text></view>
+        </view>
+        <view class="tc-tag is-solid">{{levelText}}</view>
+      </view>
+
+      <view class="tc-btn-ghost mt" bindtap="openDetail">查看产品详情</view>
+    </view>
+
+    <!-- 查询失败 -->
+    <view class="tc-card fail" wx:if="{{searched && !result}}">
+      <view class="fail-ic"><text class="cuIcon-warnfill"></text></view>
+      <view class="fail-txt">{{errMsg}}</view>
+      <view class="fail-sub">请核对编号后重试，或联系客服确认</view>
+    </view>
+  </block>
+
+  <view class="tc-safe"></view>
+</view>

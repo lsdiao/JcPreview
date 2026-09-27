@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>寓见 · 智慧公寓管理系统</title>
+<style>
+/* ============================================================
+   寓见 · 智慧公寓管理系统 — 设计系统
+   风格：深色玻璃拟态 / 渐变霓虹 / 年轻化
+============================================================ */
+:root{
+  --bg:#070b15;
+  --panel:rgba(255,255,255,.038);
+  --panel-2:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.09);
+  --border-strong:rgba(255,255,255,.16);
+  --text:#eef1f8;
+  --muted:#8b93a7;
+  --muted-2:#5c6478;
+  --violet:#8b5cf6;
+  --cyan:#22d3ee;
+  --pink:#f472b6;
+  --green:#34d399;
+  --amber:#fbbf24;
+  --red:#fb7185;
+  --blue:#60a5fa;
+  --grad:linear-gradient(135deg,#8b5cf6 0%,#6366f1 45%,#22d3ee 100%);
+  --grad-soft:linear-gradient(135deg,rgba(139,92,246,.16),rgba(34,211,238,.10));
+  --radius:18px;
+  --shadow:0 12px 40px rgba(0,0,0,.42);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei","Segoe UI",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  font-size:14px;
+  line-height:1.6;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* 背景氛围光 */
+body::before,body::after{
+  content:"";position:fixed;border-radius:50%;filter:blur(120px);z-index:0;pointer-events:none;
+}
+body::before{width:680px;height:680px;background:rgba(139,92,246,.16);top:-220px;left:18%}
+body::after{width:560px;height:560px;background:rgba(34,211,238,.10);bottom:-200px;right:6%}
+::selection{background:rgba(139,92,246,.4)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.22)}
+::-webkit-scrollbar-track{background:transparent}
+
+.app{display:flex;height:100vh;position:relative;z-index:1}
+
+/* ================= 侧边栏 ================= */
+.sidebar{
+  width:236px;flex-shrink:0;display:flex;flex-direction:column;
+  background:rgba(10,14,26,.72);backdrop-filter:blur(24px);
+  border-right:1px solid var(--border);padding:20px 14px;
+}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 10px 18px}
+.logo-mark{
+  width:38px;height:38px;border-radius:12px;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px rgba(124,92,246,.45);
+}
+.logo-mark svg{width:20px;height:20px;color:#fff}
+.logo-name{font-size:18px;font-weight:800;letter-spacing:.5px}
+.logo-name em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:-2px}
+
+.nav-group{margin-top:14px}
+.nav-label{font-size:10px;color:var(--muted-2);letter-spacing:3px;padding:0 12px;margin-bottom:6px}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:9.5px 12px;border-radius:12px;
+  color:var(--muted);cursor:pointer;transition:.22s;font-size:13.5px;margin-bottom:2px;
+  border:1px solid transparent;user-select:none;
+}
+.nav-item svg{width:17px;height:17px;flex-shrink:0}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-item.active{
+  color:#fff;background:var(--grad-soft);
+  border-color:rgba(139,92,246,.35);
+  box-shadow:inset 0 0 24px rgba(139,92,246,.10);
+}
+.nav-item.active svg{color:var(--cyan)}
+.nav-item .nav-badge{
+  margin-left:auto;font-size:10px;background:rgba(251,113,133,.18);color:var(--red);
+  padding:1px 7px;border-radius:20px;font-weight:700;
+}
+.sidebar-foot{margin-top:auto}
+.upgrade{
+  border-radius:16px;padding:14px;background:var(--grad-soft);
+  border:1px solid rgba(139,92,246,.3);position:relative;overflow:hidden;
+}
+.upgrade::after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;
+  background:rgba(34,211,238,.22);filter:blur(34px);right:-24px;top:-24px}
+.upgrade b{font-size:13px}
+.upgrade p{font-size:11px;color:var(--muted);margin:3px 0 10px}
+.upgrade button{
+  width:100%;border:none;background:var(--grad);color:#fff;font-weight:700;
+  padding:7px;border-radius:10px;cursor:pointer;font-size:12px;
+  box-shadow:0 4px 14px rgba(124,92,246,.4);transition:.2s;
+}
+.upgrade button:hover{transform:translateY(-1px);filter:brightness(1.1)}
+.user-card{display:flex;align-items:center;gap:10px;padding:12px 8px 2px}
+.avatar{
+  width:36px;height:36px;border-radius:50%;background:var(--grad);
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;
+  border:2px solid rgba(255,255,255,.18);flex-shrink:0;
+}
+.user-card .u-name{font-size:13px;font-weight:700}
+.user-card .u-role{font-size:11px;color:var(--muted)}
+
+/* ================= 主区 ================= */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{
+  height:64px;flex-shrink:0;display:flex;align-items:center;gap:14px;
+  padding:0 26px;border-bottom:1px solid var(--border);
+  background:rgba(10,14,26,.5);backdrop-filter:blur(20px);
+}
+.page-title{font-size:17px;font-weight:800}
+.crumb{font-size:11.5px;color:var(--muted)}
+.topbar .spacer{flex:1}
+.search{
+  display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);
+  border:1px solid var(--border);border-radius:12px;padding:7px 13px;width:250px;transition:.2s;
+}
+.search:focus-within{border-color:rgba(139,92,246,.55);box-shadow:0 0 0 3px rgba(139,92,246,.14)}
+.search svg{width:15px;height:15px;color:var(--muted)}
+.search input{background:none;border:none;outline:none;color:var(--text);font-size:13px;width:100%;font-family:var(--font)}
+.search input::placeholder{color:var(--muted-2)}
+
+.btn{
+  display:inline-flex;align-items:center;gap:7px;border-radius:12px;cursor:pointer;
+  padding:8px 15px;font-size:13px;font-weight:600;border:1px solid var(--border);
+  background:rgba(255,255,255,.05);color:var(--text);transition:.2s;font-family:var(--font);
+}
+.btn:hover{background:rgba(255,255,255,.1);border-color:var(--border-strong)}
+.btn svg{width:15px;height:15px}
+.btn-primary{
+  background:var(--grad);border:none;color:#fff;
+  box-shadow:0 6px 18px rgba(124,92,246,.42);
+}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:9px}
+.btn-danger-ghost{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.3);color:var(--red)}
+.btn-danger-ghost:hover{background:rgba(251,113,133,.18)}
+
+.icon-btn{
+  position:relative;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);cursor:pointer;transition:.2s;color:var(--muted);
+}
+.icon-btn:hover{color:var(--text);border-color:var(--border-strong)}
+.icon-btn svg{width:17px;height:17px}
+.icon-btn .dot{
+  position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;
+  background:var(--red);box-shadow:0 0 0 3px rgba(251,113,133,.25);
+}
+
+/* ================= 视图容器 ================= */
+.views{flex:1;overflow-y:auto;padding:24px 26px 40px}
+.view{display:none}
+.view.active{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.card{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  backdrop-filter:blur(18px);
+}
+.card-pad{padding:20px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card-title::before{content:"";width:4px;height:15px;border-radius:4px;background:var(--grad)}
+.card-sub{font-size:11.5px;color:var(--muted)}
+
+/* ================= KPI 卡片 ================= */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.kpi{
+  position:relative;overflow:hidden;padding:18px 20px;border-radius:var(--radius);
+  background:var(--panel);border:1px solid var(--border);backdrop-filter:blur(18px);transition:.25s;
+}
+.kpi:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:var(--shadow)}
+.kpi::after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;filter:blur(48px);right:-30px;top:-40px;opacity:.55}
+.kpi.k1::after{background:rgba(139,92,246,.4)}
+.kpi.k2::after{background:rgba(34,211,238,.32)}
+.kpi.k3::after{background:rgba(251,113,133,.3)}
+.kpi.k4::after{background:rgba(52,211,153,.3)}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kpi-label{font-size:12.5px;color:var(--muted)}
+.kpi-ico{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.kpi-ico svg{width:17px;height:17px}
+.kpi.k1 .kpi-ico{background:rgba(139,92,246,.16);color:var(--violet)}
+.kpi.k2 .kpi-ico{background:rgba(34,211,238,.14);color:var(--cyan)}
+.kpi.k3 .kpi-ico{background:rgba(251,113,133,.14);color:var(--red)}
+.kpi.k4 .kpi-ico{background:rgba(52,211,153,.14);color:var(--green)}
+.kpi-num{font-size:27px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kpi-num small{font-size:13px;color:var(--muted);font-weight:600;margin-left:2px}
+.kpi-foot{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:11.5px;color:var(--muted)}
+.delta{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.delta.up{background:rgba(52,211,153,.14);color:var(--green)}
+.delta.down{background:rgba(251,113,133,.14);color:var(--red)}
+.spark{position:absolute;right:16px;bottom:14px;width:92px;height:34px;opacity:.9}
+
+/* ================= 图表 ================= */
+.grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:18px}
+.grid-1-1{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.chart-box{position:relative}
+.chart-tip{
+  position:fixed;z-index:99;pointer-events:none;display:none;
+  background:rgba(14,18,32,.95);border:1px solid var(--border-strong);border-radius:10px;
+  padding:7px 11px;font-size:12px;box-shadow:var(--shadow);
+}
+.chart-tip b{font-size:13px}
+.chart-tip .t-label{color:var(--muted);font-size:11px}
+.legend{display:flex;gap:14px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted)}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+.donut-wrap{display:flex;align-items:center;gap:18px}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.donut-center b{font-size:24px;font-weight:800}
+.donut-center span{font-size:11px;color:var(--muted)}
+.donut-legend{flex:1;display:flex;flex-direction:column;gap:9px}
+.donut-legend .dl-row{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.donut-legend i{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.donut-legend .dl-val{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.donut-legend .dl-pct{color:var(--muted);font-size:11px;width:44px;text-align:right}
+
+/* ================= 列表 / 表格 ================= */
+.table{width:100%;border-collapse:collapse}
+.table th{
+  text-align:left;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px;
+  padding:10px 14px;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.table td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;white-space:nowrap}
+.table tbody tr{transition:.15s}
+.table tbody tr:hover{background:rgba(255,255,255,.03)}
+.table tbody tr:last-child td{border-bottom:none}
+.t-strong{font-weight:700}
+.t-muted{color:var(--muted);font-size:12px}
+.money{font-weight:800;font-variant-numeric:tabular-nums}
+
+.badge{
+  display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:20px;white-space:nowrap;
+}
+.badge i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.st-green{background:rgba(52,211,153,.13);color:var(--green)}
+.st-amber{background:rgba(251,191,36,.13);color:var(--amber)}
+.st-red{background:rgba(251,113,133,.13);color:var(--red)}
+.st-blue{background:rgba(96,165,250,.13);color:var(--blue)}
+.st-violet{background:rgba(139,92,246,.15);color:#a78bfa}
+.st-cyan{background:rgba(34,211,238,.12);color:var(--cyan)}
+.st-gray{background:rgba(255,255,255,.07);color:var(--muted)}
+
+.tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;margin-right:4px}
+
+/* ================= 筛选 Chips ================= */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  padding:6px 14px;border-radius:20px;font-size:12.5px;cursor:pointer;transition:.2s;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);user-select:none;
+}
+.chip:hover{color:var(--text)}
+.chip.active{background:var(--grad-soft);border-color:rgba(139,92,246,.5);color:#fff;font-weight:700}
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.toolbar .spacer{flex:1}
+
+/* ================= 房源卡片 ================= */
+.prop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.prop-card{overflow:hidden;transition:.25s;cursor:pointer}
+.prop-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--border-strong)}
+.prop-img{height:150px;position:relative;background:linear-gradient(135deg,#1e1b4b,#164e63);overflow:hidden}
+.prop-img img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92}
+.prop-img .prop-status{position:absolute;top:12px;left:12px}
+.prop-img .prop-own{position:absolute;top:12px;right:12px;font-size:10.5px;font-weight:700;
+  padding:3px 10px;border-radius:20px;background:rgba(7,11,21,.6);backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.prop-body{padding:16px 18px}
+.prop-name{font-size:15.5px;font-weight:800}
+.prop-addr{font-size:12px;color:var(--muted);margin:3px 0 12px;display:flex;align-items:center;gap:5px}
+.prop-addr svg{width:13px;height:13px;flex-shrink:0}
+.prop-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.prop-stat{background:rgba(255,255,255,.04);border-radius:10px;padding:8px 10px;text-align:center}
+.prop-stat b{font-size:15px;display:block;font-variant-numeric:tabular-nums}
+.prop-stat span{font-size:10.5px;color:var(--muted)}
+.occ-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+.occ-bar i{display:block;height:100%;border-radius:6px;background:var(--grad)}
+.occ-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px}
+.occ-row b{color:var(--text)}
+
+/* ================= 房间卡片 ================= */
+.room-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.room-card{padding:16px;transition:.22s;position:relative;overflow:hidden}
+.room-card:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:var(--shadow)}
+.room-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.room-card.rc-rented::before{background:var(--green)}
+.room-card.rc-empty::before{background:var(--cyan)}
+.room-card.rc-clean::before{background:var(--amber)}
+.room-card.rc-fix::before{background:var(--red)}
+.room-card.rc-lock::before{background:var(--violet)}
+.room-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.room-no{font-size:16px;font-weight:800;letter-spacing:.5px}
+.room-meta{font-size:11.5px;color:var(--muted);margin-bottom:10px}
+.room-price{font-size:19px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.room-price small{font-size:11px;color:var(--muted);-webkit-text-fill-color:var(--muted);font-weight:600}
+.room-foot{display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.09);font-size:11.5px;color:var(--muted)}
+.io-icons{display:flex;gap:6px}
+.io-icons span{width:20px;height:20px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;color:var(--cyan)}
+.io-icons svg{width:11px;height:11px}
+.room-warn{margin-top:8px;font-size:10.5px;color:var(--amber);display:flex;align-items:center;gap:4px}
+.room-warn svg{width:11px;height:11px}
+
+/* ================= 租客 ================= */
+.tenant-cell{display:flex;align-items:center;gap:10px}
+.tenant-cell .avatar{width:32px;height:32px;font-size:12px}
+.tenant-cell .t-sub{font-size:11px;color:var(--muted)}
+
+/* ================= 租约进度 ================= */
+.lease-prog{width:130px}
+.lease-prog .lp-row{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-bottom:4px}
+.lp-bar{height:5px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}
+.lp-bar i{display:block;height:100%;background:var(--grad);border-radius:5px}
+
+/* ================= IoT ================= */
+.dev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dev-card{padding:16px;transition:.22s}
+.dev-card:hover{transform:translateY(-3px);border-color:var(--border-strong)}
+.dev-head{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.dev-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dev-ico svg{width:19px;height:19px}
+.dev-ico.lock{background:rgba(139,92,246,.16);color:var(--violet)}
+.dev-ico.elec{background:rgba(251,191,36,.14);color:var(--amber)}
+.dev-ico.water{background:rgba(34,211,238,.13);color:var(--cyan)}
+.dev-ico.gas{background:rgba(251,113,133,.13);color:var(--red)}
+.dev-ico.gate{background:rgba(52,211,153,.13);color:var(--green)}
+.dev-name{font-weight:700;font-size:13.5px}
+.dev-room{font-size:11px;color:var(--muted)}
+.dev-status{margin-left:auto}
+.dev-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-top:8px}
+.batt{display:flex;align-items:center;gap:7px}
+.batt-bar{width:52px;height:5px;border-radius:5px;background:rgba(255,255,255,.09);overflow:hidden}
+.batt-bar i{display:block;height:100%;border-radius:5px}
+.switch{position:relative;width:36px;height:20px;flex-shrink:0;cursor:pointer}
+.switch input{display:none}
+.switch em{
+  position:absolute;inset:0;border-radius:20px;background:rgba(255,255,255,.12);transition:.25s;
+}
+.switch em::after{
+  content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.25s;
+}
+.switch input:checked + em{background:var(--grad)}
+.switch input:checked + em::after{left:19px}
+.dev-actions{display:flex;gap:8px;margin-top:13px}
+.dev-actions .btn{flex:1;justify-content:center}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ================= 报修看板 ================= */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+.kb-col{border-radius:var(--radius);background:rgba(255,255,255,.02);border:1px solid var(--border);overflow:hidden}
+.kb-head{padding:12px 15px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;border-bottom:1px solid var(--border)}
+.kb-head i{width:8px;height:8px;border-radius:50%}
+.kb-head .kb-count{margin-left:auto;font-size:11px;color:var(--muted);background:rgba(255,255,255,.07);padding:1px 9px;border-radius:20px}
+.kb-body{padding:12px;display:flex;flex-direction:column;gap:10px;min-height:120px}
+.kb-card{background:var(--panel-2);border:1px solid var(--border);border-radius:13px;padding:12px 13px;transition:.2s;cursor:pointer}
+.kb-card:hover{border-color:var(--border-strong);transform:translateY(-2px)}
+.kb-type{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;margin-bottom:6px}
+.kb-type svg{width:13px;height:13px}
+.kb-desc{font-size:12.5px;line-height:1.5;margin-bottom:8px}
+.kb-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.kb-cost{font-weight:700;color:var(--amber)}
+
+/* ================= 消息 ================= */
+.msg-list{display:flex;flex-direction:column}
+.msg-item{display:flex;gap:13px;padding:15px 20px;border-bottom:1px solid rgba(255,255,255,.05);transition:.15s;cursor:pointer}
+.msg-item:hover{background:rgba(255,255,255,.03)}
+.msg-item:last-child{border-bottom:none}
+.msg-ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.msg-ico svg{width:17px;height:17px}
+.msg-title{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px}
+.msg-item.unread .msg-title::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--red)}
+.msg-body{font-size:12.5px;color:var(--muted);margin-top:2px}
+.msg-time{margin-left:auto;font-size:11px;color:var(--muted-2);flex-shrink:0}
+
+/* ================= 设置 ================= */
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.input,select.input{
+  width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:11px;
+  padding:9px 13px;color:var(--text);font-size:13px;outline:none;transition:.2s;font-family:var(--font);
+}
+.input:focus{border-color:rgba(139,92,246,.55);box-shadow:0 0 0 3px rgba(139,92,246,.14)}
+select.input option{background:#111627}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check-row{display:flex;align-items:center;gap:9px;padding:8px 0;font-size:13px;cursor:pointer}
+.log-line{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,.06);font-size:12.5px}
+.log-line:last-child{border-bottom:none}
+.log-time{color:var(--muted-2);font-size:11.5px;flex-shrink:0;width:118px}
+.log-user{color:var(--cyan);flex-shrink:0;width:64px}
+
+/* ================= 到期提醒 / 动态 ================= */
+.feed-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+.feed-item:last-child{border-bottom:none}
+.feed-dot{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.feed-dot svg{width:15px;height:15px}
+.feed-text{font-size:12.5px;line-height:1.55}
+.feed-text b{font-weight:700}
+.feed-time{font-size:11px;color:var(--muted-2)}
+.due-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+.due-item:last-child{border-bottom:none}
+.due-day{
+  width:46px;height:46px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;
+  font-weight:800;font-size:16px;
+}
+.due-day span{font-size:9px;font-weight:600;opacity:.8;margin-top:-2px}
+.due-info{flex:1;min-width:0}
+.due-info b{font-size:13px;display:block}
+.due-info span{font-size:11.5px;color:var(--muted)}
+.due-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+
+/* ================= 弹窗 ================= */
+.modal-mask{
+  position:fixed;inset:0;background:rgba(4,7,14,.66);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;z-index:100;
+}
+.modal-mask.show{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  width:520px;max-width:92vw;max-height:86vh;overflow-y:auto;
+  background:rgba(17,22,39,.96);border:1px solid var(--border-strong);border-radius:20px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);animation:popIn .28s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.94) translateY(14px)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0}
+.modal-head h3{font-size:16.5px;font-weight:800}
+.modal-close{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);background:rgba(255,255,255,.06);transition:.2s}
+.modal-close:hover{color:#fff;background:rgba(251,113,133,.2)}
+.modal-body{padding:18px 24px 24px}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+
+/* ================= Toast ================= */
+.toast-wrap{position:fixed;right:24px;bottom:24px;z-index:200;display:flex;flex-direction:column;gap:10px}
+.toast{
+  display:flex;align-items:center;gap:10px;padding:13px 18px;border-radius:14px;font-size:13px;font-weight:600;
+  background:rgba(17,22,39,.95);border:1px solid var(--border-strong);box-shadow:var(--shadow);
+  animation:toastIn .3s cubic-bezier(.2,.9,.3,1.2);
+}
+.toast svg{width:17px;height:17px;color:var(--green)}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.toast.out{animation:toastOut .3s forwards}
+@keyframes toastOut{to{opacity:0;transform:translateX(30px)}}
+
+/* ================= 欢迎横幅 ================= */
+.hero{
+  position:relative;overflow:hidden;border-radius:var(--radius);margin-bottom:18px;
+  background:linear-gradient(120deg,rgba(139,92,246,.22),rgba(34,211,238,.12) 60%,rgba(244,114,182,.12));
+  border:1px solid rgba(139,92,246,.28);padding:22px 26px;display:flex;align-items:center;
+}
+.hero::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(139,92,246,.28);filter:blur(70px);right:60px;top:-80px}
+.hero h2{font-size:20px;font-weight:800}
+.hero h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:12.5px;margin-top:4px}
+.hero .hero-actions{margin-left:auto;display:flex;gap:10px;position:relative;z-index:1}
+
+.empty{padding:40px;text-align:center;color:var(--muted-2);font-size:13px}
+
+@media (max-width:1280px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .room-grid{grid-template-columns:repeat(3,1fr)}
+  .dev-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-2-1,.grid-1-1,.set-grid{grid-template-columns:1fr}
+  .kanban{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ================= 侧边栏 ================= -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M14 9h1M14 13h1M10 21v-4h4v4"/></svg>
+      </div>
+      <div>
+        <div class="logo-name">寓<em>见</em></div>
+        <div class="logo-sub">SMART APARTMENT</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">总 览</div>
+      <div class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>数据看板</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">资 产 管 理</div>
+      <div class="nav-item" data-view="properties">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18M2 22h20M10 6h1M13 6h1M10 10h1M13 10h1M10 14h1M13 14h1"/></svg>
+        <span>房源管理</span>
+      </div>
+      <div class="nav-item" data-view="rooms">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>
+        <span>房间管理</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">租 务 管 理</div>
+      <div class="nav-item" data-view="tenants">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>租客管理</span>
+      </div>
+      <div class="nav-item" data-view="leases">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        <span>租约合同</span>
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item" data-view="billing">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22M7 15h4"/></svg>
+        <span>账单缴费</span>
+        <span class="nav-badge">6</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">智 能 运 维</div>
+      <div class="nav-item" data-view="iot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>
+        <span>IoT 智能设备</span>
+      </div>
+      <div class="nav-item" data-view="repair">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span>报修工单</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">系 统</div>
+      <div class="nav-item" data-view="messages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span>消息通知</span>
+        <span class="nav-badge">5</span>
+      </div>
+      <div class="nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>系统设置</span>
+      </div>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="upgrade">
+        <b>🚀 寓见 Pro</b>
+        <p>解锁多门店管理、能耗分析、发票报税等高级能力</p>
+        <button onclick="toast('已开通 Pro 试用（原型演示）')">立即升级</button>
+      </div>
+      <div class="user-card">
+        <div class="avatar">王</div>
+        <div>
+          <div class="u-name">王房东</div>
+          <div class="u-role">超级管理员</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= 主内容 ================= -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="page-title" id="pageTitle">数据看板</div>
+        <div class="crumb" id="pageCrumb">寓见 · 总览</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="globalSearch" placeholder="搜索房间 / 租客 / 合同 / 账单…">
+      </div>
+      <button class="btn" onclick="openModal('modalMeter')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        快速抄表
+      </button>
+      <button class="btn btn-primary" onclick="openModal('modalLease')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        新增租约
+      </button>
+      <div class="icon-btn" onclick="switchView('messages')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="dot"></span>
+      </div>
+    </header>
+
+    <div class="views">
+
+      <!-- ============ 数据看板 ============ -->
+      <section class="view active" id="view-dashboard">
+        <div class="hero">
+          <div>
+            <h2>下午好，王房东 👋 今天有 <em>3 份租约</em> 即将到期</h2>
+            <p>2026年4月2日 · 星期四 · 您的公寓资产正在稳定运营中，本月营收同比上涨 12.6%</p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn" onclick="switchView('billing')">查看欠费</button>
+            <button class="btn btn-primary" onclick="openModal('modalRoom')">新增房间</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi k1">
+            <div class="kpi-top">
+              <span class="kpi-label">总房间数 / 出租率</span>
+              <div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18M2 22h20"/></svg></div>
+            </div>
+            <div class="kpi-num"><span data-count="128">0</span><small>间 · <b style="color:var(--green)" data-count="71.9" data-decimal="1">0</b>%</small></div>
+            <div class="kpi-foot"><span class="delta up">▲ 3.2%</span>运营中房源出租率 89.2%</div>
+            <svg class="spark" data-spark="62,66,64,70,68,72,71,74,72,76,74,72" data-color="#8b5cf6"></svg>
+          </div>
+          <div class="kpi k2">
+            <div class="kpi-top">
+              <span class="kpi-label">本月总营收</span>
+              <div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            </div>
+            <div class="kpi-num">¥<span data-count="463800">0</span></div>
+            <div class="kpi-foot"><span class="delta up">▲ 12.6%</span>较上月 ¥411,900</div>
+            <svg class="spark" data-spark="38,40,39,42,41,44,43,45,44,47,45,46" data-color="#22d3ee"></svg>
+          </div>
+          <div class="kpi k3">
+            <div class="kpi-top">
+              <span class="kpi-label">待收欠费</span>
+              <div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
+            </div>
+            <div class="kpi-num">¥<span data-count="38240">0</span></div>
+            <div class="kpi-foot"><span class="delta down">6 笔逾期</span>已自动发送催缴提醒</div>
+            <svg class="spark" data-spark="52,48,50,44,46,42,43,40,41,39,40,38" data-color="#fb7185"></svg>
+          </div>
+          <div class="kpi k4">
+            <div class="kpi-top">
+              <span class="kpi-label">IoT 设备在线率</span>
+              <div class="kpi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg></div>
+            </div>
+            <div class="kpi-num"><span data-count="97.2" data-decimal="1">0</span><small>%</small></div>
+            <div class="kpi-foot"><span class="delta up">139/143 在线</span>2 台低电量待维护</div>
+            <svg class="spark" data-spark="94,95,95,96,96,97,96,97,98,97,97,97" data-color="#34d399"></svg>
+          </div>
+        </div>
+
+        <div class="grid-2-1">
+          <div class="card card-pad">
+            <div class="card-head">
+              <div>
+                <div class="card-title">营收趋势</div>
+                <div class="card-sub">近 12 个月 · 单位：万元</div>
+              </div>
+              <div class="chips">
+                <div class="chip active" onclick="switchRev(this,'rent')">租金收入</div>
+                <div class="chip" onclick="switchRev(this,'util')">水电燃气</div>
+              </div>
+            </div>
+            <div class="chart-box" id="revChart" style="height:250px"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-head">
+              <div>
+                <div class="card-title">房间状态分布</div>
+                <div class="card-sub">全部 128 间</div>
+              </div>
+            </div>
+            <div class="donut-wrap">
+              <div style="position:relative;width:150px;height:150px;flex-shrink:0">
+                <div id="roomDonut"></div>
+                <div class="donut-center"><b>128</b><span>总房间</span></div>
+              </div>
+              <div class="donut-legend" id="donutLegend"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2-1">
+          <div class="card card-pad">
+            <div class="card-head">
+              <div class="card-title">最新动态</div>
+              <span class="card-sub">实时业务流水</span>
+            </div>
+            <div id="feedList"></div>
+          </div>
+          <div class="card card-pad">
+            <div class="card-head">
+              <div class="card-title">租约到期提醒</div>
+              <span class="card-sub">7 / 15 / 30 天</span>
+            </div>
+            <div id="dueList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 房源管理 ============ -->
+      <section class="view" id="view-properties">
+        <div class="toolbar">
+          <div class="chips">
+            <div class="chip active">全部房源 (4)</div>
+            <div class="chip">自有 (2)</div>
+            <div class="chip">托管 (2)</div>
+            <div class="chip">装修中 (1)</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" onclick="openModal('modalProperty')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            新增房源
+          </button>
+        </div>
+        <div class="prop-grid" id="propGrid"></div>
+      </section>
+
+      <!-- ============ 房间管理 ============ -->
+      <section class="view" id="view-rooms">
+        <div class="toolbar">
+          <div class="chips" id="roomChips">
+            <div class="chip active" data-f="all">全部 (128)</div>
+            <div class="chip" data-f="rented">已出租 (92)</div>
+            <div class="chip" data-f="empty">空置 (24)</div>
+            <div class="chip" data-f="clean">待保洁 (6)</div>
+            <div class="chip" data-f="fix">维修中 (4)</div>
+            <div class="chip" data-f="lock">已锁定 (2)</div>
+          </div>
+          <div class="spacer"></div>
+          <div class="search" style="width:200px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="roomSearch" placeholder="搜索房号…">
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modalRoom')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            新增房间
+          </button>
+        </div>
+        <div class="room-grid" id="roomGrid"></div>
+      </section>
+
+      <!-- ============ 租客管理 ============ -->
+      <section class="view" id="view-tenants">
+        <div class="toolbar">
+          <div class="chips" id="tenantChips">
+            <div class="chip active" data-f="all">全部 (86)</div>
+            <div class="chip" data-f="vip">优质租客</div>
+            <div class="chip" data-f="owing">欠费租客</div>
+            <div class="chip" data-f="share">合租租客</div>
+            <div class="chip" data-f="black">黑名单</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" onclick="toast('已打开租客录入（原型演示）')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            录入租客
+          </button>
+        </div>
+        <div class="card">
+          <table class="table">
+            <thead><tr>
+              <th>租客</th><th>手机号</th><th>入住房间</th><th>标签</th><th>入住时间</th><th>缴费状态</th><th>操作</th>
+            </tr></thead>
+            <tbody id="tenantBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 租约合同 ============ -->
+      <section class="view" id="view-leases">
+        <div class="toolbar">
+          <div class="chips" id="leaseChips">
+            <div class="chip active" data-f="all">全部 (94)</div>
+            <div class="chip" data-f="active">生效中 (82)</div>
+            <div class="chip" data-f="due">即将到期 (3)</div>
+            <div class="chip" data-f="wait">待签约 (4)</div>
+            <div class="chip" data-f="end">已退租 (5)</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" onclick="openModal('modalLease')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            创建租约
+          </button>
+        </div>
+        <div class="card">
+          <table class="table">
+            <thead><tr>
+              <th>合同编号</th><th>租客</th><th>房间</th><th>租期进度</th><th>付款方式</th><th>月租金</th><th>状态</th><th>操作</th>
+            </tr></thead>
+            <tbody id="leaseBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 账单缴费 ============ -->
+      <section class="view" id="view-billing">
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="kpi k2">
+            <div class="kpi-top"><span class="kpi-label">本月应收</span></div>
+            <div class="kpi-num">¥<span data-count="486200">0</span></div>
+            <div class="kpi-foot">含租金 / 水电 / 物业公摊</div>
+          </div>
+          <div class="kpi k4">
+            <div class="kpi-top"><span class="kpi-label">已收金额</span></div>
+            <div class="kpi-num">¥<span data-count="447960">0</span></div>
+            <div class="kpi-foot"><span class="delta up">回款率 92.1%</span></div>
+          </div>
+          <div class="kpi k3">
+            <div class="kpi-top"><span class="kpi-label">欠费金额</span></div>
+            <div class="kpi-num">¥<span data-count="38240">0</span></div>
+            <div class="kpi-foot"><span class="delta down">6 笔逾期</span>滞纳金按 0.05%/天 自动计算</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="chips" id="billChips">
+            <div class="chip active" data-f="all">全部账单</div>
+            <div class="chip" data-f="rent">租金</div>
+            <div class="chip" data-f="util">水电燃气</div>
+            <div class="chip" data-f="prop">物业公摊</div>
+            <div class="chip" data-f="other">维修/违约</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn" onclick="toast('账单流水已导出 Excel（原型演示）')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            导出 Excel
+          </button>
+          <button class="btn btn-primary" onclick="toast('4 月账单已批量生成并推送租客（原型演示）')">批量生成账单</button>
+        </div>
+        <div class="card">
+          <table class="table">
+            <thead><tr>
+              <th>账单编号</th><th>租客 / 房间</th><th>类型</th><th>账期</th><th>金额</th><th>状态</th><th>操作</th>
+            </tr></thead>
+            <tbody id="billBody"></tbody>
+          </table>
+        </div>
+
+        <!-- 押金管理 -->
+        <div class="card card-pad" style="margin-top:16px">
+          <div class="card-head">
+            <div class="card-title">押金管理</div>
+            <span class="card-sub">缴纳 · 冻结 · 退租抵扣 · 退还 全流程记录</span>
+          </div>
+          <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
+            <div class="kpi k1" style="padding:14px 16px">
+              <div class="kpi-top"><span class="kpi-label">在管押金总额</span></div>
+              <div class="kpi-num" style="font-size:22px">¥<span data-count="186400">0</span></div>
+              <div class="kpi-foot">52 笔生效中</div>
+            </div>
+            <div class="kpi k4" style="padding:14px 16px">
+              <div class="kpi-top"><span class="kpi-label">本月已退还</span></div>
+              <div class="kpi-num" style="font-size:22px">¥<span data-count="7360">0</span></div>
+              <div class="kpi-foot">2 笔 · 核验无损全额退</div>
+            </div>
+            <div class="kpi k3" style="padding:14px 16px">
+              <div class="kpi-top"><span class="kpi-label">待结算（退租中）</span></div>
+              <div class="kpi-num" style="font-size:22px">¥<span data-count="3980">0</span></div>
+              <div class="kpi-foot">李慕白 B-0303 资产核验中</div>
+            </div>
+            <div class="kpi k2" style="padding:14px 16px">
+              <div class="kpi-top"><span class="kpi-label">累计抵扣金额</span></div>
+              <div class="kpi-num" style="font-size:22px">¥<span data-count="2140">0</span></div>
+              <div class="kpi-foot">维修赔付 / 欠费抵扣</div>
+            </div>
+          </div>
+          <table class="table">
+            <thead><tr><th>流水号</th><th>租客 / 房间</th><th>类型</th><th>金额</th><th>时间</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody id="depositBody"></tbody>
+          </table>
+        </div>
+
+        <!-- 财务统计 -->
+        <div class="card card-pad" style="margin-top:16px">
+          <div class="card-head">
+            <div class="card-title">财务统计</div>
+            <span class="card-sub">空置亏损 · 单房间收益 · 滞纳金测算</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px">
+            <div>
+              <div class="card-title" style="font-size:13px;margin-bottom:10px">单房间收益排行（近 3 个月）</div>
+              <div id="roomProfit"></div>
+            </div>
+            <div>
+              <div class="card-title" style="font-size:13px;margin-bottom:10px">空置亏损估算</div>
+              <div style="background:var(--grad-soft);border:1px solid rgba(139,92,246,.3);border-radius:13px;padding:16px">
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:8px"><span>空置房间</span><b style="color:#fff">11 间</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:8px"><span>平均日租金</span><b style="color:#fff">¥142 / 天</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:12px"><span>平均空置天数</span><b style="color:#fff">17.5 天</b></div>
+                <div style="border-top:1px dashed rgba(255,255,255,.15);padding-top:12px;display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:12.5px;color:var(--muted)">本月空置亏损</span>
+                  <span style="font-size:22px;font-weight:800;color:var(--red)">¥27,405</span>
+                </div>
+              </div>
+              <div class="card-title" style="font-size:13px;margin:14px 0 10px">滞纳金测算</div>
+              <div style="background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:13px;padding:14px">
+                <div class="form-grid-2" style="margin-bottom:10px">
+                  <div class="form-row" style="margin-bottom:0"><label>欠费金额（元）</label><input class="input" id="lateAmt" type="number" value="3280" oninput="calcLate()"></div>
+                  <div class="form-row" style="margin-bottom:0"><label>逾期天数</label><input class="input" id="lateDays" type="number" value="12" oninput="calcLate()"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted)">
+                  <span>按 0.05%/天 自动计算</span>
+                  <span>滞纳金 <b id="lateFee" style="color:var(--amber);font-size:16px">¥19.68</b></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ IoT 设备 ============ -->
+      <section class="view" id="view-iot">
+        <div class="kpi-grid">
+          <div class="kpi k1">
+            <div class="kpi-top"><span class="kpi-label">设备总数</span></div>
+            <div class="kpi-num"><span data-count="143">0</span><small>台</small></div>
+            <div class="kpi-foot">门锁 62 · 电表 48 · 水表 26 · 门禁 7</div>
+          </div>
+          <div class="kpi k4">
+            <div class="kpi-top"><span class="kpi-label">在线设备</span></div>
+            <div class="kpi-num"><span data-count="139">0</span><small>台</small></div>
+            <div class="kpi-foot"><span class="delta up">在线率 97.2%</span></div>
+          </div>
+          <div class="kpi k3">
+            <div class="kpi-top"><span class="kpi-label">离线 / 故障</span></div>
+            <div class="kpi-num"><span data-count="4">0</span><small>台</small></div>
+            <div class="kpi-foot"><span class="delta down">已推送告警</span>维修工单已自动创建</div>
+          </div>
+          <div class="kpi k2">
+            <div class="kpi-top"><span class="kpi-label">低电量提醒</span></div>
+            <div class="kpi-num"><span data-count="2">0</span><small>台</small></div>
+            <div class="kpi-foot">电量低于 20% 自动提醒</div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="chips">
+            <div class="chip active">全部设备</div>
+            <div class="chip">智能门锁</div>
+            <div class="chip">智能电表</div>
+            <div class="chip">智能水表</div>
+            <div class="chip">智能门禁</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn" onclick="openModal('modalUnlockLog')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            开锁记录查询
+          </button>
+          <button class="btn btn-primary" onclick="openModal('modalBindDev')">绑定新设备</button>
+        </div>
+        <div class="dev-grid" id="devGrid"></div>
+
+        <div class="card card-pad" style="margin-top:16px">
+          <div class="card-head">
+            <div class="card-title">设备操作日志</div>
+            <span class="card-sub">开锁 · 抄表 · 权限变更 全程溯源</span>
+          </div>
+          <table class="table">
+            <thead><tr><th>时间</th><th>设备</th><th>事件</th><th>操作人</th><th>结果</th></tr></thead>
+            <tbody id="devLogBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 报修工单 ============ -->
+      <section class="view" id="view-repair">
+        <div class="toolbar">
+          <div class="chips">
+            <div class="chip active">全部工单 (34)</div>
+            <div class="chip">水电 (12)</div>
+            <div class="chip">家具 (8)</div>
+            <div class="chip">家电 (9)</div>
+            <div class="chip">网络 (5)</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" onclick="toast('已创建报修工单（原型演示）')">手动创建工单</button>
+        </div>
+        <div class="kanban" id="kanban"></div>
+      </section>
+
+      <!-- ============ 消息通知 ============ -->
+      <section class="view" id="view-messages">
+        <div class="toolbar">
+          <div class="chips">
+            <div class="chip active">全部消息</div>
+            <div class="chip">租约提醒</div>
+            <div class="chip">账单缴费</div>
+            <div class="chip">设备告警</div>
+            <div class="chip">报修进度</div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn" onclick="markAllRead()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            全部标记已读
+          </button>
+        </div>
+        <div class="card"><div class="msg-list" id="msgList"></div></div>
+      </section>
+
+      <!-- ============ 系统设置 ============ -->
+      <section class="view" id="view-settings">
+        <div class="set-grid">
+          <div class="card card-pad">
+            <div class="card-head"><div class="card-title">参数配置</div><span class="card-sub">全局计费与提醒规则</span></div>
+            <div class="form-grid-2">
+              <div class="form-row"><label>水费单价（元/吨）</label><input class="input" value="3.50"></div>
+              <div class="form-row"><label>电费单价（元/度）</label><input class="input" value="1.20"></div>
+              <div class="form-row"><label>燃气单价（元/方）</label><input class="input" value="4.20"></div>
+              <div class="form-row"><label>滞纳金比例（%/天）</label><input class="input" value="0.05"></div>
+              <div class="form-row"><label>空置预警阈值（天）</label><input class="input" value="15"></div>
+              <div class="form-row"><label>默认押金规则</label>
+                <select class="input"><option>押一付三</option><option>押一付一</option><option>押二付一</option></select>
+              </div>
+            </div>
+            <div class="form-row" style="margin-top:4px">
+              <label>租约到期提醒</label>
+              <div style="display:flex;gap:18px">
+                <label class="check-row"><input type="checkbox" checked> 提前 7 天</label>
+                <label class="check-row"><input type="checkbox" checked> 提前 15 天</label>
+                <label class="check-row"><input type="checkbox" checked> 提前 30 天</label>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+              <button class="btn btn-primary" onclick="toast('参数配置已保存')">保存配置</button>
+              <button class="btn" onclick="toast('数据备份任务已启动（原型演示）')">立即备份数据</button>
+            </div>
+          </div>
+
+          <div class="card card-pad">
+            <div class="card-head"><div class="card-title">角色权限</div><span class="card-sub">多角色协作管理</span></div>
+            <table class="table">
+              <thead><tr><th>权限项</th><th>超级管理员</th><th>运营管理员</th><th>租客端</th></tr></thead>
+              <tbody>
+                <tr><td>房源 / 房间管理</td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox"><em></em></label></td></tr>
+                <tr><td>财务数据查看</td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox"><em></em></label></td><td><label class="switch"><input type="checkbox"><em></em></label></td></tr>
+                <tr><td>租约创建与签署</td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox" checked><em></em></label></td></tr>
+                <tr><td>IoT 设备管控</td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox"><em></em></label></td></tr>
+                <tr><td>报修工单处理</td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox" checked><em></em></label></td></tr>
+                <tr><td>系统参数配置</td><td><label class="switch"><input type="checkbox" checked><em></em></label></td><td><label class="switch"><input type="checkbox"><em></em></label></td><td><label class="switch"><input type="checkbox"><em></em></label></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="margin-top:16px">
+          <div class="card-head"><div class="card-title">日志审计</div><span class="card-sub">操作日志 · 登录日志 · 数据修改 全程可追溯</span></div>
+          <div id="auditLog"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ================= 弹窗 ================= -->
+<div class="modal-mask" id="modalProperty">
+  <div class="modal">
+    <div class="modal-head"><h3>新增房源</h3><div class="modal-close" onclick="closeModal('modalProperty')">✕</div></div>
+    <div class="modal-body">
+      <div class="form-row"><label>房源名称</label><input class="input" placeholder="例如：星河青年社区 · B栋"></div>
+      <div class="form-row"><label>详细地址</label><input class="input" placeholder="区 / 街道 / 门牌号"></div>
+      <div class="form-grid-2">
+        <div class="form-row"><label>楼栋层数</label><input class="input" placeholder="例如：18"></div>
+        <div class="form-row"><label>总面积（㎡）</label><input class="input" placeholder="例如：3200"></div>
+        <div class="form-row"><label>归属状态</label><select class="input"><option>自有</option><option>托管</option></select></div>
+        <div class="form-row"><label>产权证明</label><input class="input" placeholder="上传产权证照片"></div>
+      </div>
+      <div class="form-row"><label>配套设施</label>
+        <div style="display:flex;flex-wrap:wrap;gap:4px 18px">
+          <label class="check-row"><input type="checkbox" checked> 电梯</label>
+          <label class="check-row"><input type="checkbox" checked> WiFi</label>
+          <label class="check-row"><input type="checkbox" checked> 燃气</label>
+          <label class="check-row"><input type="checkbox"> 空调</label>
+          <label class="check-row"><input type="checkbox"> 停车位</label>
+          <label class="check-row"><input type="checkbox"> 健身房</label>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('modalProperty')">取消</button>
+        <button class="btn btn-primary" onclick="submitForm('modalProperty','房源已创建，可继续录入房间')">保存房源</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modalRoom">
+  <div class="modal">
+    <div class="modal-head"><h3>新增房间</h3><div class="modal-close" onclick="closeModal('modalRoom')">✕</div></div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-row"><label>所属房源</label>
+          <select class="input"><option>星河青年社区 · A栋</option><option>云朵公寓 · 旗舰店</option><option>半山青年驿站</option></select>
+        </div>
+        <div class="form-row"><label>房号</label><input class="input" placeholder="例如：A-1502"></div>
+        <div class="form-row"><label>户型</label><select class="input"><option>大床房</option><option>双床房</option><option>一室一厅</option><option>整租套间</option></select></div>
+        <div class="form-row"><label>面积（㎡）</label><input class="input" placeholder="例如：28"></div>
+        <div class="form-row"><label>朝向</label><select class="input"><option>南</option><option>北</option><option>东</option><option>西</option></select></div>
+        <div class="form-row"><label>楼层</label><input class="input" placeholder="例如：15"></div>
+        <div class="form-row"><label>基础租金（元/月）</label><input class="input" placeholder="例如：3680"></div>
+        <div class="form-row"><label>押金（元）</label><input class="input" placeholder="例如：3680"></div>
+      </div>
+      <div class="form-row"><label>家具家电配置</label>
+        <div style="display:flex;flex-wrap:wrap;gap:4px 18px">
+          <label class="check-row"><input type="checkbox" checked> 床</label>
+          <label class="check-row"><input type="checkbox" checked> 衣柜</label>
+          <label class="check-row"><input type="checkbox" checked> 空调</label>
+          <label class="check-row"><input type="checkbox" checked> 洗衣机</label>
+          <label class="check-row"><input type="checkbox"> 冰箱</label>
+          <label class="check-row"><input type="checkbox"> 热水器</label>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('modalRoom')">取消</button>
+        <button class="btn btn-primary" onclick="submitForm('modalRoom','房间已创建并上架待租')">保存房间</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modalLease">
+  <div class="modal">
+    <div class="modal-head"><h3>创建租约</h3><div class="modal-close" onclick="closeModal('modalLease')">✕</div></div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-row"><label>租客</label>
+          <select class="input"><option>林晓彤 · 138****6688</option><option>陈屿 · 139****2211</option><option>苏晚晴 · 137****8899</option></select>
+        </div>
+        <div class="form-row"><label>房间</label>
+          <select class="input"><option>A-1502 · 大床房 · 空置</option><option>A-0903 · 一室一厅 · 空置</option><option>B-0501 · 双床房 · 空置</option></select>
+        </div>
+        <div class="form-row"><label>租期类型</label><select class="input"><option>长租</option><option>短租</option></select></div>
+        <div class="form-row"><label>付款方式</label><select class="input"><option>月付</option><option>季付</option><option>半年付</option><option>年付</option></select></div>
+        <div class="form-row"><label>起租日期</label><input class="input" type="date" value="2026-04-05"></div>
+        <div class="form-row"><label>到期日期</label><input class="input" type="date" value="2027-04-04"></div>
+        <div class="form-row"><label>月租金（元）</label><input class="input" value="3680"></div>
+        <div class="form-row"><label>押金（元）</label><input class="input" value="3680"></div>
+      </div>
+      <div class="form-row"><label>其他费用</label>
+        <div style="display:flex;flex-wrap:wrap;gap:4px 18px">
+          <label class="check-row"><input type="checkbox" checked> 物业费 ¥120/月</label>
+          <label class="check-row"><input type="checkbox" checked> 公摊水电</label>
+          <label class="check-row"><input type="checkbox"> 保洁费 ¥80/月</label>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('modalLease')">取消</button>
+        <button class="btn btn-primary" onclick="submitForm('modalLease','租约已生成，等待租客线上签署')">生成电子合同</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="modalMeter">
+  <div class="modal">
+    <div class="modal-head"><h3>快速抄表</h3><div class="modal-close" onclick="closeModal('modalMeter')">✕</div></div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-row"><label>房间</label>
+          <select class="input"><option>A-1201 · 林晓彤</option><option>A-1005 · 陈屿</option><option>B-0702 · 苏晚晴</option></select>
+        </div>
+        <div class="form-row"><label>表类型</label>
+          <select class="input" id="meterType" onchange="calcMeter()"><option value="1.2">电表（元/度）</option><option value="3.5">水表（元/吨）</option><option value="4.2">燃气表（元/方）</option></select>
+        </div>
+        <div class="form-row"><label>上期读数</label><input class="input" id="meterPrev" type="number" value="1286" oninput="calcMeter()"></div>
+        <div class="form-row"><label>本期读数</label><input class="input" id="meterCurr" type="number" value="1424" oninput="calcMeter()"></div>
+      </div>
+      <div style="background:var(--grad-soft);border:1px solid rgba(139,92,246,.3);border-radius:13px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center">
+        <span style="color:var(--muted);font-size:12.5px">本期用量 <b id="meterUsed" style="color:#fff">138</b> · 自动计算费用</span>
+        <span style="font-size:20px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">¥<span id="meterFee">165.60</span></span>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('modalMeter')">取消</button>
+        <button class="btn btn-primary" onclick="submitForm('modalMeter','抄表数据已录入，费用将计入本月账单')">确认录入</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 线下缴费登记 -->
+<div class="modal-mask" id="modalOfflinePay">
+  <div class="modal">
+    <div class="modal-head"><h3>登记线下缴费</h3><div class="modal-close" onclick="closeModal('modalOfflinePay')">✕</div></div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-row"><label>关联账单</label>
+          <select class="input"><option>ZD-202604-1009 · 韩飞 · 租金(合租) ¥2,140</option><option>ZD-202603-0961 · 李慕白 · 维修赔付 ¥480</option></select>
+        </div>
+        <div class="form-row"><label>收款方式</label>
+          <select class="input"><option>现金</option><option>银行转账</option><option>微信转账（对私）</option><option>支付宝（对私）</option></select>
+        </div>
+        <div class="form-row"><label>实收金额（元）</label><input class="input" type="number" value="2140"></div>
+        <div class="form-row"><label>收款日期</label><input class="input" type="date" value="2026-04-02"></div>
+      </div>
+      <div class="form-row"><label>备注 / 凭证号</label><input class="input" placeholder="例如：转账尾号 8891 / 收据编号"></div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('modalOfflinePay')">取消</button>
+        <button class="btn btn-primary" onclick="submitForm('modalOfflinePay','线下缴费已登记，账单状态更新为已缴费')">确认登记</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 设备绑定向导 -->
+<div class="modal-mask" id="modalBindDev">
+  <div class="modal">
+    <div class="modal-head"><h3>设备绑定向导</h3><div class="modal-close" onclick="closeModal('modalBindDev')">✕</div></div>
+    <div class="modal-body">
+      <div style="display:flex;gap:8px;margin-bottom:18px">
+        <div style="flex:1;text-align:center;font-size:11.5px;color:#fff;font-weight:700;background:var(--grad);border-radius:9px;padding:7px">① 选择设备</div>
+        <div style="flex:1;text-align:center;font-size:11.5px;color:var(--muted);background:rgba(255,255,255,.04);border-radius:9px;padding:7px">② 绑定房间</div>
+        <div style="flex:1;text-align:center;font-size:11.5px;color:var(--muted);background:rgba(255,255,255,.04);border-radius:9px;padding:7px">③ 关联租约</div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row"><label>设备类型</label>
+          <select class="input"><option>智能门锁 SL-Pro</option><option>智能电表 DM-3</option><option>智能水表 WM-2</option><option>智能燃气表 GM-1</option><option>智能门禁 GT-1</option></select>
+        </div>
+        <div class="form-row"><label>设备 SN 码</label><input class="input" placeholder="扫码或输入，例如：SLP-2026-0488"></div>
+        <div class="form-row"><label>绑定房间</label>
+          <select class="input"><option>A-1105（空置）</option><option>B-0605（空置）</option><option>B-0303（空置）</option></select>
+        </div>
+        <div class="form-row"><label>绑定模式</label>
+          <select class="input"><option>一对一（房间独占）</option><option>一对多（合租共享）</option></select>
+        </div>
+      </div>
+      <div style="background:var(--grad-soft);border:1px solid rgba(139,92,246,.3);border-radius:13px;padding:13px 16px;font-size:12.5px;color:var(--muted);line-height:1.8">
+        <b style="color:#fff">租约联动规则：</b>设备权限自动跟随租约状态 —— 租约生效时开通租客权限，<b style="color:var(--amber)">租约到期/退租时自动解绑回收权限</b>，临时密码同步失效。
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('modalBindDev')">取消</button>
+        <button class="btn btn-primary" onclick="submitForm('modalBindDev','设备绑定成功，已关联房间与租约规则')">完成绑定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 开锁记录查询 -->
+<div class="modal-mask" id="modalUnlockLog">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-head"><h3>开锁记录查询</h3><div class="modal-close" onclick="closeModal('modalUnlockLog')">✕</div></div>
+    <div class="modal-body">
+      <div class="toolbar" style="margin-bottom:12px">
+        <div class="chips">
+          <div class="chip active">全部记录</div>
+          <div class="chip">指纹开锁</div>
+          <div class="chip">临时密码</div>
+          <div class="chip">远程开锁</div>
+          <div class="chip" style="color:var(--red)">异常告警</div>
+        </div>
+      </div>
+      <table class="table">
+        <thead><tr><th>时间</th><th>门锁</th><th>开锁方式</th><th>操作人</th><th>结果</th></tr></thead>
+        <tbody>
+          <tr><td class="t-muted">04-02 14:22</td><td class="t-strong">SL-Pro · A-1201</td><td>指纹开锁</td><td>林晓彤（租客）</td><td><span class="badge st-green"><i></i>正常</span></td></tr>
+          <tr><td class="t-muted">04-02 11:40</td><td class="t-strong">SL-Pro · A-0903</td><td>临时密码（看房）</td><td>运营 · 小李</td><td><span class="badge st-green"><i></i>正常</span></td></tr>
+          <tr><td class="t-muted">04-02 03:17</td><td class="t-strong">SL-Pro · B-0303</td><td>密码尝试 ×5 失败</td><td>未知</td><td><span class="badge st-red"><i class="pulse"></i>异常告警</span></td></tr>
+          <tr><td class="t-muted">04-01 20:05</td><td class="t-strong">SL-Pro · A-1005</td><td>远程开锁</td><td>房东（后台指令）</td><td><span class="badge st-green"><i></i>正常</span></td></tr>
+          <tr><td class="t-muted">04-01 18:30</td><td class="t-strong">SL-Pro · A-1201</td><td>临时密码（保洁）</td><td>保洁阿姨</td><td><span class="badge st-green"><i></i>正常</span></td></tr>
+        </tbody>
+      </table>
+      <div style="background:rgba(255,90,110,.08);border:1px solid rgba(255,90,110,.3);border-radius:13px;padding:12px 16px;font-size:12.5px;color:var(--muted);margin-top:12px">
+        <b style="color:var(--red)">⚠ 异常开锁告警：</b>B-0303（已退租空置房）凌晨 03:17 连续 5 次密码尝试失败，已实时推送房东并生成安防工单。该房间租约已到期，设备权限已自动回收。
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('modalUnlockLog')">关闭</button>
+        <button class="btn btn-primary" onclick="toast('开锁记录已导出（原型演示）')">导出记录</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 能耗分析 -->
+<div class="modal-mask" id="modalEnergy">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-head"><h3>能耗分析 · A-1005</h3><div class="modal-close" onclick="closeModal('modalEnergy')">✕</div></div>
+    <div class="modal-body">
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+        <div class="kpi k1" style="padding:12px 14px"><div class="kpi-top"><span class="kpi-label">本月用电</span></div><div class="kpi-num" style="font-size:20px">138<small>度</small></div><div class="kpi-foot">环比 +6.2%</div></div>
+        <div class="kpi k4" style="padding:12px 14px"><div class="kpi-top"><span class="kpi-label">本月费用</span></div><div class="kpi-num" style="font-size:20px">¥165.6</div><div class="kpi-foot">单价 1.2 元/度</div></div>
+        <div class="kpi k3" style="padding:12px 14px"><div class="kpi-top"><span class="kpi-label">异常检测</span></div><div class="kpi-num" style="font-size:20px">1<small>处</small></div><div class="kpi-foot">03-28 夜间用电突增</div></div>
+      </div>
+      <div class="card-title" style="font-size:13px;margin-bottom:8px">近 6 个月用电趋势（度）</div>
+      <div id="energyChart" style="display:flex;align-items:flex-end;gap:10px;height:130px;padding:0 4px"></div>
+      <div style="display:flex;justify-content:space-around;font-size:11px;color:var(--muted);margin-top:6px">
+        <span>11月</span><span>12月</span><span>1月</span><span>2月</span><span>3月</span><span>4月</span>
+      </div>
+      <div style="background:rgba(255,171,46,.08);border:1px solid rgba(255,171,46,.3);border-radius:13px;padding:12px 16px;font-size:12.5px;color:var(--muted);margin-top:14px">
+        <b style="color:var(--amber)">💡 能耗异常提示：</b>03-28 凌晨用电较均值高出 210%，疑似大功率电器彻夜运行或线路漏电，建议安排巡检，杜绝偷漏水电与安全隐患。
+      </div>
+      <div class="modal-foot"><button class="btn btn-primary" onclick="closeModal('modalEnergy')">知道了</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="chart-tip" id="chartTip"></div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================================================
+   模拟数据
+============================================================ */
+const IMG = (prompt, size='landscape_16_9') =>
+  'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=' + encodeURIComponent(prompt) + '&image_size=' + size;
+
+const PROPERTIES = [
+  { name:'星河青年社区 · A栋', addr:'南山区科技园南路 88 号', own:'自有', status:'正常运营', st:'st-green',
+    rooms:48, empty:5, rate:89.6, income:'218,400',
+    img:IMG('Modern youth apartment building exterior at dusk, glass and white facade with warm window lights, urban Shenzhen street, photorealistic architectural photography, cinematic lighting') },
+  { name:'云朵公寓 · 旗舰店', addr:'福田区华强北路 12 号', own:'托管', status:'正常运营', st:'st-green',
+    rooms:32, empty:2, rate:93.8, income:'156,800',
+    img:IMG('Boutique modern apartment entrance at night, minimalist design with warm ambient lighting, cozy urban China street, photorealistic') },
+  { name:'橘子洲轻奢公寓', addr:'宝安区新安街道海秀路 66 号', own:'自有', status:'装修中', st:'st-amber',
+    rooms:26, empty:26, rate:0, income:'0',
+    img:IMG('Bright modern luxury apartment interior under renovation design concept, floor to ceiling windows, warm sunlight, photorealistic interior photography') },
+  { name:'半山青年驿站', addr:'龙岗区坂田街道五和大道 9 号', own:'托管', status:'正常运营', st:'st-green',
+    rooms:22, empty:3, rate:86.4, income:'88,600',
+    img:IMG('Cozy hillside apartment complex surrounded by greenery at golden hour, modern architecture, warm lights, photorealistic') },
+];
+
+const ROOMS = [
+  { no:'A-1201', type:'大床房 · 28㎡ · 朝南', price:3680, st:'rented', tenant:'林晓彤', days:0 },
+  { no:'A-1202', type:'双床房 · 32㎡ · 朝南', price:4280, st:'rented', tenant:'赵子墨 / 韩飞', days:0 },
+  { no:'A-1105', type:'一室一厅 · 45㎡ · 朝东', price:5600, st:'empty', tenant:'', days:23 },
+  { no:'A-1005', type:'大床房 · 26㎡ · 朝北', price:3280, st:'rented', tenant:'陈屿', days:0 },
+  { no:'A-0903', type:'整租套间 · 58㎡ · 朝南', price:7800, st:'lock', tenant:'已预留：周雨桐', days:0 },
+  { no:'A-0806', type:'大床房 · 28㎡ · 朝西', price:3480, st:'clean', tenant:'', days:2 },
+  { no:'A-0702', type:'双床房 · 30㎡ · 朝南', price:4080, st:'fix', tenant:'', days:5 },
+  { no:'B-0702', type:'大床房 · 27㎡ · 朝南', price:3580, st:'rented', tenant:'苏晚晴', days:0 },
+  { no:'B-0605', type:'大床房 · 25㎡ · 朝东', price:3180, st:'empty', tenant:'', days:9 },
+  { no:'B-0501', type:'一室一厅 · 42㎡ · 朝南', price:5200, st:'rented', tenant:'顾一凡', days:0 },
+  { no:'B-0303', type:'双床房 · 31㎡ · 朝北', price:3980, st:'empty', tenant:'', days:31 },
+  { no:'C-0201', type:'整租套间 · 62㎡ · 朝南', price:8200, st:'rented', tenant:'沈知夏', days:0 },
+];
+const ROOM_ST = {
+  rented:{label:'已出租', cls:'st-green', card:'rc-rented'},
+  empty:{label:'空置', cls:'st-cyan', card:'rc-empty'},
+  clean:{label:'待保洁', cls:'st-amber', card:'rc-clean'},
+  fix:{label:'维修中', cls:'st-red', card:'rc-fix'},
+  lock:{label:'已锁定', cls:'st-violet', card:'rc-lock'},
+};
+
+const TENANTS = [
+  { name:'林晓彤', phone:'138****6688', room:'A-1201', tags:[['优质租客','st-green']], since:'2025-06-12', pay:'st-green|缴费正常' },
+  { name:'陈屿', phone:'139****2211', room:'A-1005', tags:[['欠费租客','st-red']], since:'2025-09-01', pay:'st-red|逾期 12 天' },
+  { name:'苏晚晴', phone:'137****8899', room:'B-0702', tags:[['优质租客','st-green']], since:'2025-11-20', pay:'st-green|缴费正常' },
+  { name:'赵子墨', phone:'136****4455', room:'A-1202', tags:[['合租租客','st-blue']], since:'2025-08-15', pay:'st-green|缴费正常' },
+  { name:'韩飞', phone:'135****7788', room:'A-1202', tags:[['合租租客','st-blue']], since:'2025-08-15', pay:'st-amber|待缴费' },
+  { name:'周雨桐', phone:'188****3322', room:'A-0903', tags:[['待签约','st-violet']], since:'—', pay:'st-gray|待签约' },
+  { name:'顾一凡', phone:'186****9900', room:'B-0501', tags:[['优质租客','st-green']], since:'2024-12-03', pay:'st-green|缴费正常' },
+  { name:'沈知夏', phone:'150****1122', room:'C-0201', tags:[['短租租客','st-amber']], since:'2026-02-14', pay:'st-green|缴费正常' },
+];
+
+const LEASES = [
+  { id:'YZ-2026-0412', tenant:'林晓彤', room:'A-1201', start:'2025-06-12', end:'2026-06-11', prog:81, pay:'月付', rent:3680, st:'active' },
+  { id:'YZ-2026-0398', tenant:'苏晚晴', room:'B-0702', start:'2025-11-20', end:'2026-05-19', prog:76, pay:'季付', rent:3580, st:'due' },
+  { id:'YZ-2026-0371', tenant:'顾一凡', room:'B-0501', start:'2024-12-03', end:'2026-04-15', prog:96, pay:'月付', rent:5200, st:'due' },
+  { id:'YZ-2026-0455', tenant:'周雨桐', room:'A-0903', start:'2026-04-05', end:'2027-04-04', prog:0, pay:'押一付三', rent:7800, st:'wait' },
+  { id:'YZ-2026-0302', tenant:'沈知夏', room:'C-0201', start:'2026-02-14', end:'2026-08-13', prog:26, pay:'半年付', rent:8200, st:'active' },
+  { id:'YZ-2025-0218', tenant:'陈屿', room:'A-1005', start:'2025-09-01', end:'2026-08-31', prog:58, pay:'月付', rent:3280, st:'active' },
+  { id:'YZ-2025-0144', tenant:'李慕白', room:'B-0303', start:'2025-03-01', end:'2026-02-28', prog:100, pay:'月付', rent:3980, st:'end' },
+];
+const LEASE_ST = {
+  active:{label:'生效中', cls:'st-green'},
+  due:{label:'即将到期', cls:'st-amber'},
+  wait:{label:'待签约', cls:'st-violet'},
+  end:{label:'已退租', cls:'st-gray'},
+};
+
+const BILLS = [
+  { id:'ZD-202604-1024', who:'陈屿 · A-1005', type:'rent', tLabel:'租金', period:'2026-04', amount:3280, st:'overdue' },
+  { id:'ZD-202604-1018', who:'林晓彤 · A-1201', type:'rent', tLabel:'租金', period:'2026-04', amount:3680, st:'paid' },
+  { id:'ZD-202604-1015', who:'苏晚晴 · B-0702', type:'util', tLabel:'水电燃气', period:'2026-03', amount:236.4, st:'paid' },
+  { id:'ZD-202604-1009', who:'韩飞 · A-1202', type:'rent', tLabel:'租金(合租)', period:'2026-04', amount:2140, st:'pending' },
+  { id:'ZD-202604-1002', who:'顾一凡 · B-0501', type:'prop', tLabel:'物业公摊', period:'2026-04', amount:156, st:'paid' },
+  { id:'ZD-202603-0988', who:'赵子墨 · A-1202', type:'util', tLabel:'水电燃气', period:'2026-03', amount:198.2, st:'overdue' },
+  { id:'ZD-202603-0975', who:'沈知夏 · C-0201', type:'rent', tLabel:'租金', period:'2026-03', amount:8200, st:'paid' },
+  { id:'ZD-202603-0961', who:'李慕白 · B-0303', type:'other', tLabel:'维修赔付', period:'2026-03', amount:480, st:'pending' },
+  { id:'ZD-202603-0955', who:'陈屿 · A-1005', type:'other', tLabel:'滞纳金', period:'2026-03', amount:19.7, st:'overdue' },
+];
+const BILL_ST = {
+  paid:{label:'已缴费', cls:'st-green'},
+  pending:{label:'待缴费', cls:'st-amber'},
+  overdue:{label:'已逾期', cls:'st-red'},
+};
+
+const DEVICES = [
+  { type:'lock', name:'智能门锁 SL-Pro', room:'A-1201 · 林晓彤', online:true, batt:86, extra:'临时密码 2 个生效中' },
+  { type:'elec', name:'智能电表 DM-3', room:'A-1005 · 陈屿', online:true, batt:100, extra:'本月用电 138 度' },
+  { type:'water', name:'智能水表 WM-2', room:'B-0702 · 苏晚晴', online:true, batt:100, extra:'本月用水 6.8 吨' },
+  { type:'lock', name:'智能门锁 SL-Pro', room:'A-0903 · 待签约', online:true, batt:14, extra:'低电量 · 租约生效前权限锁定' },
+  { type:'gate', name:'智能门禁 GT-1', room:'A栋大堂', online:true, batt:100, extra:'今日通行 214 次' },
+  { type:'gas', name:'智能燃气表 GM-1', room:'C-0201 · 沈知夏', online:false, batt:62, extra:'离线 2 小时 · 已告警' },
+];
+const DEV_META = {
+  lock:{cls:'lock', icon:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'},
+  elec:{cls:'elec', icon:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>'},
+  water:{cls:'water', icon:'<path d="M12 2.69 5.66 9.05a9 9 0 1 0 12.68 0z"/>'},
+  gas:{cls:'gas', icon:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3 2.5.5 5 2.62 5 6a5 5 0 0 1-10 0c0-1.57.92-2.75 2.5-4 .25 1 .75 2 1 3.5z"/>'},
+  gate:{cls:'gate', icon:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 6v4M9 18h6"/>'},
+};
+
+const DEV_LOGS = [
+  ['2026-04-02 14:22','门锁 SL-Pro · A-1201','租客林晓彤 指纹开锁','系统','成功'],
+  ['2026-04-02 13:05','电表 DM-3 · A-1005','自动抄表：读数 1424 度','系统','成功'],
+  ['2026-04-02 11:40','门锁 SL-Pro · A-0903','生成临时密码（看房 15:00）','运营 · 小李','成功'],
+  ['2026-04-02 09:12','门禁 GT-1 · A栋大堂','异常尾随告警，已推送房东','系统','已处理'],
+  ['2026-04-01 22:30','燃气表 GM-1 · C-0201','设备离线，触发故障告警','系统','待处理'],
+];
+
+const TICKETS = {
+  wait:{ title:'待接单', color:'var(--amber)', items:[
+    { type:'水电', icon:'⚡', desc:'卫生间水龙头持续滴水，已用盆接住', room:'A-1005', who:'陈屿', time:'10 分钟前', cost:'' },
+    { type:'网络', icon:'📶', desc:'房间 WiFi 频繁掉线，影响远程办公', room:'B-0605', who:'看房反馈', time:'1 小时前', cost:'' },
+  ]},
+  doing:{ title:'维修中', color:'var(--blue)', items:[
+    { type:'家电', icon:'❄️', desc:'空调制冷效果差，疑似缺氟', room:'A-1202', who:'赵子墨', time:'今天 09:30', cost:'预计 ¥200' },
+    { type:'家具', icon:'🪑', desc:'衣柜门铰链松动脱落', room:'B-0501', who:'顾一凡', time:'昨天 16:20', cost:'房东承担' },
+  ]},
+  check:{ title:'待验收', color:'var(--violet)', items:[
+    { type:'水电', icon:'💡', desc:'客厅吸顶灯闪烁，已更换驱动器', room:'C-0201', who:'沈知夏', time:'昨天 11:00', cost:'¥85 · 房东承担' },
+  ]},
+  done:{ title:'已完成', color:'var(--green)', items:[
+    { type:'家电', icon:'🧺', desc:'洗衣机排水堵塞，已疏通', room:'A-1201', who:'林晓彤', time:'03-30', cost:'¥60 · 租客承担', star:5 },
+    { type:'水电', icon:'🚿', desc:'花洒水压不足，已清洗滤网', room:'B-0702', who:'苏晚晴', time:'03-28', cost:'免费', star:5 },
+  ]},
+};
+
+const MESSAGES = [
+  { ico:'lease', color:'var(--violet)', title:'租约即将到期', body:'顾一凡（B-0501）租约将于 13 天后到期，建议提前沟通续租意向。', time:'10 分钟前', unread:true },
+  { ico:'bill', color:'var(--cyan)', title:'4 月账单已生成', body:'本月共生成 92 笔租金账单、86 笔水电账单，已推送至租客端。', time:'1 小时前', unread:true },
+  { ico:'owe', color:'var(--red)', title:'欠费催缴提醒', body:'陈屿（A-1005）4 月租金 ¥3,280 已逾期 12 天，滞纳金 ¥19.7。', time:'2 小时前', unread:true },
+  { ico:'device', color:'var(--amber)', title:'设备故障告警', body:'燃气表 GM-1（C-0201）离线超过 2 小时，请检查设备状态。', time:'3 小时前', unread:true },
+  { ico:'repair', color:'var(--blue)', title:'报修工单进度更新', body:'C-0201 吸顶灯维修已完成，等待租客验收评价。', time:'昨天 18:40', unread:true },
+  { ico:'lease', color:'var(--violet)', title:'退租申请', body:'李慕白（B-0303）已提交退租申请，请安排资产核验与押金结算。', time:'昨天 15:12', unread:false },
+  { ico:'bill', color:'var(--cyan)', title:'缴费成功', body:'林晓彤（A-1201）已在线缴纳 4 月租金 ¥3,680。', time:'昨天 10:03', unread:false },
+  { ico:'device', color:'var(--green)', title:'门锁权限已回收', body:'B-0303 租约到期，门锁密码与门禁权限已自动失效。', time:'03-31 20:00', unread:false },
+];
+const MSG_ICON = {
+  lease:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6"/>',
+  bill:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>',
+  owe:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
+  device:'<path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/>',
+  repair:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+};
+
+const FEEDS = [
+  { color:'var(--green)', icon:'<path d="M20 6 9 17l-5-5"/>', text:'<b>林晓彤</b> 在线缴纳 4 月租金 <b>¥3,680</b>', time:'10 分钟前' },
+  { color:'var(--cyan)', icon:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>', text:'系统自动抄表完成：<b>A-1005</b> 本期用电 <b>138 度</b>，费用已计入账单', time:'1 小时前' },
+  { color:'var(--violet)', icon:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>', text:'<b>周雨桐</b> 完成 <b>A-0903</b> 电子合同签署，租约明日生效', time:'2 小时前' },
+  { color:'var(--amber)', icon:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>', text:'<b>陈屿</b> 租金逾期 12 天，系统已自动发送第 3 次催缴', time:'3 小时前' },
+  { color:'var(--red)', icon:'<path d="M5 12.55a11 11 0 0 1 14.08 0M12 20h.01"/>', text:'燃气表 <b>GM-1</b> 离线告警，已自动生成运维工单', time:'3 小时前' },
+  { color:'var(--blue)', icon:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>', text:'运营 · 小李 接单报修工单：<b>A-1202</b> 空调检修', time:'今天 09:32' },
+];
+
+const DUES = [
+  { day:5, unit:'天', name:'顾一凡 · B-0501', sub:'2024-12-03 ~ 2026-04-15 · 月付', level:'warn', tag:'15 天内' },
+  { day:13, unit:'天', name:'苏晚晴 · B-0702', sub:'2025-11-20 ~ 2026-05-19 · 季付', level:'mid', tag:'30 天内' },
+  { day:70, unit:'天', name:'林晓彤 · A-1201', sub:'2025-06-12 ~ 2026-06-11 · 月付', level:'ok', tag:'已提醒' },
+];
+
+const AUDIT = [
+  ['2026-04-02 14:30','王房东','修改电费单价 1.15 → 1.20 元/度','参数配置'],
+  ['2026-04-02 11:02','运营 · 小李','创建看房临时密码（A-0903）','IoT 设备'],
+  ['2026-04-01 18:45','王房东','导出 3 月账单流水 Excel','财务'],
+  ['2026-04-01 09:12','运营 · 小李','登记租客 沈知夏 实名认证信息','租客管理'],
+  ['2026-03-31 20:00','系统','租约 YZ-2025-0144 到期，自动回收设备权限','系统任务'],
+];
+
+const REV_DATA = {
+  rent:[38.2,40.1,39.4,42.0,41.2,43.8,42.9,45.2,44.1,46.8,45.6,46.4],
+  util:[4.1,4.4,4.2,4.8,5.2,5.8,6.1,5.9,5.3,4.9,4.5,4.3],
+};
+const MONTHS = ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'];
+
+/* ============================================================
+   路由
+============================================================ */
+const VIEW_META = {
+  dashboard:['数据看板','寓见 · 总览'],
+  properties:['房源管理','资产管理 · 楼栋/公寓'],
+  rooms:['房间管理','资产管理 · 最小出租单元'],
+  tenants:['租客管理','租务管理 · 租客档案'],
+  leases:['租约合同','租务管理 · 全流程合同'],
+  billing:['账单缴费','租务管理 · 财务中心'],
+  iot:['IoT 智能设备','智能运维 · 设备联动'],
+  repair:['报修工单','智能运维 · 工单流转'],
+  messages:['消息通知','系统 · 双向推送'],
+  settings:['系统设置','系统 · 权限与参数'],
+};
+function switchView(v){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.view===v));
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  const sec = document.getElementById('view-'+v);
+  sec.classList.add('active');
+  document.getElementById('pageTitle').textContent = VIEW_META[v][0];
+  document.getElementById('pageCrumb').textContent = VIEW_META[v][1];
+  document.querySelector('.views').scrollTop = 0;
+  if(v==='dashboard'){ animateCounters(sec); }
+  else animateCounters(sec);
+}
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>switchView(n.dataset.view)));
+
+/* ============================================================
+   渲染
+============================================================ */
+function renderProperties(){
+  document.getElementById('propGrid').innerHTML = PROPERTIES.map(p=>`
+    <div class="card prop-card">
+      <div class="prop-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
+        <span class="prop-status badge ${p.st}"><i></i>${p.status}</span>
+        <span class="prop-own">${p.own}</span>
+      </div>
+      <div class="prop-body">
+        <div class="prop-name">${p.name}</div>
+        <div class="prop-addr">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${p.addr}
+        </div>
+        <div class="prop-stats">
+          <div class="prop-stat"><b>${p.rooms}</b><span>总房间</span></div>
+          <div class="prop-stat"><b>${p.empty}</b><span>空置</span></div>
+          <div class="prop-stat"><b>¥${p.income}</b><span>月收入</span></div>
+        </div>
+        <div class="occ-row"><span>出租率</span><b>${p.rate}%</b></div>
+        <div class="occ-bar"><i style="width:${p.rate}%"></i></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderRooms(filter='all', kw=''){
+  const list = ROOMS.filter(r=>(filter==='all'||r.st===filter) && r.no.toLowerCase().includes(kw.toLowerCase()));
+  const el = document.getElementById('roomGrid');
+  if(!list.length){ el.innerHTML = '<div class="empty" style="grid-column:1/-1">没有匹配的房间</div>'; return; }
+  el.innerHTML = list.map(r=>{
+    const m = ROOM_ST[r.st];
+    return `<div class="card room-card ${m.card}">
+      <div class="room-top"><span class="room-no">${r.no}</span><span class="badge ${m.cls}"><i></i>${m.label}</span></div>
+      <div class="room-meta">${r.type}</div>
+      <div class="room-price">¥${r.price.toLocaleString()}<small> /月</small></div>
+      ${r.st==='empty' && r.days>=15 ? `<div class="room-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>空置 ${r.days} 天 · 触发预警</div>` : ''}
+      <div class="room-foot">
+        <span>${r.tenant ? (r.st==='lock' ? r.tenant : '租客：'+r.tenant) : '待出租'}</span>
+        <div class="io-icons">
+          <span title="智能门锁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          <span title="智能电表"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+          <span title="智能水表"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69 5.66 9.05a9 9 0 1 0 12.68 0z"/></svg></span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTenants(filter='all'){
+  const F = { vip:'优质租客', owing:'欠费租客', share:'合租租客', black:'黑名单' };
+  const list = TENANTS.filter(t=>filter==='all' || t.tags.some(x=>x[0]===F[filter]));
+  const el = document.getElementById('tenantBody');
+  if(!list.length){ el.innerHTML = '<tr><td colspan="7"><div class="empty">暂无该标签租客</div></td></tr>'; return; }
+  el.innerHTML = list.map(t=>{
+    const [payCls,payTxt] = t.pay.split('|');
+    return `<tr>
+      <td><div class="tenant-cell"><div class="avatar">${t.name[0]}</div><div><div class="t-strong">${t.name}</div><div class="t-sub">已实名认证 · 紧急联系人已录入</div></div></div></td>
+      <td>${t.phone}</td>
+      <td class="t-strong">${t.room}</td>
+      <td>${t.tags.map(x=>`<span class="badge ${x[1]}" style="margin-right:4px">${x[0]}</span>`).join('')}</td>
+      <td class="t-muted">${t.since}</td>
+      <td><span class="badge ${payCls}"><i></i>${payTxt}</span></td>
+      <td>
+        <button class="btn btn-sm" onclick="toast('已打开租客档案：${t.name}')">档案</button>
+        <button class="btn btn-sm btn-danger-ghost" onclick="toast('已加入黑名单（原型演示）')">拉黑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderLeases(filter='all'){
+  const list = LEASES.filter(l=>filter==='all'||l.st===filter);
+  const el = document.getElementById('leaseBody');
+  if(!list.length){ el.innerHTML = '<tr><td colspan="8"><div class="empty">暂无该状态租约</div></td></tr>'; return; }
+  el.innerHTML = list.map(l=>{
+    const m = LEASE_ST[l.st];
+    const actions = l.st==='active' ? `<button class="btn btn-sm" onclick="toast('已发起一键续租（原型演示）')">续租</button> <button class="btn btn-sm btn-danger-ghost" onclick="toast('已发起退租流程（原型演示）')">退租</button>`
+      : l.st==='due' ? `<button class="btn btn-sm btn-primary" onclick="toast('续租邀请已推送租客（原型演示）')">一键续租</button>`
+      : l.st==='wait' ? `<button class="btn btn-sm btn-primary" onclick="toast('电子合同已推送签署（原型演示）')">推送签署</button>`
+      : `<button class="btn btn-sm" onclick="toast('已归档（原型演示）')">归档</button>`;
+    return `<tr>
+      <td class="t-strong">${l.id}</td>
+      <td>${l.tenant}</td>
+      <td class="t-strong">${l.room}</td>
+      <td><div class="lease-prog"><div class="lp-row"><span>${l.start}</span><span>${l.end}</span></div><div class="lp-bar"><i style="width:${l.prog}%"></i></div></div></td>
+      <td>${l.pay}</td>
+      <td class="money">¥${l.rent.toLocaleString()}</td>
+      <td><span class="badge ${m.cls}"><i></i>${m.label}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderBills(filter='all'){
+  const list = BILLS.filter(b=>filter==='all'||b.type===filter);
+  const el = document.getElementById('billBody');
+  if(!list.length){ el.innerHTML = '<tr><td colspan="7"><div class="empty">暂无账单</div></td></tr>'; return; }
+  el.innerHTML = list.map(b=>{
+    const m = BILL_ST[b.st];
+    const act = b.st==='paid'
+      ? `<button class="btn btn-sm" onclick="toast('缴费流水详情（原型演示）')">流水</button>`
+      : b.st==='overdue'
+      ? `<button class="btn btn-sm btn-danger-ghost" onclick="toast('催缴短信 + 小程序推送已发送给 ${b.who.split(' ')[0]}')">一键催缴</button>`
+      : `<button class="btn btn-sm" onclick="openModal('modalOfflinePay')">登记缴费</button>`;
+    return `<tr>
+      <td class="t-strong">${b.id}</td>
+      <td>${b.who}</td>
+      <td><span class="badge st-blue">${b.tLabel}</span></td>
+      <td class="t-muted">${b.period}</td>
+      <td class="money">¥${b.amount.toLocaleString()}</td>
+      <td><span class="badge ${m.cls}"><i></i>${m.label}</span></td>
+      <td>${act}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDevices(){
+  document.getElementById('devGrid').innerHTML = DEVICES.map((d,i)=>{
+    const meta = DEV_META[d.type];
+    const stBadge = d.online
+      ? (d.batt<=20 ? '<span class="badge st-amber"><i></i>低电量</span>' : '<span class="badge st-green"><i></i>在线</span>')
+      : '<span class="badge st-red"><i class="pulse"></i>离线</span>';
+    const battColor = d.batt<=20 ? 'var(--red)' : d.batt<=50 ? 'var(--amber)' : 'var(--green)';
+    return `<div class="card dev-card">
+      <div class="dev-head">
+        <div class="dev-ico ${meta.cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${meta.icon}</svg></div>
+        <div><div class="dev-name">${d.name}</div><div class="dev-room">${d.room}</div></div>
+        <div class="dev-status">${stBadge}</div>
+      </div>
+      <div class="dev-row"><span>${d.extra}</span></div>
+      <div class="dev-row">
+        <div class="batt">电量 <div class="batt-bar"><i style="width:${d.batt}%;background:${battColor}"></i></div> ${d.batt}%</div>
+        <div style="display:flex;align-items:center;gap:8px">租客权限 <label class="switch"><input type="checkbox" ${d.online?'checked':''} onchange="toast(this.checked?'已开通租客权限':'已回收租客权限')"><em></em></label></div>
+      </div>
+      <div class="dev-actions">
+        ${d.type==='lock' ? `<button class="btn btn-sm" onclick="toast('远程开锁指令已下发（原型演示）')">远程开锁</button><button class="btn btn-sm" onclick="toast('临时密码已生成并推送（原型演示）')">临时密码</button><button class="btn btn-sm" onclick="openModal('modalUnlockLog')">开锁记录</button>` : ''}
+        ${d.type==='elec'||d.type==='water'||d.type==='gas' ? `<button class="btn btn-sm" onclick="openModal('modalMeter')">立即抄表</button><button class="btn btn-sm" onclick="openModal('modalEnergy')">能耗分析</button>` : ''}
+        ${d.type==='gate' ? `<button class="btn btn-sm" onclick="toast('通行记录（原型演示）')">通行记录</button><button class="btn btn-sm" onclick="toast('远程开门指令已下发（原型演示）')">远程开门</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('devLogBody').innerHTML = DEV_LOGS.map(l=>`
+    <tr><td class="t-muted">${l[0]}</td><td class="t-strong">${l[1]}</td><td>${l[2]}</td><td class="t-muted">${l[3]}</td>
+    <td><span class="badge ${l[4]==='成功'?'st-green':l[4]==='已处理'?'st-blue':'st-red'}"><i></i>${l[4]}</span></td></tr>`).join('');
+}
+
+function renderKanban(){
+  document.getElementById('kanban').innerHTML = Object.values(TICKETS).map(col=>`
+    <div class="kb-col">
+      <div class="kb-head"><i style="background:${col.color}"></i>${col.title}<span class="kb-count">${col.items.length}</span></div>
+      <div class="kb-body">
+        ${col.items.map(t=>`
+          <div class="kb-card" onclick="toast('工单详情（原型演示）')">
+            <div class="kb-type" style="color:${col.color}">${t.icon} ${t.type}报修</div>
+            <div class="kb-desc">${t.desc}</div>
+            <div class="kb-foot"><span>${t.room} · ${t.who}</span><span>${t.time}</span></div>
+            ${t.cost?`<div class="kb-foot" style="margin-top:5px"><span class="kb-cost">${t.cost}</span>${t.star?'<span style="color:var(--amber)'+'">★'.repeat(t.star)+'</span>':''}</div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderMessages(){
+  document.getElementById('msgList').innerHTML = MESSAGES.map((m,i)=>`
+    <div class="msg-item ${m.unread?'unread':''}" onclick="this.classList.remove('unread')">
+      <div class="msg-ico" style="background:color-mix(in srgb, ${m.color} 14%, transparent);color:${m.color}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${MSG_ICON[m.ico]}</svg>
+      </div>
+      <div style="min-width:0">
+        <div class="msg-title">${m.title}</div>
+        <div class="msg-body">${m.body}</div>
+      </div>
+      <div class="msg-time">${m.time}</div>
+    </div>`).join('');
+}
+
+function renderFeed(){
+  document.getElementById('feedList').innerHTML = FEEDS.map(f=>`
+    <div class="feed-item">
+      <div class="feed-dot" style="background:color-mix(in srgb, ${f.color} 14%, transparent);color:${f.color}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${f.icon}</svg>
+      </div>
+      <div><div class="feed-text">${f.text}</div><div class="feed-time">${f.time}</div></div>
+    </div>`).join('');
+}
+
+function renderDues(){
+  const colors = { warn:'var(--red)', mid:'var(--amber)', ok:'var(--green)' };
+  document.getElementById('dueList').innerHTML = DUES.map(d=>`
+    <div class="due-item">
+      <div class="due-day" style="background:color-mix(in srgb, ${colors[d.level]} 13%, transparent);color:${colors[d.level]}">
+        ${d.day}<span>${d.unit}</span>
+      </div>
+      <div class="due-info"><b>${d.name}</b><span>${d.sub}</span></div>
+      <span class="due-tag" style="background:color-mix(in srgb, ${colors[d.level]} 13%, transparent);color:${colors[d.level]}">${d.tag}</span>
+    </div>`).join('');
+}
+
+function renderAudit(){
+  document.getElementById('auditLog').innerHTML = AUDIT.map(l=>`
+    <div class="log-line">
+      <span class="log-time">${l[0]}</span>
+      <span class="log-user">${l[1]}</span>
+      <span style="flex:1">${l[2]}</span>
+      <span class="badge st-gray">${l[3]}</span>
+    </div>`).join('');
+}
+
+/* ============================================================
+   图表（纯 SVG，无第三方依赖）
+============================================================ */
+const tip = document.getElementById('chartTip');
+function showTip(html, x, y){
+  tip.innerHTML = html;
+  tip.style.display = 'block';
+  tip.style.left = (x+14)+'px';
+  tip.style.top = (y-10)+'px';
+}
+function hideTip(){ tip.style.display = 'none'; }
+
+function renderRevChart(key='rent'){
+  const data = REV_DATA[key];
+  const box = document.getElementById('revChart');
+  const W = box.clientWidth || 720, H = 250;
+  const padL = 40, padR = 16, padT = 18, padB = 30;
+  const max = Math.ceil(Math.max(...data)*1.15);
+  const iw = W-padL-padR, ih = H-padT-padB;
+  const px = i => padL + iw*i/(data.length-1);
+  const py = v => padT + ih*(1 - v/max);
+
+  // 平滑路径
+  function smoothPath(pts){
+    let d = `M ${pts[0][0]} ${pts[0][1]}`;
+    for(let i=1;i<pts.length;i++){
+      const [x0,y0] = pts[i-1], [x1,y1] = pts[i];
+      const cx = (x0+x1)/2;
+      d += ` C ${cx} ${y0}, ${cx} ${y1}, ${x1} ${y1}`;
+    }
+    return d;
+  }
+  const pts = data.map((v,i)=>[px(i),py(v)]);
+  const line = smoothPath(pts);
+  const area = line + ` L ${px(data.length-1)} ${padT+ih} L ${px(0)} ${padT+ih} Z`;
+
+  let grid = '';
+  for(let g=0; g<=4; g++){
+    const y = padT + ih*g/4;
+    const val = (max*(1-g/4)).toFixed(0);
+    grid += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="rgba(255,255,255,.06)"/>
+             <text x="${padL-8}" y="${y+4}" fill="#5c6478" font-size="10" text-anchor="end">${val}</text>`;
+  }
+  let labels = MONTHS.map((m,i)=>`<text x="${px(i)}" y="${H-8}" fill="#5c6478" font-size="10" text-anchor="middle">${m}</text>`).join('');
+  const dots = pts.map((p,i)=>`
+    <circle class="rev-dot" data-i="${i}" cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#070b15" stroke="url(#revGrad)" stroke-width="2" style="cursor:pointer"/>
+    <circle cx="${p[0]}" cy="${p[1]}" r="14" fill="transparent" data-i="${i}" data-v="${data[i]}" style="cursor:pointer"/>`).join('');
+
+  box.innerHTML = `<svg width="${W}" height="${H}" style="overflow:visible">
+    <defs>
+      <linearGradient id="revGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#22d3ee"/>
+      </linearGradient>
+      <linearGradient id="revArea" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(139,92,246,.30)"/><stop offset="100%" stop-color="rgba(34,211,238,0)"/>
+      </linearGradient>
+    </defs>
+    ${grid}
+    <path d="${area}" fill="url(#revArea)"/>
+    <path d="${line}" fill="none" stroke="url(#revGrad)" stroke-width="2.5" stroke-linecap="round"/>
+    ${dots}
+    ${labels}
+  </svg>`;
+
+  box.querySelectorAll('circle[data-v]').forEach(c=>{
+    c.addEventListener('mousemove', e=>{
+      const i = +c.dataset.i;
+      showTip(`<div class="t-label">${MONTHS[i]} · ${key==='rent'?'租金收入':'水电燃气'}</div><b>¥${(+c.dataset.v).toFixed(1)} 万</b>`, e.clientX, e.clientY);
+    });
+    c.addEventListener('mouseleave', hideTip);
+  });
+}
+
+function switchRev(el, key){
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderRevChart(key);
+}
+
+function renderDonut(){
+  const segs = [
+    { label:'已出租', val:92, color:'#34d399' },
+    { label:'空置', val:24, color:'#22d3ee' },
+    { label:'待保洁', val:6, color:'#fbbf24' },
+    { label:'维修中', val:4, color:'#fb7185' },
+    { label:'已锁定', val:2, color:'#8b5cf6' },
+  ];
+  const total = segs.reduce((s,x)=>s+x.val,0);
+  const R = 60, C = 2*Math.PI*R;
+  let offset = 0, paths = '';
+  segs.forEach(s=>{
+    const len = C*s.val/total;
+    paths += `<circle cx="75" cy="75" r="${R}" fill="none" stroke="${s.color}" stroke-width="14"
+      stroke-dasharray="${len-3} ${C-len+3}" stroke-dashoffset="${-offset}" stroke-linecap="round"
+      transform="rotate(-90 75 75)" style="transition:.3s;cursor:pointer"/>`;
+    offset += len;
+  });
+  document.getElementById('roomDonut').innerHTML = `<svg width="150" height="150">${paths}</svg>`;
+  document.getElementById('donutLegend').innerHTML = segs.map(s=>`
+    <div class="dl-row"><i style="background:${s.color}"></i>${s.label}
+      <span class="dl-val">${s.val}</span><span class="dl-pct">${(s.val/total*100).toFixed(1)}%</span></div>`).join('');
+}
+
+function renderSparks(){
+  document.querySelectorAll('svg[data-spark]').forEach(svg=>{
+    const vals = svg.dataset.spark.split(',').map(Number);
+    const color = svg.dataset.color;
+    const W = 92, H = 34;
+    const min = Math.min(...vals), max = Math.max(...vals);
+    const pts = vals.map((v,i)=>[W*i/(vals.length-1), H-4-(H-8)*(v-min)/(max-min||1)]);
+    let d = `M ${pts[0][0]} ${pts[0][1]}`;
+    for(let i=1;i<pts.length;i++){
+      const cx = (pts[i-1][0]+pts[i][0])/2;
+      d += ` C ${cx} ${pts[i-1][1]}, ${cx} ${pts[i][1]}, ${pts[i][0]} ${pts[i][1]}`;
+    }
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+    svg.innerHTML = `<path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" opacity=".9"/>`;
+  });
+}
+
+/* ============================================================
+   数字滚动动画
+============================================================ */
+function animateCounters(scope=document){
+  scope.querySelectorAll('[data-count]').forEach(el=>{
+    if(el.dataset.done) return;
+    el.dataset.done = '1';
+    const target = parseFloat(el.dataset.count);
+    const dec = parseInt(el.dataset.decimal||'0');
+    const dur = 900, t0 = performance.now();
+    function tick(t){
+      const p = Math.min((t-t0)/dur, 1);
+      const ease = 1-Math.pow(1-p,3);
+      const v = target*ease;
+      el.textContent = dec ? v.toFixed(dec) : Math.round(v).toLocaleString();
+      if(p<1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+/* ============================================================
+   交互
+============================================================ */
+function bindChips(id, cb){
+  document.querySelectorAll(`#${id} .chip`).forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll(`#${id} .chip`).forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+      cb(c.dataset.f);
+    });
+  });
+}
+bindChips('roomChips', f=>renderRooms(f, document.getElementById('roomSearch').value));
+bindChips('tenantChips', f=>renderTenants(f));
+bindChips('leaseChips', f=>renderLeases(f));
+bindChips('billChips', f=>renderBills(f));
+document.getElementById('roomSearch').addEventListener('input', e=>{
+  const f = document.querySelector('#roomChips .chip.active').dataset.f;
+  renderRooms(f, e.target.value);
+});
+
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-mask').forEach(m=>{
+  m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('show'); });
+});
+function submitForm(id, msg){ closeModal(id); toast(msg); }
+
+function toast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>${msg}`;
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(), 320); }, 2600);
+}
+
+function markAllRead(){
+  document.querySelectorAll('.msg-item.unread').forEach(m=>m.classList.remove('unread'));
+  toast('全部消息已标记为已读');
+}
+
+function calcMeter(){
+  const prev = parseFloat(document.getElementById('meterPrev').value)||0;
+  const curr = parseFloat(document.getElementById('meterCurr').value)||0;
+  const price = parseFloat(document.getElementById('meterType').value);
+  const used = Math.max(curr-prev, 0);
+  document.getElementById('meterUsed').textContent = used;
+  document.getElementById('meterFee').textContent = (used*price).toFixed(2);
+}
+
+/* ---------- 押金流水 ---------- */
+const DEPOSITS = [
+  { id:'YJ-2026-0412', who:'林晓彤 · A-1201', type:'缴纳冻结', amount:3680, time:'2025-06-12', st:'frozen' },
+  { id:'YJ-2026-0398', who:'沈知夏 · C-0201', type:'缴纳冻结', amount:8200, time:'2025-11-03', st:'frozen' },
+  { id:'YJ-2026-0385', who:'周雨桐 · A-0903', type:'缴纳冻结', amount:7800, time:'2026-03-28', st:'frozen' },
+  { id:'YJ-2026-0371', who:'李慕白 · B-0303', type:'退租抵扣', amount:-480, time:'2026-04-01', st:'deduct' },
+  { id:'YJ-2026-0366', who:'王梓萱 · B-0208', type:'全额退还', amount:3680, time:'2026-03-30', st:'refund' },
+  { id:'YJ-2026-0352', who:'刘一诺 · A-0608', type:'全额退还', amount:3680, time:'2026-03-22', st:'refund' },
+];
+const DEP_ST = {
+  frozen:{label:'冻结中', cls:'st-violet'},
+  deduct:{label:'部分抵扣', cls:'st-amber'},
+  refund:{label:'已退还', cls:'st-green'},
+};
+function renderDeposits(){
+  document.getElementById('depositBody').innerHTML = DEPOSITS.map(d=>{
+    const m = DEP_ST[d.st];
+    const act = d.st==='frozen'
+      ? `<button class="btn btn-sm" onclick="toast('押金冻结明细（原型演示）')">明细</button>`
+      : d.st==='deduct'
+      ? `<button class="btn btn-sm btn-primary" onclick="toast('已发起退租结算：抵扣 ¥480 后退还 ¥3,500')">结算退还</button>`
+      : `<button class="btn btn-sm" onclick="toast('退还流水详情（原型演示）')">流水</button>`;
+    return `<tr>
+      <td class="t-strong">${d.id}</td>
+      <td>${d.who}</td>
+      <td><span class="badge ${d.amount<0?'st-amber':'st-blue'}">${d.type}</span></td>
+      <td class="money" style="color:${d.amount<0?'var(--amber)':'#fff'}">${d.amount<0?'-':''}¥${Math.abs(d.amount).toLocaleString()}</td>
+      <td class="t-muted">${d.time}</td>
+      <td><span class="badge ${m.cls}"><i></i>${m.label}</span></td>
+      <td>${act}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------- 单房间收益排行 ---------- */
+const ROOM_PROFIT = [
+  { room:'C-0201 · 整租套间', val:24600 },
+  { room:'A-0903 · 整租套间', val:23400 },
+  { room:'B-0501 · 一室一厅', val:15600 },
+  { room:'A-1202 · 双床合租', val:12840 },
+  { room:'A-1201 · 大床房', val:11040 },
+  { room:'B-0702 · 大床房', val:10740 },
+];
+function renderRoomProfit(){
+  const max = ROOM_PROFIT[0].val;
+  document.getElementById('roomProfit').innerHTML = ROOM_PROFIT.map((r,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+      <span style="width:18px;height:18px;border-radius:6px;background:${i<3?'var(--grad)':'rgba(255,255,255,.08)'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0">${i+1}</span>
+      <span style="width:150px;font-size:12px;color:var(--muted);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.room}</span>
+      <div style="flex:1;height:9px;border-radius:6px;background:rgba(255,255,255,.05);overflow:hidden">
+        <div style="height:100%;width:${(r.val/max*100).toFixed(1)}%;border-radius:6px;background:${i<3?'var(--grad)':'rgba(139,92,246,.35)'}"></div>
+      </div>
+      <span style="width:76px;text-align:right;font-size:12.5px;font-weight:700;flex-shrink:0">¥${r.val.toLocaleString()}</span>
+    </div>`).join('');
+}
+
+/* ---------- 滞纳金测算 ---------- */
+function calcLate(){
+  const amt = parseFloat(document.getElementById('lateAmt').value)||0;
+  const days = parseFloat(document.getElementById('lateDays').value)||0;
+  document.getElementById('lateFee').textContent = '¥' + (amt*0.0005*days).toFixed(2);
+}
+
+/* ---------- 能耗图表 ---------- */
+function renderEnergyChart(){
+  const data = [112, 126, 143, 118, 130, 138];
+  const max = Math.max(...data);
+  document.getElementById('energyChart').innerHTML = data.map((v,i)=>{
+    const abnormal = i===4;
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
+      <span style="font-size:10.5px;color:${abnormal?'var(--amber)':'var(--muted)'};font-weight:${abnormal?'800':'600'}">${v}${abnormal?' ⚠':''}</span>
+      <div style="width:100%;height:${(v/max*100).toFixed(0)}%;border-radius:8px 8px 4px 4px;background:${abnormal?'linear-gradient(180deg,#ffab2e,#ff8a2e)':'var(--grad)'};opacity:${abnormal?1:.85}"></div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('globalSearch').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && e.target.value.trim()){
+    switchView('rooms');
+    document.getElementById('roomSearch').value = e.target.value.trim();
+    renderRooms('all', e.target.value.trim());
+    toast(`已搜索「${e.target.value.trim()}」`);
+  }
+});
+
+/* ============================================================
+   初始化
+============================================================ */
+renderProperties();
+renderRooms();
+renderTenants();
+renderLeases();
+renderBills();
+renderDeposits();
+renderRoomProfit();
+renderEnergyChart();
+renderDevices();
+renderKanban();
+renderMessages();
+renderFeed();
+renderDues();
+renderAudit();
+renderDonut();
+renderSparks();
+renderRevChart('rent');
+animateCounters();
+window.addEventListener('resize', ()=>{
+  renderRevChart(document.querySelector('#revChart .chip.active')?.textContent.includes('水电') ? 'util' : 'rent');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!-- 管理后台 · 新品投票（发起 / 截止 / 结果与明细） -->
+<view class="tc-page tc-pad">
+  <view class="tc-hero">
+    <view class="tc-hero-k">VOTE</view>
+    <view class="tc-hero-title">投票管理</view>
+    <view class="tc-hero-desc">发起新品意向投票 · 会员每人一票 · 可分享到群和朋友圈</view>
+  </view>
+
+  <view class="bar">
+    <view class="bar-btn" bindtap="openForm">
+      <text class="cuIcon-add"></text><text class="bar-txt">发起投票</text>
+    </view>
+  </view>
+
+  <!-- ============ 创建表单 ============ -->
+  <view class="tc-card" wx:if="{{formOpen}}">
+    <view class="tc-card-hd">发起新品投票</view>
+
+    <view class="fl-label">投票标题 <text class="req">必填</text></view>
+    <input class="tc-input" data-field="title" value="{{title}}" bindinput="onField" placeholder="如：新品「柔光微水泥瓷砖」是否上架？" placeholder-class="tc-input-ph" />
+
+    <view class="fl-label">投票说明</view>
+    <textarea class="tc-textarea" data-field="intro" value="{{intro}}" bindinput="onField" placeholder="新品规格、预计价格、征集目的等" placeholder-class="tc-input-ph" auto-height />
+
+    <view class="fl-label">新品图片（最多 6 张）</view>
+    <view class="img-grid">
+      <view class="img-cell" wx:for="{{images}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill"></image>
+        <view class="img-del" data-index="{{index}}" catchtap="removeImage"><text class="cuIcon-close"></text></view>
+      </view>
+      <view class="img-cell is-add" wx:if="{{images.length < 6}}" bindtap="addImages">
+        <text class="cuIcon-add"></text>
+      </view>
+    </view>
+
+    <view class="fl-label">投票选项（2~4 个）</view>
+    <view class="opt-edit" wx:for="{{options}}" wx:key="index">
+      <text class="opt-idx">{{index + 1}}</text>
+      <input
+        class="tc-input opt-in"
+        data-index="{{index}}"
+        value="{{item}}"
+        bindinput="onOption"
+        placeholder="选项文案"
+        placeholder-class="tc-input-ph"
+      />
+      <text class="cuIcon-delete opt-del" data-index="{{index}}" bindtap="removeOption"></text>
+    </view>
+    <view class="tc-btn-ghost add-opt" wx:if="{{options.length < 4}}" bindtap="addOption">＋ 添加选项</view>
+
+    <view class="fl-label">截止时间</view>
+    <view class="deadline">
+      <picker mode="date" value="{{deadline}}" bindchange="onDeadline">
+        <view class="tc-picker dl-picker">
+          <text class="{{deadline ? '' : 'ph'}}">{{deadline || '选择截止日期'}}</text>
+          <text class="cuIcon-right"></text>
+        </view>
+      </picker>
+      <view class="tc-btn-ghost dl-clear" wx:if="{{deadline}}" bindtap="clearDeadline">清除</view>
+    </view>
+    <view class="hint">不设置截止日期视为长期有效；截止当日 23:59 自动停止投票。</view>
+
+    <view class="form-ops">
+      <view class="tc-btn-ghost fop" bindtap="closeForm">取消</view>
+      <view class="tc-btn fop {{saving ? 'tc-disabled' : ''}}" bindtap="create">{{saving ? '发布中…' : '发布投票'}}</view>
+    </view>
+  </view>
+
+  <!-- ============ 列表 ============ -->
+  <block wx:if="{{loading}}">
+    <view class="tc-loading">加载中…</view>
+  </block>
+
+  <block wx:elif="{{list.length}}">
+    <view class="tc-item" wx:for="{{list}}" wx:key="_id">
+      <view class="tc-item-hd">
+        <view class="vt tc-clamp2">{{item.title}}</view>
+        <text class="tc-tag {{item.doing ? 'is-on' : 'is-off'}}">{{item.doing ? '进行中' : '已结束'}}</text>
+      </view>
+      <view class="tc-item-meta">{{item.total}} 人参与 · {{item.deadlineText}} · 发起于 {{item.createdText}}</view>
+
+      <view class="res-list">
+        <view class="res-r" wx:for="{{item.opts}}" wx:for-item="o" wx:key="index">
+          <view class="res-row">
+            <text class="res-t">{{o.text}}</text>
+            <text class="res-n">{{o.count}} 票 · {{o.percent}}%</text>
+          </view>
+          <view class="tc-bar">
+            <view class="tc-bar-fill" style="width: {{o.percent}}%"></view>
+          </view>
+        </view>
+      </view>
+
+      <view class="tc-item-ops wrap">
+        <view class="tc-btn-ghost" data-id="{{item._id}}" bindtap="toggleRecords">{{detailId === item._id ? '收起明细' : '投票明细'}}</view>
+        <view class="tc-btn-ghost" wx:if="{{item.doing}}" data-id="{{item._id}}" bindtap="close">提前截止</view>
+        <view class="tc-btn-danger" data-id="{{item._id}}" bindtap="remove">删除</view>
+      </view>
+
+      <!-- 明细 -->
+      <view class="records" wx:if="{{detailId === item._id}}">
+        <block wx:if="{{records.length}}">
+          <view class="rec" wx:for="{{records}}" wx:for-item="r" wx:key="index">
+            <text class="rec-opt">{{r.optionText}}</text>
+            <text class="rec-time">{{r.time}}</text>
+          </view>
+        </block>
+        <view class="rec-empty" wx:else>还没有会员投票</view>
+      </view>
+    </view>
+  </block>
+
+  <view class="tc-empty" wx:else>还没有投票，点击「发起投票」开始</view>
+
+  <view class="tc-safe"></view>
+</view>
