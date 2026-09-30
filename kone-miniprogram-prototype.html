@@ -348,6 +348,45 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 
 /* generic list */
 .note{padding:10px 16px 4px;font-size:9.5px;color:var(--txt-3);letter-spacing:.3px}
+
+/* ===== screen 7: nearby switcher ===== */
+.seg{
+  display:flex;margin:12px 16px 0;background:var(--card);border:1px solid var(--line);
+  border-radius:999px;padding:4px;gap:4px;
+}
+.seg button{
+  flex:1;padding:8px 0;border-radius:999px;font-size:11.5px;font-weight:600;
+  color:var(--txt-2);transition:.25s;letter-spacing:.3px;
+}
+.seg button.on{background:var(--red);color:#fff;box-shadow:0 6px 16px rgba(228,0,27,.35)}
+
+/* pin visibility by mode */
+.map-box[data-mode="case"] .pin[data-type="dealer"],
+.map-box[data-mode="dealer"] .pin[data-type="case"]{display:none}
+/* pin colors by type */
+.pin[data-type="dealer"] .dot{background:var(--red)}
+.pin[data-type="case"] .dot{background:var(--gold)}
+.pin.me .dot{background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.18),0 4px 12px rgba(255,255,255,.4)}
+.pin .lbl{transform:translateX(-50%) rotate(45deg);transform-origin:center}
+
+/* list blocks */
+.list-block{display:none}
+.list-block.on{display:block}
+
+/* case-location item (with thumbnail) */
+.case-loc{margin:0 16px 9px;background:var(--card);border:1px solid var(--line);
+  border-radius:13px;padding:9px;display:flex;gap:10px;align-items:center}
+.case-loc .thumb{width:46px;height:46px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#222;position:relative}
+.case-loc .thumb img{width:100%;height:100%;object-fit:cover}
+.case-loc .thumb .tag{position:absolute;left:3px;top:3px;background:rgba(203,164,90,.95);
+  color:#1a1206;font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px;letter-spacing:.3px}
+.case-loc .dt{flex:1;min-width:0}
+.case-loc .dt h4{font-size:11.5px;font-weight:600;line-height:1.2}
+.case-loc .dt p{font-size:9.5px;color:var(--txt-2);margin-top:2px;line-height:1.3}
+.case-loc .dst{text-align:right;flex-shrink:0}
+.case-loc .dst .d{font-size:11px;font-weight:700;color:var(--gold-2)}
+.case-loc .dst .n{font-size:8.5px;color:var(--txt-3);margin-top:1px}
+.case-loc .arr{margin-left:6px;color:var(--txt-3);font-size:14px}
 </style>
 </head>
 <body>
@@ -734,9 +773,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
       </div></div>
     </div>
 
-    <!-- ============ 7. DEALERS ============ -->
+    <!-- ============ 7. NEARBY (CASE / DEALER SWITCH) ============ -->
     <div class="phone-col">
-      <div class="phone-label"><b>07</b> <span data-zh="经销商定位" data-en="Dealer Locator">经销商定位</span></div>
+      <div class="phone-label"><b>07</b> <span data-zh="附近案例" data-en="Nearby Cases">附近案例</span></div>
       <div class="phone"><div class="screen">
         <div class="statusbar"><span>9:41</span><div class="icons">
           <svg viewBox="0 0 16 16" fill="#fff"><path d="M1 11h2v3H1zM5 8h2v6H5zM9 5h2v9H9zM13 2h2v12h-2z"/></svg>
@@ -744,46 +783,97 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
           <svg viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="#fff" stroke-width="1"/><rect x="3" y="3" width="14" height="6" rx="1" fill="#fff"/><rect x="21" y="4" width="2" height="4" rx="1" fill="#fff"/></svg>
         </div></div>
         <div class="mp-head">
-          <div class="ttl" data-zh="附近经销商" data-en="Nearby Dealers">附近经销商</div>
+          <div class="ttl" data-zh="附近" data-en="Nearby">附近</div>
           <div class="mp-capsule">
             <div class="c-btn"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
             <div class="c-btn"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6" fill="#fff" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="#fff" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="#fff" stroke="none"/></svg></div>
           </div>
         </div>
         <div class="body"><div class="body-inner">
-          <div class="map-box" style="margin-top:14px">
+
+          <!-- segmented switcher -->
+          <div class="seg" id="nearbySeg">
+            <button class="on" data-mode="case" data-zh="附近案例" data-en="Nearby Cases">附近案例</button>
+            <button data-mode="dealer" data-zh="附近经销商" data-en="Nearby Dealers">附近经销商</button>
+          </div>
+
+          <!-- map -->
+          <div class="map-box" id="nearbyMap" data-mode="case" style="margin-top:10px">
             <div class="grid-bg"></div>
             <div class="road r1"></div><div class="road r2"></div>
             <div class="scope"></div>
             <div class="pin me" style="left:50%;top:54px"><div class="dot"></div></div>
-            <div class="pin" style="left:24%;top:36%"><div class="dot"></div><div class="lbl">KONE 上海</div></div>
-            <div class="pin" style="left:72%;top:30%"><div class="dot"></div></div>
-            <div class="pin" style="left:64%;top:74%"><div class="dot"></div></div>
-            <div class="pin" style="left:30%;top:78%"><div class="dot"></div></div>
+            <!-- case pins (gold) -->
+            <div class="pin" data-type="case" style="left:24%;top:34%"><div class="dot"></div><div class="lbl" data-zh="环球金融中心" data-en="SWFC">环球金融中心</div></div>
+            <div class="pin" data-type="case" style="left:70%;top:28%"><div class="dot"></div><div class="lbl" data-zh="SKP" data-en="SKP">SKP</div></div>
+            <div class="pin" data-type="case" style="left:66%;top:70%"><div class="dot"></div><div class="lbl" data-zh="国金中心" data-en="IFC">国金中心</div></div>
+            <div class="pin" data-type="case" style="left:30%;top:74%"><div class="dot"></div><div class="lbl" data-zh="嘉里中心" data-en="Kerry Centre">嘉里中心</div></div>
+            <!-- dealer pins (red) -->
+            <div class="pin" data-type="dealer" style="left:22%;top:40%"><div class="dot"></div><div class="lbl">KONE 上海</div></div>
+            <div class="pin" data-type="dealer" style="left:74%;top:34%"><div class="dot"></div></div>
+            <div class="pin" data-type="dealer" style="left:62%;top:72%"><div class="dot"></div></div>
+            <div class="pin" data-type="dealer" style="left:32%;top:76%"><div class="dot"></div></div>
           </div>
 
-          <div class="chip-row" style="padding-top:12px">
-            <div class="chip on" data-zh="全部 5 家" data-en="All 5">全部 5 家</div>
-            <div class="chip" data-zh="销售" data-en="Sales">销售</div>
-            <div class="chip" data-zh="维保" data-en="Service">维保</div>
-            <div class="chip" data-zh="改造" data-en="Modernization">改造</div>
+          <!-- CASE list -->
+          <div class="list-block on" data-type="case">
+            <div class="chip-row" style="padding-top:12px">
+              <div class="chip on" data-zh="全部 4 项" data-en="All 4">全部 4 项</div>
+              <div class="chip" data-zh="超高层" data-en="High-Rise">超高层</div>
+              <div class="chip" data-zh="商业" data-en="Commercial">商业</div>
+              <div class="chip" data-zh="办公" data-en="Office">办公</div>
+            </div>
+            <div style="padding-top:4px">
+            <div class="case-loc">
+              <div class="thumb"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Futuristic%20glass%20skyscraper%20tower%20blue%20sky%20low%20angle%20architectural&image_size=square"><span class="tag" data-zh="超高层" data-en="HIGH-RISE">超高层</span></div>
+              <div class="dt"><h4 data-zh="上海环球金融中心" data-en="Shanghai World Financial Center">上海环球金融中心</h4><p data-zh="91 台电梯 · 双层轿厢 · 浦东" data-en="91 elevators · Double-deck · Pudong">91 台电梯 · 双层轿厢 · 浦东</p></div>
+              <div class="dst"><div class="d">1.2 km</div><div class="n" data-zh="查看 ›" data-en="View ›">查看 ›</div></div>
+            </div>
+            <div class="case-loc">
+              <div class="thumb"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Luxury%20shopping%20mall%20atrium%20glass%20elevators%20escalators%20modern%20interior&image_size=square"><span class="tag" data-zh="商业" data-en="RETAIL">商业</span></div>
+              <div class="dt"><h4 data-zh="北京 SKP" data-en="Beijing SKP">北京 SKP</h4><p data-zh="32 台 · 智能群控 · 朝阳" data-en="32 units · Smart group · Chaoyang">32 台 · 智能群控 · 朝阳</p></div>
+              <div class="dst"><div class="d">3.4 km</div><div class="n" data-zh="查看 ›" data-en="View ›">查看 ›</div></div>
+            </div>
+            <div class="case-loc">
+              <div class="thumb"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Modern%20glass%20office%20tower%20premium%20business%20district%20cityscape&image_size=square"><span class="tag" data-zh="办公" data-en="OFFICE">办公</span></div>
+              <div class="dt"><h4 data-zh="上海国金中心 IFC" data-en="Shanghai IFC">上海国金中心 IFC</h4><p data-zh="48 台 · 目的楼层控制" data-en="48 units · Destination control">48 台 · 目的楼层控制</p></div>
+              <div class="dst"><div class="d">5.8 km</div><div class="n" data-zh="查看 ›" data-en="View ›">查看 ›</div></div>
+            </div>
+            <div class="case-loc">
+              <div class="thumb"><img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Elegant%20mixed%20use%20building%20complex%20modern%20architecture%20dusk&image_size=square"><span class="tag" data-zh="商业" data-en="RETAIL">商业</span></div>
+              <div class="dt"><h4 data-zh="上海嘉里中心" data-en="Shanghai Kerry Centre">上海嘉里中心</h4><p data-zh="26 台 · 预测性维保" data-en="26 units · Predictive maintenance">26 台 · 预测性维保</p></div>
+              <div class="dst"><div class="d">7.1 km</div><div class="n" data-zh="查看 ›" data-en="View ›">查看 ›</div></div>
+            </div>
+            </div>
           </div>
 
-          <div class="dealer-item">
-            <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/></svg></div>
-            <div class="dt"><h4 data-zh="通力电梯 · 上海旗舰店" data-en="KONE Shanghai Flagship">通力电梯 · 上海旗舰店</h4><p data-zh="浦东新区世纪大道 88 号 · 销售/维保" data-en="88 Century Ave, Pudong · Sales/Service">浦东新区世纪大道 88 号 · 销售/维保</p></div>
-            <div class="dst"><div class="d">1.2 km</div><div class="n" data-zh="营业中" data-en="Open">营业中</div></div>
+          <!-- DEALER list -->
+          <div class="list-block" data-type="dealer">
+            <div class="chip-row" style="padding-top:12px">
+              <div class="chip on" data-zh="全部 5 家" data-en="All 5">全部 5 家</div>
+              <div class="chip" data-zh="销售" data-en="Sales">销售</div>
+              <div class="chip" data-zh="维保" data-en="Service">维保</div>
+              <div class="chip" data-zh="改造" data-en="Modernization">改造</div>
+            </div>
+            <div style="padding-top:4px">
+            <div class="dealer-item">
+              <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/></svg></div>
+              <div class="dt"><h4 data-zh="通力电梯 · 上海旗舰店" data-en="KONE Shanghai Flagship">通力电梯 · 上海旗舰店</h4><p data-zh="浦东新区世纪大道 88 号 · 销售/维保" data-en="88 Century Ave, Pudong · Sales/Service">浦东新区世纪大道 88 号 · 销售/维保</p></div>
+              <div class="dst"><div class="d">1.2 km</div><div class="n" data-zh="营业中" data-en="Open">营业中</div></div>
+            </div>
+            <div class="dealer-item">
+              <div class="ic"><svg viewBox="0 0 24 24"><path d="M14 4l6 6M3 21l9-9 4 4-9 9H3v-4z"/></svg></div>
+              <div class="dt"><h4 data-zh="通力维保中心 · 徐汇" data-en="KONE Service Center · Xuhui">通力维保中心 · 徐汇</h4><p data-zh="徐汇区漕溪北路 66 号 · 维保/改造" data-en="66 Caoxi Rd N, Xuhui · Service/Mod.">徐汇区漕溪北路 66 号 · 维保/改造</p></div>
+              <div class="dst"><div class="d">3.4 km</div><div class="n" data-zh="营业中" data-en="Open">营业中</div></div>
+            </div>
+            <div class="dealer-item">
+              <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/></svg></div>
+              <div class="dt"><h4 data-zh="通力销售处 · 长宁" data-en="KONE Sales Office · Changning">通力销售处 · 长宁</h4><p data-zh="长宁区愚园路 120 号 · 销售" data-en="120 Yuyuan Rd, Changning · Sales">长宁区愚园路 120 号 · 销售</p></div>
+              <div class="dst"><div class="d">5.8 km</div><div class="n" data-zh="营业中" data-en="Open">营业中</div></div>
+            </div>
+            </div>
           </div>
-          <div class="dealer-item">
-            <div class="ic"><svg viewBox="0 0 24 24"><path d="M14 4l6 6M3 21l9-9 4 4-9 9H3v-4z"/></svg></div>
-            <div class="dt"><h4 data-zh="通力维保中心 · 徐汇" data-en="KONE Service Center · Xuhui">通力维保中心 · 徐汇</h4><p data-zh="徐汇区漕溪北路 66 号 · 维保/改造" data-en="66 Caoxi Rd N, Xuhui · Service/Mod.">徐汇区漕溪北路 66 号 · 维保/改造</p></div>
-            <div class="dst"><div class="d">3.4 km</div><div class="n" data-zh="营业中" data-en="Open">营业中</div></div>
-          </div>
-          <div class="dealer-item">
-            <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/></svg></div>
-            <div class="dt"><h4 data-zh="通力销售处 · 长宁" data-en="KONE Sales Office · Changning">通力销售处 · 长宁</h4><p data-zh="长宁区愚园路 120 号 · 销售" data-en="120 Yuyuan Rd, Changning · Sales">长宁区愚园路 120 号 · 销售</p></div>
-            <div class="dst"><div class="d">5.8 km</div><div class="n" data-zh="营业中" data-en="Open">营业中</div></div>
-          </div>
+
         </div></div>
         <div class="tabbar">
           <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13M9 21v-6h6v6"/></svg><span data-zh="首页" data-en="Home">首页</span></div>
@@ -863,6 +953,21 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   document.querySelectorAll('#langToggle button').forEach(function(b){
     b.addEventListener('click', function(){ apply(b.dataset.lang); });
   });
+
+  // ===== screen 7: nearby case / dealer switcher =====
+  var seg = document.getElementById('nearbySeg');
+  var map = document.getElementById('nearbyMap');
+  if (seg && map) {
+    var lists = map.closest('.body').querySelectorAll('.list-block[data-type]');
+    seg.querySelectorAll('button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var mode = btn.dataset.mode;
+        seg.querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b===btn); });
+        map.setAttribute('data-mode', mode);
+        lists.forEach(function(lb){ lb.classList.toggle('on', lb.getAttribute('data-type')===mode); });
+      });
+    });
+  }
 })();
 </script>
 </body>
